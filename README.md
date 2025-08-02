@@ -26,6 +26,16 @@ The project is organized as follows:
 - **wpm_paragraphs.db:** SQLite database file (auto-generated on first use).
 - **1000_paragraphs.txt:** (You provide this) Source file for populating the database.
 
-Start typing, track your speed, and improve your accuracy—one paragraph at a time! 🚀🔡
+## 🖥️ Technology Stack Breakdown
+
+The application is built using a mix of modern web technologies:
+
+- JavaScript (33.4%) 🟡
+- CSS (31.0%) 🟣
+- Python (29.3%) 🔵
+- HTML (6.3%) 🔴
+
+
+## ***Start typing, track your speed, and improve your accuracy—one paragraph at a time!*** 🚀🔡
 
 
