@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>WPM Counter</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>WPM Typing Test</h1>
+      <div id="text-display" class="text-display">Loading text...</div>
+      <textarea
+        id="user-input"
+        class="user-input"
+        placeholder="Start typing here..."
+        autofocus
+      ></textarea>
+      <div class="controls">
+        <button id="start-button">Start Test</button>
+        <button id="reset-button" style="display: none">Reset Test</button>
+        <button id="next-paragraph-button" style="display: none">
+          Next Paragraph
+        </button>
+      </div>
+      <div class="results">
+        <p>WPM: <span id="wpm">0</span></p>
+        <p>Accuracy: <span id="accuracy">100%</span></p>
+        <p>Time Left: <span id="time-left">5m 00s</span></p>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
