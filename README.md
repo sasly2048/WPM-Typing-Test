@@ -32,7 +32,6 @@ The project is organized into the following files:
 
 ***index.html:*** The main HTML file for the typing test user interface.
 
-static/
 ***style.css:*** Contains all the CSS rules for styling the application.
 
 ***script.js:*** Contains the JavaScript logic for the typing test functionality, including WPM calculation, accuracy, timer, and character highlighting.
