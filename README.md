@@ -18,24 +18,10 @@ This is a simple web-based Words Per Minute (WPM) typing test application. It al
 
 - **Responsive Design:** Adapts to different screen sizes for a good user experience on various devices.
 
+# Technologies Used : 
 
+- **Backend:** Python (Flask)
 
-# Project Structure :
+- **Database:** SQLite3
 
-The project is organized into the following files:
-
-***app.py:*** The main Flask application that serves the web pages and handles API requests for text.
-
-***database.py:*** Manages the SQLite database, including initialization, inserting paragraphs, and retrieving random paragraphs.
-
-***text_processor.py:*** A utility script to extract paragraphs from a plain text file for database population.
-
-***index.html:*** The main HTML file for the typing test user interface.
-
-***style.css:*** Contains all the CSS rules for styling the application.
-
-***script.js:*** Contains the JavaScript logic for the typing test functionality, including WPM calculation, accuracy, timer, and character highlighting.
-
-***wpm_paragraphs.db:*** The SQLite database file (will be created automatically if it doesn't exist upon running database.py or app.py).
-
-***1000_paragraphs.txt:*** A placeholder text file that you need to create and populate with paragraphs. This file will be used by database.py to initially fill the wpm_paragraphs.db.
+- **Frontend:** HTML5 , CSS3 (with Google Fonts for Roboto and Montserrat) JavaScript
