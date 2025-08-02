@@ -20,8 +20,8 @@ This is a simple web-based Words Per Minute (WPM) typing test application. It al
 
 # Technologies Used : 
 
-- **Backend:** <img src="https://skillicons.dev/icons?i=python" width="35" />
+- **Backend:** <img src="https://skillicons.dev/icons?i=python" width="25" />
 
 - **Database:** <img src="https://skillicons.dev/icons?i=sql" />
 
-- **Frontend:** <img src="https://skillicons.dev/icons?i=html,css,js" width="80" />
+- **Frontend:** <img src="https://skillicons.dev/icons?i=html,css,js" width="75" />
