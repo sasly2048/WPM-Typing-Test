@@ -1,0 +1,290 @@
+/* static/style.css - ENHANCED */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+    --primary-color: #007bff;
+    /* A vibrant blue */
+    --secondary-color: #28a745;
+    /* Green for success/start */
+    --danger-color: #dc3545;
+    /* Red for danger/reset */
+    --info-color: #17a2b8;
+    /* Cyan for general info */
+    --background-light: #f4f7f6;
+    /* Lighter background */
+    --background-dark: #e0e4e8;
+    /* Slightly darker background elements */
+    --text-dark: #343a40;
+    /* Darker text */
+    --text-medium: #6c757d;
+    /* Medium gray text */
+    --text-light: #f8f9fa;
+    /* Light text (for buttons etc) */
+    --border-color: #ced4da;
+    /* Light border for inputs */
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    /* Modern, readable font */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    /* Smoother text rendering */
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px var(--shadow-medium);
+    text-align: center;
+    max-width: 900px;
+    width: 95%;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease-in-out;
+}
+
+.container:hover {
+    transform: translateY(-3px);
+    /* Subtle lift on hover */
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+    /* Stronger font for headings */
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-size: 2.8em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.text-display {
+    background-color: var(--background-dark);
+    border: 1px solid var(--primary-color);
+    /* Highlighted border */
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    font-size: 1.45em;
+    /* Slightly larger text */
+    line-height: 1.7;
+    text-align: justify;
+    /* Justify text for a block look */
+    min-height: 180px;
+    /* Increased height */
+    max-height: 250px;
+    /* Max height with scroll */
+    overflow-y: auto;
+    /* Enable scrolling */
+    color: var(--text-dark);
+    font-weight: 300;
+    /* Lighter font weight for body text */
+    box-shadow: inset 0 2px 5px var(--shadow-light);
+    /* Inner shadow */
+    transition: border-color 0.3s ease;
+}
+
+.text-display:hover {
+    border-color: #0056b3;
+    /* Darker blue on hover */
+}
+
+.user-input {
+    width: calc(100% - 50px);
+    /* Adjust width for padding */
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 3px solid var(--primary-color);
+    /* Thicker, prominent border */
+    border-radius: 10px;
+    font-size: 1.5em;
+    /* Larger input font */
+    min-height: 120px;
+    /* Increased height */
+    resize: vertical;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-dark);
+    background-color: var(--background-light);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-input:focus {
+    outline: none;
+    border-color: #0056b3;
+    /* Darker blue on focus */
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.3);
+    /* Glow effect */
+}
+
+.user-input[disabled] {
+    background-color: var(--background-dark);
+    cursor: not-allowed;
+    border-color: var(--border-color);
+    /* Muted border when disabled */
+    box-shadow: none;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    /* Space between buttons */
+    margin-bottom: 30px;
+}
+
+.controls button {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 15px 35px;
+    border: none;
+    border-radius: 50px;
+    /* Pill shape */
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    min-width: 180px;
+    /* Ensure buttons have a minimum width */
+}
+
+.controls button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    transform: translateY(-2px);
+    /* Subtle lift */
+    box-shadow: 0 6px 15px var(--shadow-medium);
+}
+
+.controls button:active {
+    transform: translateY(0);
+    /* Press effect */
+    box-shadow: 0 2px 5px var(--shadow-light);
+}
+
+#start-button {
+    background-color: var(--secondary-color);
+}
+
+#start-button:hover {
+    background-color: #218838;
+}
+
+#reset-button {
+    background-color: var(--danger-color);
+}
+
+#reset-button:hover {
+    background-color: #c82333;
+}
+
+#next-paragraph-button {
+    background-color: var(--info-color);
+    /* Use info color for next button */
+}
+
+#next-paragraph-button:hover {
+    background-color: #138496;
+}
+
+.results {
+    background-color: #e9f5ff;
+    /* Lighter blue background for results */
+    border: 1px solid var(--primary-color);
+    padding: 25px;
+    border-radius: 10px;
+    font-size: 1.3em;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 25px;
+    /* Increased gap */
+    box-shadow: 0 5px 15px var(--shadow-light);
+}
+
+.results p {
+    margin: 0;
+    flex: 1;
+    min-width: 180px;
+    /* Ensure minimum width for readability */
+    text-align: center;
+    font-weight: 400;
+}
+
+.results span {
+    font-weight: 700;
+    /* Bolder result numbers */
+    color: var(--primary-color);
+    display: block;
+    /* Make the number a block for better spacing */
+    margin-top: 5px;
+    font-size: 1.2em;
+    /* Slightly larger result numbers */
+}
+
+/* Character highlighting */
+.correct-char {
+    color: #28a745;
+    /* Bright green for correct */
+    font-weight: 500;
+}
+
+.incorrect-char {
+    color: #dc3545;
+    /* Bright red for incorrect */
+    background-color: rgba(220, 53, 69, 0.1);
+    /* Subtle red background for incorrect */
+    border-radius: 2px;
+    padding: 0 1px;
+}
+
+.current-char {
+    background-color: #ffc107;
+    /* Amber for current char */
+    color: var(--text-dark);
+    padding: 2px 0;
+    border-radius: 3px;
+    box-shadow: 0 0 3px rgba(255, 193, 7, 0.5);
+    /* Subtle glow for current char */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 25px 30px;
+        width: 95%;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    .text-display {
+        font-size: 1.2em;
+        padding: 18px;
+        min-height: 150px;
+    }
+
+    .user-input {
+        font-size: 1.2em;
+        padding: 15px;
+        min-height: 90px;
+    }
+
+    .controls {
