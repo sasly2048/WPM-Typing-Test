@@ -20,8 +20,8 @@ This is a simple web-based Words Per Minute (WPM) typing test application. It al
 
 # Technologies Used : 
 
-- **Backend:** Python (Flask)
+- **Backend:** <img src="https://skillicons.dev/icons?i=python" width="35" />
 
-- **Database:** SQLite3
+- **Database:** <img src="https://skillicons.dev/icons?i=sql" />
 
-- **Frontend:** HTML5 , CSS3 (with Google Fonts for Roboto and Montserrat) JavaScript
+- **Frontend:** <img src="https://skillicons.dev/icons?i=html,css,js" width="80" />
