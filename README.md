@@ -1,41 +1,31 @@
-# WPM Typing Test Application
+# ⌨️ WPM Typing Test Application 🚀
 
-This is a simple web-based Words Per Minute (WPM) typing test application. It allows users to practice their typing by presenting paragraphs of text and calculating their WPM and accuracy. The application uses Flask for the backend, SQLite for paragraph storage, and a combination of HTML, CSS, and JavaScript for the frontend.
+This is a simple web-based Words Per Minute (WPM) typing test application. It enables users to practice typing with randomly selected paragraphs, giving real-time feedback on speed and accuracy. The app is built with Flask (Python) on the backend, uses SQLite for paragraph storage, and serves a responsive interface with HTML, CSS, and JavaScript on the frontend.
 
-# Features
+## ✨ Features
 
-- **Typing Test:** Users can start a typing test with a randomly selected paragraph.
+- **Typing Test 📝:** Start a test with a randomly chosen paragraph to type.
+- **WPM Calculation ⚡:** Real-time calculation of Words Per Minute as you type.
+- **Accuracy Tracking 🎯:** Track and display typing accuracy dynamically.
+- **Time Limit ⏰:** 5-minute countdown timer for each test.
+- **Character Highlighting 🌈:** Visually highlights correct, incorrect, and current characters.
+- **Paragraph Management 📚:** Paragraphs are fetched from an SQLite database, prioritizing those not recently used for more variety.
+- **Responsive Design 📱:** Optimized for both desktop and mobile devices.
 
-- **WPM Calculation:** Dynamically calculates Words Per Minute as the user types.
+## 🗂️ Project Structure
 
-- **Accuracy Tracking:** Shows the user's typing accuracy in real-time.
+The project is organized as follows:
 
-- **Time Limit:** The test has a 5-minute time limit.
+- **app.py:** Main Flask application; serves pages and handles API requests.
+- **database.py:** Handles SQLite database functions—initialization, adding, and fetching paragraphs.
+- **text_processor.py:** A utility to extract paragraphs from text files for database population.
+- **index.html:** Main user interface for the typing test.
+- **static/**
+  - **style.css:** All styling rules for the application.
+  - **script.js:** Core JavaScript for WPM calculation, accuracy, timer, and highlights.
+- **wpm_paragraphs.db:** SQLite database file (auto-generated on first use).
+- **1000_paragraphs.txt:** (You provide this) Source file for populating the database.
 
-- **Character Highlighting:** Provides visual feedback by highlighting correct, incorrect, and the current character  to be typed.
-
-- **Paragraph Management:** Stores paragraphs in an SQLite database and fetches them, prioritizing less recently used ones to provide variety.
-
-- **Responsive Design:** Adapts to different screen sizes for a good user experience on various devices.
+Start typing, track your speed, and improve your accuracy—one paragraph at a time! 🚀🔡
 
 
-# Project Structure :
-
-The project is organized into the following files:
-
-***app.py:*** The main Flask application that serves the web pages and handles API requests for text.
-
-***database.py:*** Manages the SQLite database, including initialization, inserting paragraphs, and retrieving random paragraphs.
-
-***text_processor.py:*** A utility script to extract paragraphs from a plain text file for database population.
-
-***index.html:*** The main HTML file for the typing test user interface.
-
-static/
-***style.css:*** Contains all the CSS rules for styling the application.
-
-***script.js:*** Contains the JavaScript logic for the typing test functionality, including WPM calculation, accuracy, timer, and character highlighting.
-
-***wpm_paragraphs.db:*** The SQLite database file (will be created automatically if it doesn't exist upon running database.py or app.py).
-
-***1000_paragraphs.txt:*** A placeholder text file that you need to create and populate with paragraphs. This file will be used by database.py to initially fill the wpm_paragraphs.db.
