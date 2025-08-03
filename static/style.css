@@ -1,290 +1,350 @@
-/* static/style.css - ENHANCED */
+/* static/style.css - ENHANCED (Blue/Teal/Neon Green Theme - Reduced Size) */
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@400;600;700&display=swap");
 
 :root {
-    --primary-color: #007bff;
-    /* A vibrant blue */
-    --secondary-color: #28a745;
-    /* Green for success/start */
-    --danger-color: #dc3545;
-    /* Red for danger/reset */
-    --info-color: #17a2b8;
-    /* Cyan for general info */
-    --background-light: #f4f7f6;
-    /* Lighter background */
-    --background-dark: #e0e4e8;
-    /* Slightly darker background elements */
-    --text-dark: #343a40;
-    /* Darker text */
-    --text-medium: #6c757d;
-    /* Medium gray text */
-    --text-light: #f8f9fa;
-    /* Light text (for buttons etc) */
-    --border-color: #ced4da;
-    /* Light border for inputs */
-    --shadow-light: rgba(0, 0, 0, 0.08);
-    --shadow-medium: rgba(0, 0, 0, 0.15);
+  --primary-color: #007bff;
+  /* A vibrant blue - remains for general buttons if not overridden */
+  --secondary-color: #28a745;
+  /* Green for success/start - remains for specific buttons */
+  --danger-color: #dc3545;
+  /* Red for danger/reset - remains for specific buttons */
+  --info-color: #17a2b8;
+  /* Cyan for general info - remains for specific buttons */
+  --background-light: #f4f7f6;
+  /* Lighter background - used for user-input */
+  --background-dark: #e0e4e8;
+  /* Slightly darker background elements */
+  --text-dark: #343a40;
+  /* Darker text - used on lighter elements like user-input */
+  --text-medium: #6c757d;
+  /* Medium gray text */
+  --text-light: #f8f9fa;
+  /* Light text (for buttons etc) */
+  --border-color: #ced4da;
+  /* Light border for inputs */
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+
+  /* New colors for blue/teal/neon green techy theme */
+  --tech-bg-gradient-start: #001f3f; /* Deep dark blue */
+  --tech-bg-gradient-end: #000a14; /* Even darker blue/black */
+  --tech-accent-light: #39ff14; /* Neon green for accents */
+  --tech-accent-blue: #00bcd4; /* Vibrant Cyan Blue for highlight */
+  --tech-shadow-glow: rgba(57, 255, 20, 0.5); /* Neon green glow */
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    /* Modern, readable font */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: var(--background-light);
-    color: var(--text-dark);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    /* Smoother text rendering */
-    -moz-osx-font-smoothing: grayscale;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--tech-bg-gradient-start) 0%,
+    var(--tech-bg-gradient-end) 100%
+  );
+  background-attachment: fixed;
+  color: var(--text-light);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.5s ease-in-out;
+  position: relative; /* Added for footer positioning */
+}
+
+/* Celebration style when test is completed */
+body.test-completed {
+  background: linear-gradient(
+    135deg,
+    #4caf50 0%,
+    #8bc34a 100%
+  ); /* Greenish celebration background */
+  background-attachment: fixed;
+  animation: celebrateBackground 2s forwards ease-in-out;
+}
+
+@keyframes celebrateBackground {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .container {
-    background-color: #ffffff;
-    padding: 40px 50px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px var(--shadow-medium);
-    text-align: center;
-    max-width: 900px;
-    width: 95%;
-    border: 1px solid var(--border-color);
-    transition: transform 0.3s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker semi-transparent */
+  backdrop-filter: blur(8px); /* Increased blur for more depth */
+  padding: 30px 40px; /* Decreased padding */
+  border-radius: 15px;
+  box-shadow: 0 10px 30px var(--shadow-medium);
+  text-align: center;
+  max-width: 750px; /* Decreased max-width */
+  width: 95%;
+  border: 1px solid rgba(var(--tech-accent-light), 0.3);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
 }
 
 .container:hover {
-    transform: translateY(-3px);
-    /* Subtle lift on hover */
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px var(--tech-shadow-glow);
 }
 
 h1 {
-    font-family: 'Montserrat', sans-serif;
-    /* Stronger font for headings */
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    font-size: 2.8em;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  font-family: "Montserrat", sans-serif;
+  color: var(--tech-accent-blue);
+  margin-bottom: 25px; /* Decreased margin */
+  font-size: 2.5em; /* Decreased font size */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 10px rgba(0, 188, 212, 0.8);
 }
 
 .text-display {
-    background-color: var(--background-dark);
-    border: 1px solid var(--primary-color);
-    /* Highlighted border */
-    padding: 25px;
-    margin-bottom: 30px;
-    border-radius: 10px;
-    font-size: 1.45em;
-    /* Slightly larger text */
-    line-height: 1.7;
-    text-align: justify;
-    /* Justify text for a block look */
-    min-height: 180px;
-    /* Increased height */
-    max-height: 250px;
-    /* Max height with scroll */
-    overflow-y: auto;
-    /* Enable scrolling */
-    color: var(--text-dark);
-    font-weight: 300;
-    /* Lighter font weight for body text */
-    box-shadow: inset 0 2px 5px var(--shadow-light);
-    /* Inner shadow */
-    transition: border-color 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--tech-accent-blue);
+  padding: 20px; /* Decreased padding */
+  margin-bottom: 25px; /* Decreased margin */
+  border-radius: 10px;
+  font-size: 1.3em; /* Decreased font size */
+  line-height: 1.6; /* Adjusted line height */
+  text-align: justify;
+  min-height: 150px; /* Decreased min-height */
+  max-height: 200px; /* Decreased max-height */
+  overflow-y: auto;
+  color: var(--text-light);
+  font-weight: 300;
+  box-shadow: inset 0 2px 5px var(--shadow-light);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .text-display:hover {
-    border-color: #0056b3;
-    /* Darker blue on hover */
+  border-color: var(--tech-accent-light);
+  box-shadow: inset 0 2px 10px rgba(57, 255, 20, 0.3);
 }
 
 .user-input {
-    width: calc(100% - 50px);
-    /* Adjust width for padding */
-    padding: 20px;
-    margin-bottom: 30px;
-    border: 3px solid var(--primary-color);
-    /* Thicker, prominent border */
-    border-radius: 10px;
-    font-size: 1.5em;
-    /* Larger input font */
-    min-height: 120px;
-    /* Increased height */
-    resize: vertical;
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-    color: var(--text-dark);
-    background-color: var(--background-light);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: calc(100% - 40px); /* Adjusted width for new padding */
+  padding: 18px; /* Decreased padding */
+  margin-bottom: 25px; /* Decreased margin */
+  border: 3px solid var(--tech-accent-blue);
+  border-radius: 10px;
+  font-size: 1.4em; /* Decreased font size */
+  min-height: 100px; /* Decreased min-height */
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+  color: var(--text-dark);
+  background-color: var(--background-light);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .user-input:focus {
-    outline: none;
-    border-color: #0056b3;
-    /* Darker blue on focus */
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.3);
-    /* Glow effect */
+  outline: none;
+  border-color: var(--tech-accent-light);
+  box-shadow: 0 0 0 5px var(--tech-shadow-glow);
 }
 
 .user-input[disabled] {
-    background-color: var(--background-dark);
-    cursor: not-allowed;
-    border-color: var(--border-color);
-    /* Muted border when disabled */
-    box-shadow: none;
+  background-color: var(--background-dark);
+  cursor: not-allowed;
+  border-color: var(--border-color);
+  box-shadow: none;
 }
 
 .controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    /* Space between buttons */
-    margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Decreased gap */
+  margin-bottom: 25px; /* Decreased margin */
 }
 
 .controls button {
-    background-color: var(--primary-color);
-    color: var(--text-light);
-    padding: 15px 35px;
-    border: none;
-    border-radius: 50px;
-    /* Pill shape */
-    cursor: pointer;
-    font-size: 1.2em;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px var(--shadow-light);
-    min-width: 180px;
-    /* Ensure buttons have a minimum width */
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: 12px 30px; /* Decreased padding */
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1.1em; /* Decreased font size */
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px var(--shadow-light);
+  min-width: 160px; /* Decreased min-width */
 }
 
 .controls button:hover {
-    background-color: #0056b3;
-    /* Darker blue on hover */
-    transform: translateY(-2px);
-    /* Subtle lift */
-    box-shadow: 0 6px 15px var(--shadow-medium);
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px var(--shadow-medium);
 }
 
 .controls button:active {
-    transform: translateY(0);
-    /* Press effect */
-    box-shadow: 0 2px 5px var(--shadow-light);
+  transform: translateY(0);
+  box-shadow: 0 2px 5px var(--shadow-light);
 }
 
 #start-button {
-    background-color: var(--secondary-color);
+  background-color: var(--secondary-color);
 }
 
 #start-button:hover {
-    background-color: #218838;
+  background-color: #218838;
 }
 
 #reset-button {
-    background-color: var(--danger-color);
+  background-color: var(--danger-color);
 }
 
 #reset-button:hover {
-    background-color: #c82333;
+  background-color: #c82333;
 }
 
 #next-paragraph-button {
-    background-color: var(--info-color);
-    /* Use info color for next button */
+  background-color: var(--info-color);
 }
 
 #next-paragraph-button:hover {
-    background-color: #138496;
+  background-color: #138496;
 }
 
 .results {
-    background-color: #e9f5ff;
-    /* Lighter blue background for results */
-    border: 1px solid var(--primary-color);
-    padding: 25px;
-    border-radius: 10px;
-    font-size: 1.3em;
-    color: var(--text-dark);
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 25px;
-    /* Increased gap */
-    box-shadow: 0 5px 15px var(--shadow-light);
+  background-color: rgba(0, 188, 212, 0.15);
+  border: 1px solid var(--tech-accent-blue);
+  padding: 20px; /* Decreased padding */
+  border-radius: 10px;
+  font-size: 1.2em; /* Decreased font size */
+  color: var(--text-light);
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px; /* Decreased gap */
+  box-shadow: 0 5px 15px var(--shadow-light);
+  transition: all 0.3s ease-in-out;
 }
 
 .results p {
-    margin: 0;
-    flex: 1;
-    min-width: 180px;
-    /* Ensure minimum width for readability */
-    text-align: center;
-    font-weight: 400;
+  margin: 0;
+  flex: 1;
+  min-width: 150px; /* Decreased min-width */
+  text-align: center;
+  font-weight: 400;
 }
 
 .results span {
-    font-weight: 700;
-    /* Bolder result numbers */
-    color: var(--primary-color);
-    display: block;
-    /* Make the number a block for better spacing */
-    margin-top: 5px;
-    font-size: 1.2em;
-    /* Slightly larger result numbers */
+  font-weight: 700;
+  color: var(--tech-accent-light);
+  display: block;
+  margin-top: 5px;
+  font-size: 1.1em; /* Decreased font size */
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.7);
 }
 
 /* Character highlighting */
 .correct-char {
-    color: #28a745;
-    /* Bright green for correct */
-    font-weight: 500;
+  color: #4caf50;
+  font-weight: 500;
 }
 
 .incorrect-char {
-    color: #dc3545;
-    /* Bright red for incorrect */
-    background-color: rgba(220, 53, 69, 0.1);
-    /* Subtle red background for incorrect */
-    border-radius: 2px;
-    padding: 0 1px;
+  color: #ff5252;
+  background-color: rgba(255, 82, 82, 0.1);
+  border-radius: 2px;
+  padding: 0 1px;
 }
 
 .current-char {
-    background-color: #ffc107;
-    /* Amber for current char */
-    color: var(--text-dark);
-    padding: 2px 0;
-    border-radius: 3px;
-    box-shadow: 0 0 3px rgba(255, 193, 7, 0.5);
-    /* Subtle glow for current char */
+  background-color: #ffeb3b;
+  color: var(--text-dark);
+  padding: 2px 0;
+  border-radius: 3px;
+  box-shadow: 0 0 3px rgba(255, 235, 59, 0.5);
+}
+
+/* Footer Styles */
+.main-footer {
+  position: absolute; /* Positions the footer relative to the nearest positioned ancestor (body in this case) */
+  bottom: 10px; /* Places it 10px from the bottom of the viewport */
+  width: 100%; /* Ensures it spans the full width */
+  text-align: center; /* Centers the text within the footer */
+  color: var(--text-medium); /* Sets the text color */
+  font-size: 0.9em; /* Sets the font size */
+  padding: 10px 0; /* Adds vertical padding */
+  z-index: -1; /* Ensures the footer is behind the main content */
+}
+
+.main-footer a {
+  color: var(--tech-accent-blue); /* Sets the link color */
+  text-decoration: none; /* Removes underline by default */
+  transition: color 0.3s ease; /* Smooth transition for color changes */
+}
+
+.main-footer a:hover {
+  color: var(--tech-accent-light); /* Changes link color on hover */
+  text-decoration: underline; /* Adds underline on hover */
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .container {
-        padding: 25px 30px;
-        width: 95%;
-    }
+  .container {
+    padding: 20px 25px; /* Further decreased padding for mobile */
+    width: 95%;
+  }
 
-    h1 {
-        font-size: 2em;
-        margin-bottom: 20px;
-    }
+  h1 {
+    font-size: 1.8em; /* Further decreased font size for mobile */
+    margin-bottom: 15px;
+  }
 
-    .text-display {
-        font-size: 1.2em;
-        padding: 18px;
-        min-height: 150px;
-    }
+  .text-display {
+    font-size: 1.1em; /* Further decreased font size for mobile */
+    padding: 15px;
+    min-height: 120px;
+  }
 
-    .user-input {
-        font-size: 1.2em;
-        padding: 15px;
-        min-height: 90px;
-    }
+  .user-input {
+    font-size: 1.1em; /* Further decreased font size for mobile */
+    padding: 12px;
+    min-height: 80px;
+  }
 
-    .controls {
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .controls button {
+    min-width: unset;
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 1em;
+  }
+
+  .results {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .results p {
+    min-width: unset;
+  }
+
+  .main-footer {
+    position: relative; /* Change to relative on smaller screens */
+    margin-top: 20px; /* Add some margin above it */
+    bottom: unset; /* Remove fixed bottom positioning */
+    padding: 10px; /* Adjust padding for smaller screens */
+    z-index: unset; /* Remove z-index */
+  }
+}
