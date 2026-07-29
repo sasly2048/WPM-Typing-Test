@@ -1,0 +1,57 @@
+/* Theme: Arctic — crisp light theme, cool blue accent. */
+:root[data-theme="arctic"] {
+  --surface-0: #f7f9fb;
+  --surface-1: #ffffff;
+  --surface-2: #eef2f6;
+  --surface-3: #e2e8f0;
+  --surface-4: #d6dee7;
+
+  --color-bg-primary: var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary: var(--surface-2);
+  --color-bg-elevated: var(--surface-3);
+
+  --color-text-primary: #14212e;
+  --color-text-secondary: #4c5b6b;
+  --color-text-tertiary: #93a1af;
+  --color-text-muted: var(--color-text-tertiary);
+  --color-text-inverse: #f7f9fb;
+
+  --color-accent: #1c7ed6;
+  --color-accent-hover: #3d94e6;
+  --color-accent-subtle: rgba(28, 126, 214, 0.1);
+
+  --color-success: #2f9e6f;
+  --color-error: #d64545;
+  --color-warning: #c2831f;
+  --color-info: #1c7ed6;
+
+  --color-border: #d6dee7;
+  --color-border-subtle: #e2e8f0;
+
+  --color-surface: rgba(20, 33, 46, 0.03);
+  --color-surface-hover: rgba(20, 33, 46, 0.06);
+
+  --typing-correct: var(--color-text-primary);
+  --typing-incorrect: var(--color-error);
+  --typing-untyped: #b9c4cf;
+  --typing-current: var(--color-text-primary);
+  --typing-extra: var(--color-error);
+  --caret-color: var(--color-accent);
+
+  --color-chart-wpm: #1c7ed6;
+  --color-chart-accuracy: #2f9e6f;
+  --color-chart-consistency: #7c5cd6;
+  --color-chart-mistakes: #d64545;
+  --color-chart-time: #c2831f;
+
+  --color-code-keyword: #6a3fd6;
+  --color-code-function: #1c7ed6;
+  --color-code-variable: #14212e;
+  --color-code-string: #2f9e6f;
+  --color-code-number: #c2831f;
+  --color-code-comment: #93a1af;
+  --color-code-operator: #1592a8;
+
+  color-scheme: light;
+}

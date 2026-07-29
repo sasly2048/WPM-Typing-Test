@@ -1,0 +1,57 @@
+/* Theme: Midnight — deep navy, teal accent. The default dark theme. */
+:root[data-theme="midnight"] {
+  --surface-0: #060608;
+  --surface-1: #0d0d12;
+  --surface-2: #13131a;
+  --surface-3: #1a1a24;
+  --surface-4: #21212e;
+
+  --color-bg-primary: var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary: var(--surface-2);
+  --color-bg-elevated: var(--surface-3);
+
+  --color-text-primary: #e2e2e2;
+  --color-text-secondary: #9a9a9a;
+  --color-text-tertiary: #404040;
+  --color-text-muted: var(--color-text-tertiary);
+  --color-text-inverse: #060608;
+
+  --color-accent: #f0a968;
+  --color-accent-hover: #f5c093;
+  --color-accent-subtle: rgba(240, 169, 104, 0.12);
+
+  --color-success: #4aa882;
+  --color-error: #d95050;
+  --color-warning: #c49550;
+  --color-info: #6b8fbf;
+
+  --color-border: #222222;
+  --color-border-subtle: #1a1a1a;
+
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+
+  --typing-correct: var(--color-text-primary);
+  --typing-incorrect: var(--color-error);
+  --typing-untyped: var(--color-text-tertiary);
+  --typing-current: var(--color-text-primary);
+  --typing-extra: var(--color-error);
+  --caret-color: var(--color-accent);
+
+  --color-chart-wpm: #6b8fbf;
+  --color-chart-accuracy: #5ba87a;
+  --color-chart-consistency: #9178b5;
+  --color-chart-mistakes: #c46464;
+  --color-chart-time: #c49550;
+
+  --color-code-keyword: #b0a0c8;
+  --color-code-function: #8fa8c8;
+  --color-code-variable: #d8dae0;
+  --color-code-string: #9ab88a;
+  --color-code-number: #c49078;
+  --color-code-comment: #6b7280;
+  --color-code-operator: #88b0c0;
+
+  color-scheme: dark;
+}

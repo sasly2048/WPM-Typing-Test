@@ -1,0 +1,58 @@
+[
+  {
+    "id": "first_test",
+    "title": "First Steps",
+    "description": "Complete your first typing test",
+    "icon": "🎯",
+    "category": "milestone",
+    "condition": { "type": "tests_completed", "value": 1 }
+  },
+  {
+    "id": "speed_demon_50",
+    "title": "Speed Demon",
+    "description": "Reach 50 WPM in any mode",
+    "icon": "⚡",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 50 }
+  },
+  {
+    "id": "speed_demon_100",
+    "title": "Sonic Typist",
+    "description": "Reach 100 WPM in any mode",
+    "icon": "🚀",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 100 }
+  },
+  {
+    "id": "perfect_accuracy",
+    "title": "Flawless",
+    "description": "Complete a test with 100% accuracy",
+    "icon": "💎",
+    "category": "accuracy",
+    "condition": { "type": "perfect_test", "value": true }
+  },
+  {
+    "id": "streak_7",
+    "title": "Weekly Warrior",
+    "description": "Maintain a 7-day typing streak",
+    "icon": "🔥",
+    "category": "streak",
+    "condition": { "type": "streak_days", "value": 7 }
+  },
+  {
+    "id": "consistency_king",
+    "title": "Metronome",
+    "description": "Achieve a consistency score of 95% or higher",
+    "icon": "⏱️",
+    "category": "consistency",
+    "condition": { "type": "consistency_reached", "value": 95 }
+  },
+  {
+    "id": "tests_100",
+    "title": "Centurion",
+    "description": "Complete 100 tests",
+    "icon": "💯",
+    "category": "milestone",
+    "condition": { "type": "tests_completed", "value": 100 }
+  }
+]

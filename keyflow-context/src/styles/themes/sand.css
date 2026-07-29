@@ -1,0 +1,57 @@
+/* Theme: Sand — warm light theme, terracotta accent. */
+:root[data-theme="sand"] {
+  --surface-0: #faf6ee;
+  --surface-1: #ffffff;
+  --surface-2: #f2ebdc;
+  --surface-3: #e8dcc4;
+  --surface-4: #ddceb0;
+
+  --color-bg-primary: var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary: var(--surface-2);
+  --color-bg-elevated: var(--surface-3);
+
+  --color-text-primary: #3a2e20;
+  --color-text-secondary: #6e5f4c;
+  --color-text-tertiary: #a99a83;
+  --color-text-muted: var(--color-text-tertiary);
+  --color-text-inverse: #faf6ee;
+
+  --color-accent: #c26a3f;
+  --color-accent-hover: #d38154;
+  --color-accent-subtle: rgba(194, 106, 63, 0.12);
+
+  --color-success: #4f8f5e;
+  --color-error: #c0503f;
+  --color-warning: #b8863b;
+  --color-info: #4a7fa3;
+
+  --color-border: #ddceb0;
+  --color-border-subtle: #e8dcc4;
+
+  --color-surface: rgba(58, 46, 32, 0.03);
+  --color-surface-hover: rgba(58, 46, 32, 0.06);
+
+  --typing-correct: var(--color-text-primary);
+  --typing-incorrect: var(--color-error);
+  --typing-untyped: #c3b39a;
+  --typing-current: var(--color-text-primary);
+  --typing-extra: var(--color-error);
+  --caret-color: var(--color-accent);
+
+  --color-chart-wpm: #4a7fa3;
+  --color-chart-accuracy: #4f8f5e;
+  --color-chart-consistency: #8a6fb0;
+  --color-chart-mistakes: #c0503f;
+  --color-chart-time: #b8863b;
+
+  --color-code-keyword: #8a5fb0;
+  --color-code-function: #4a7fa3;
+  --color-code-variable: #3a2e20;
+  --color-code-string: #4f8f5e;
+  --color-code-number: #b8863b;
+  --color-code-comment: #a99a83;
+  --color-code-operator: #4a7fa3;
+
+  color-scheme: light;
+}

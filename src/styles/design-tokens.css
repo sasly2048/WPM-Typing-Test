@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Design Tokens - Foundation for KeyFlow
+   ========================================================================== */
+
+:root {
+  /* Colors - Base Palette */
+  --palette-gray-50: #f9fafb;
+  --palette-gray-100: #f3f4f6;
+  --palette-gray-200: #e5e7eb;
+  --palette-gray-300: #d1d5db;
+  --palette-gray-400: #9ca3af;
+  --palette-gray-500: #6b7280;
+  --palette-gray-600: #4b5563;
+  --palette-gray-700: #374151;
+  --palette-gray-800: #1f2937;
+  --palette-gray-900: #111827;
+  --palette-gray-950: #030712;
+
+  --palette-violet-50: #f5f3ff;
+  --palette-violet-100: #ede9fe;
+  --palette-violet-200: #ddd6fe;
+  --palette-violet-300: #c4b5fd;
+  --palette-violet-400: #a78bfa;
+  --palette-violet-500: #8b5cf6;
+  --palette-violet-600: #7c3aed;
+  --palette-violet-700: #6d28d9;
+  --palette-violet-800: #5b21b6;
+  --palette-violet-900: #4c1d95;
+  --palette-violet-950: #2e1065;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, Monaco, monospace;
+  
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  --text-5xl: 3rem; /* 48px */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* Spacing (4px grid system) */
+  --space-0: 0px;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+  --space-32: 8rem; /* 128px */
+  
+  /* Radii — professional, moderate scale */
+  --radius-sm: 0.5rem;   /* 8px */
+  --radius-md: 0.75rem;  /* 12px */
+  --radius-lg: 1rem;     /* 16px */
+  --radius-xl: 1.25rem;  /* 20px */
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  
+  /* Z-Index */
+  --z-hide: -1;
+  --z-base: 0;
+  --z-elevated: 10;
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  
+  /* Animation */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-ritual: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+  
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.01em;
+
+  /* Semantic Transitions */
+  --transition-hover: var(--duration-150) var(--ease-in-out);
+  --transition-press: var(--duration-75) var(--ease-in-out);
+  --transition-dialog: var(--duration-200) var(--ease-out);
+  --transition-page: var(--duration-300) var(--ease-out);
+
+  /* Focus */
+  --focus-ring-color: var(--color-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+/* Alias Tokens for Compatibility */
+--font-size-xs: var(--text-xs);
+--font-size-sm: var(--text-sm);
+--font-size-base: var(--text-base);
+--font-size-lg: var(--text-lg);
+--font-size-xl: var(--text-xl);
+--font-size-2xl: var(--text-2xl);
+--font-size-3xl: var(--text-3xl);
+--font-size-4xl: var(--text-4xl);
+--font-size-5xl: var(--text-5xl);
+
+/* Line-height aliases */
+/* Removed line-height alias block - redundant definitions */
+
+/* Radius alias */
+--radius-2xl: var(--radius-xl);
+
+}
+
+/* Base Theme Defaults (Obsidian Ritualist) */
+:root {
+  /* Surface System — 5-level elevation hierarchy */
+  --surface-0: #060608;
+  --surface-1: #0D0D12;
+  --surface-2: #13131A;
+  --surface-3: #1A1A24;
+  --surface-4: #21212E;
+
+  /* Semantic Colors — derived from surface system */
+  --color-bg-primary: var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary: var(--surface-2);
+  --color-bg-elevated: var(--surface-3);
+  
+  --color-text-primary: #E2E2E2;
+  --color-text-secondary: #9A9A9A;
+  --color-text-tertiary: #404040;
+  --color-text-muted: var(--color-text-tertiary);
+  --color-text-inverse: #060608;
+  
+  --color-accent: #F0A968;
+  --color-accent-hover: #F5C093;
+  --color-accent-subtle: rgba(240, 169, 104, 0.12);
+  
+  --color-success: #4AA882;
+  --color-error: #D95050;
+  --color-warning: #C49550;
+  --color-info: #6B8FBF;
+  
+  --color-border: #222222;
+  --color-border-subtle: #1a1a1a;
+  
+  --color-surface: rgba(255, 255, 255, 0.04);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+  
+  /* Typing Test Specific */
+  --typing-correct: var(--color-text-primary);
+  --typing-incorrect: var(--color-error);
+  --typing-untyped: var(--color-text-tertiary);
+  --typing-current: var(--color-text-primary);
+  --typing-extra: var(--color-error);
+  
+  --caret-color: var(--color-accent);
+  --caret-width: 2px;
+
+  /* ── Chart / Analytics Colors — muted palette ── */
+  --color-chart-wpm: #6B8FBF;
+  --color-chart-accuracy: #5BA87A;
+  --color-chart-consistency: #9178B5;
+  --color-chart-mistakes: #C46464;
+  --color-chart-time: #C49550;
+  --color-chart-streak: #5A9DAD;
+  --color-chart-xp: #B8A04A;
+
+  /* ── Code Syntax Highlighting — muted palette ── */
+  --color-code-keyword: #B0A0C8;
+  --color-code-function: #8FA8C8;
+  --color-code-variable: #D8DAE0;
+  --color-code-string: #9AB88A;
+  --color-code-number: #C49078;
+  --color-code-comment: #6B7280;
+  --color-code-operator: #88B0C0;
+  --color-code-class: #C4A86A;
+  --color-code-boolean: #C07080;
+  --color-code-decorator: #78ADA0;
+
+  /* ── Button Tokens ── */
+  --button-height-xs: 28px;
+  --button-height-sm: 36px;
+  --button-height-md: 44px;
+  --button-height-lg: 52px;
+  --button-height-xl: 60px;
+  --button-radius: var(--radius-sm);
+  --button-padding-x: var(--space-4);
+  --button-padding-y: var(--space-3);
+  --button-font-size: var(--text-sm);
+  --button-font-weight: var(--font-weight-medium);
+  --button-letter-spacing: var(--tracking-wide);
+  --button-transition: var(--duration-150);
+  --button-primary-bg: var(--color-accent);
+  --button-primary-hover: var(--color-accent-hover);
+  --button-secondary-bg: transparent;
+  --button-danger-bg: var(--color-error);
+  --button-disabled-opacity: 0.4;
+
+  /* ── Input Tokens ── */
+  --input-height-sm: 36px;
+  --input-height-md: 44px;
+  --input-height-lg: 52px;
+  --input-radius: var(--radius-sm);
+  --input-padding-x: var(--space-4);
+  --input-padding-y: var(--space-3);
+  --input-bg: var(--surface-1);
+  --input-border: var(--color-border-subtle);
+  --input-border-hover: var(--color-border);
+  --input-border-focus: var(--color-accent);
+  --input-border-error: var(--color-error);
+  --input-border-success: var(--color-success);
+  --input-placeholder: var(--color-text-muted);
+  --input-text: var(--color-text-primary);
+  --input-helper: var(--color-text-secondary);
+  --input-transition: var(--duration-150);
+
+  /* ── Card Tokens ── */
+  --card-radius: var(--radius-md);
+  --card-padding: var(--space-6);
+  --card-padding-compact: var(--space-4);
+  --card-padding-large: var(--space-8);
+  --card-gap: var(--space-4);
+  --card-bg: var(--surface-1);
+  --card-border: var(--color-border-subtle);
+  --card-border-hover: var(--color-border);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+  --card-transition: var(--duration-150);
+  --card-selected-border: var(--color-accent);
+  --card-disabled-opacity: 0.4;
+
+  /* ── Dialog / Modal Tokens ── */
+  --dialog-radius: var(--radius-lg);
+  --dialog-padding: var(--space-8);
+  --dialog-width-sm: 400px;
+  --dialog-width-md: 640px;
+  --dialog-width-lg: 960px;
+  --overlay-bg: rgba(0,0,0,0.4);
+  --overlay-blur: 4px;
+  --dialog-shadow: 0 16px 48px rgba(0,0,0,0.2);
+
+  /* ── Navigation Tokens ── */
+  --navbar-height: 64px;
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 72px;
+  --nav-item-height: 44px;
+  --nav-item-radius: var(--radius-sm);
+  --nav-gap: var(--space-1);
+  --tab-height: 44px;
+  --tab-indicator: 2px;
+  --drawer-width: 320px;
+  --menu-radius: var(--radius-md);
+  --menu-shadow: 0 8px 24px rgba(0,0,0,0.15);
+
+  /* ── Feedback Tokens ── */
+  --badge-radius: var(--radius-sm);
+  --badge-padding: var(--space-1) var(--space-2);
+  --badge-height-sm: 20px;
+  --badge-height-md: 24px;
+  --badge-height-lg: 28px;
+  --progress-height: 6px;
+  --progress-bg: rgba(255,255,255,0.06);
+  --progress-fill: var(--color-accent);
+  --spinner-size: 20px;
+  --spinner-speed: 800ms;
+  --skeleton-bg: rgba(255,255,255,0.06);
+  --skeleton-highlight: rgba(255,255,255,0.12);
+  --feedback-transition: var(--duration-150);
+
+  /* ── Typing Tokens ── */
+  --typing-line-height: 1.8;
+  --typing-width: 900px;
+  --typing-font-size: 24px;
+
+  /* ── Table Tokens ── */
+  --table-header-height: 52px;
+  --table-row-height: 48px;
+  --table-row-height-compact: 40px;
+  --table-radius: var(--radius-md);
+  --table-border: var(--color-border-subtle);
+  --table-hover: rgba(255,255,255,0.03);
+  --table-selected: rgba(240,169,104,0.08);
+  --table-header-bg: rgba(255,255,255,0.03);
+  --table-cell-padding: var(--space-4);
+  --table-transition: var(--duration-150);
+
+  /* ── Chart Tokens ── */
+  --chart-radius: var(--radius-md);
+  --chart-padding: var(--space-6);
+  --chart-grid: rgba(255,255,255,0.06);
+  --chart-axis: var(--color-text-muted);
+  --chart-label: var(--color-text-secondary);
+  --chart-tooltip-bg: var(--surface-3);
+  --chart-tooltip-radius: var(--radius-sm);
+  --chart-line-width: 2px;
+  --chart-dot-size: 4px;
+  --chart-animation: var(--duration-200);
+  --chart-legend-gap: var(--space-4);
+
+  /* ── Heatmap Tokens ── */
+  --heatmap-cell: 14px;
+  --heatmap-gap: 3px;
+  --sparkline-height: 32px;
+
+  color-scheme: dark;
+}

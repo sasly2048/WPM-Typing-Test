@@ -1,0 +1,8 @@
+export const PARAGRAPHS_30S = [
+  { id: 'p30-1', text: "The art of writing clean code requires patience, clarity, and continuous refinement. Master developers treat code not merely as instructions for a computer, but as a form of communication meant to be read effortlessly by future engineers who will maintain and expand the system." },
+  { id: 'p30-2', text: "Typing speed is not just about raw physical dexterity; it is a direct reflection of muscle memory and cognitive processing speed. When your fingers move in rhythm with your thoughts, the friction between ideas and execution completely disappears." },
+  { id: 'p30-3', text: "Cybersecurity is no longer just an IT issue; it is a fundamental business risk. Organizations must adopt a proactive approach to threat detection and response, ensuring that their critical assets are protected against increasingly sophisticated adversaries." },
+  { id: 'p30-4', text: "Machine learning models require vast amounts of high-quality data to function effectively. The process of gathering, cleaning, and labeling this data is often the most time-consuming and expensive part of developing an artificial intelligence system." },
+  { id: 'p30-5', text: "The history of the internet is a testament to the power of open standards and collaborative innovation. From its origins as a research network, it has evolved into a global infrastructure that underpins the modern digital economy." },
+  { id: 'p30-6', text: "Effective communication is the cornerstone of any successful team. Whether you are writing an email, giving a presentation, or participating in a meeting, the ability to convey your ideas clearly and concisely is an invaluable skill." }
+];

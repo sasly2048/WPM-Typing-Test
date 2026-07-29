@@ -1,0 +1,16 @@
+{
+  "name": "KeyFlow",
+  "short_name": "KeyFlow",
+  "description": "Premium typing test platform — measure speed, track progress, master the keyboard.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#7c5cfc",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
