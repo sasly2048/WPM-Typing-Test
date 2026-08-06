@@ -73,6 +73,7 @@ export function render(container) {
   let inputEngine = null;
   let adapter = null;
   let started = false;
+  let countdownId = null;
 
   const statsEngine = new StatsEngine();
   const settings = saved;
@@ -151,6 +152,14 @@ export function render(container) {
         <button class="btn btn-primary btn-sm" id="practice-custom-apply">Use this text</button>
       </div>
 
+      <!-- Countdown. Only present in time mode, and only once typing has
+           started — a static number before the clock runs is just pressure. -->
+      <div class="practice__clock" id="practice-clock" hidden
+           role="timer" aria-live="off" aria-label="Time remaining">
+        <span class="practice__clock-value" id="practice-clock-value">0</span>
+        <span class="practice__clock-unit">s</span>
+      </div>
+
       <div class="practice__surface">
         <div class="typing-surface" id="practice-target" tabindex="0"
              role="textbox" aria-label="Typing test text">
@@ -192,6 +201,8 @@ export function render(container) {
   const accEl    = $('#practice-acc');
   const progEl   = $('#practice-progress');
   const pbEl     = $('#practice-pb');
+  const clockEl      = $('#practice-clock');
+  const clockValueEl = $('#practice-clock-value');
 
   const renderEngine = new RenderEngine(renderEl, caretEl);
 
@@ -216,6 +227,8 @@ export function render(container) {
   async function startSession() {
     contentEngine.unlockSession();
     if (inputEngine) inputEngine.stop();
+    stopCountdown();
+    clockEl.hidden = true;
 
     statsEngine.reset();
     renderEngine.resetDiffState();
@@ -260,6 +273,9 @@ export function render(container) {
           started = true;
           root.classList.add('is-typing');
           contentEngine.lockSession();
+          // The clock starts on the first keystroke, not on page load, so
+          // reading the passage first does not cost you time.
+          startCountdown();
         }
 
         const correct = isCorrect(inputEvent);
@@ -304,10 +320,55 @@ export function render(container) {
 
   function isComplete() {
     const last = adapter.words.length - 1;
-    return (
+    const passageFinished =
       adapter.currentWordIndex >= last &&
-      (adapter.typedWords[last] || '').length >= (adapter.words[last] || '').length
-    );
+      (adapter.typedWords[last] || '').length >= (adapter.words[last] || '').length;
+
+    // In time mode the clock decides. Reaching the end of the passage early
+    // is possible for a fast typist, and should still end the run rather than
+    // leave them with nothing to type.
+    return passageFinished;
+  }
+
+  /* ── countdown (time mode) ───────────────────────────────────────────── */
+
+  /**
+   * Time mode previously had no clock at all: the duration control existed,
+   * but nothing ended the session, so a "15s" test ran until the passage was
+   * exhausted. The control promised a contract the engine never honoured.
+   *
+   * Driven by wall-clock deltas rather than by counting ticks, so a throttled
+   * background tab cannot stretch the session.
+   */
+  function startCountdown() {
+    if (mode !== MODES.TIME) return;
+
+    const endsAt = performance.now() + duration * 1000;
+    clockEl.hidden = false;
+
+    const tick = () => {
+      const remainingMs = endsAt - performance.now();
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+
+      clockValueEl.textContent = remaining;
+      clockEl.classList.toggle('is-urgent', remaining <= 5 && remaining > 0);
+
+      if (remainingMs <= 0) {
+        stopCountdown();
+        endSession();
+        return;
+      }
+      countdownId = requestAnimationFrame(tick);
+    };
+
+    countdownId = requestAnimationFrame(tick);
+  }
+
+  function stopCountdown() {
+    if (countdownId) {
+      cancelAnimationFrame(countdownId);
+      countdownId = null;
+    }
   }
 
   function updateHud() {
@@ -319,6 +380,7 @@ export function render(container) {
 
   function endSession() {
     inputEngine.stop();
+    stopCountdown();
     statsEngine.finish();
     contentEngine.unlockSession();
     if (settings.soundEnabled) audio.playComplete();
@@ -448,6 +510,8 @@ export function render(container) {
   container._destroy = () => {
     document.removeEventListener('keydown', onKeyDown);
     if (inputEngine) inputEngine.stop();
+    // Without this the countdown's rAF loop keeps running after navigation.
+    stopCountdown();
   };
 }
 

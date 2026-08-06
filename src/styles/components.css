@@ -2061,6 +2061,40 @@ kbd, .kbd {
   transition: opacity var(--duration-normal) var(--ease-out);
 }
 
+/* Countdown. Sits above the passage in the accent colour so it is legible at
+   a glance without competing with the text being read. */
+.practice__clock {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.practice__clock-value {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.practice__clock-unit { font-size: var(--text-base); color: var(--color-text-tertiary); }
+
+/* The last five seconds turn red. Colour alone would fail WCAG 1.4.1, so the
+   number also pulses — two independent channels for the same signal. */
+.practice__clock.is-urgent { color: var(--color-error); }
+
+.practice__clock.is-urgent .practice__clock-value {
+  animation: kf-clock-pulse 1s var(--ease-out) infinite;
+}
+
+@keyframes kf-clock-pulse {
+  0%, 100% { transform: scale(1); }
+  12%      { transform: scale(1.12); }
+}
+
+.reduce-motion .practice__clock.is-urgent .practice__clock-value { animation: none; }
+
 .practice__surface { width: 100%; }
 
 .practice .typing-surface {
