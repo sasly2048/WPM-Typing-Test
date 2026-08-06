@@ -4,6 +4,14 @@
    whole document changes voice with the surface, from one token.
    ========================================================================== */
 
+/* The `hidden` attribute maps to display:none in the UA stylesheet, which any
+   author `display` rule outranks on specificity. Components here set display
+   freely (.segmented, .badge, .card…), so hidden silently stopped working on
+   them. `hidden` is a semantic assertion about whether an element exists for
+   the user, so it must outrank layout — one of the few correct uses of
+   !important. */
+[hidden] { display: none !important; }
+
 html {
   -webkit-text-size-adjust: 100%;
   /* Nothing should scroll the page sideways. Wide content (tables, charts,

@@ -168,7 +168,7 @@
   gap: var(--space-6);
 }
 
-.nav-left, .nav-right { display: flex; align-items: center; gap: var(--space-2); }
+.nav-left, .nav-right { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
 .nav-center { flex: 1; display: flex; justify-content: center; min-width: 0; }
 
 .logo-link {
@@ -481,6 +481,7 @@
 .pill-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   height: var(--button-height-sm);
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
@@ -488,6 +489,10 @@
   color: var(--color-accent-contrast);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
+  /* Must not wrap: at narrow widths the flex nav was squeezing "Sign in"
+     onto two lines and stretching the pill. */
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background var(--transition-hover);
 }
 
@@ -801,10 +806,6 @@
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
-
-/* display on .badge would otherwise beat the `hidden` attribute, leaving an
-   empty coloured pill behind whenever a badge has nothing to say. */
-.badge[hidden] { display: none; }
 
 .badge--accent  { background: var(--color-accent-subtle); color: var(--color-accent); }
 .badge--success { background: color-mix(in srgb, var(--color-success) 14%, transparent); color: var(--color-success); }
@@ -2011,9 +2012,17 @@ kbd, .kbd {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-3);
+  max-width: 100%;
   transition: opacity var(--duration-normal) var(--ease-out),
               transform var(--duration-normal) var(--ease-out);
+}
+
+/* Dividers separate groups on one line. Once the strip wraps they land at
+   the start or end of a row and read as stray marks, so they are dropped
+   below the width where wrapping begins. */
+@media (max-width: 1180px) {
+  .practice__config-divider { display: none; }
 }
 
 /* Fade rather than hide — removing it would reflow the text mid-keystroke. */
@@ -2044,7 +2053,6 @@ kbd, .kbd {
   border-radius: var(--card-radius);
 }
 
-.practice__custom[hidden] { display: none; }
 .practice__custom .textarea { width: 100%; }
 
 .practice.is-typing .practice__custom {
