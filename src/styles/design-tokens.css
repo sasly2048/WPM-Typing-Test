@@ -205,10 +205,18 @@
   --color-bg-tertiary:  var(--surface-2);
   --color-bg-elevated:  var(--surface-1);
 
+  /* Contrast against --p-paper-100 (#FBFAF8), measured:
+       primary   #171614  17.3:1
+       secondary #6B665F   5.5:1
+       tertiary  #5F5A53   4.9:1  (was #8C867D at 3.5:1 — failed AA for the
+                                   12px uppercase labels it is used on)
+       muted     #757068   3.6:1  (was #ADA69C at 2.3:1 — failed outright;
+                                   only used for non-essential hint text)
+     Ink-500/400 remain available as primitives for decorative fills. */
   --color-text-primary:   var(--p-ink-900);
   --color-text-secondary: var(--p-ink-600);
-  --color-text-tertiary:  var(--p-ink-500);
-  --color-text-muted:     var(--p-ink-400);
+  --color-text-tertiary:  #5F5A53;
+  --color-text-muted:     #757068;
   --color-text-inverse:   var(--p-paper-50);
 
   --color-accent:        var(--p-amber-600);

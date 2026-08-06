@@ -6,6 +6,9 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Nothing should scroll the page sideways. Wide content (tables, charts,
+     filter rails) scrolls inside its own container instead. */
+  overflow-x: hidden;
 }
 
 html, body {

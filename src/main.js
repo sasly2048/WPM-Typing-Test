@@ -247,9 +247,16 @@ function init() {
   app.appendChild(pageContainer);
   setContainer(pageContainer);
 
-  // 3. Render Footer
+  // 3. Render Footer. Hidden in the developer workspace, which is a
+  //    full-height IDE shell with its own status bar.
   const footerComponent = createFooter();
   app.appendChild(footerComponent);
+
+  const syncFooter = () => {
+    footerComponent.hidden = document.documentElement.getAttribute('data-surface') === 'dev';
+  };
+  window.addEventListener('keyflow:surface-change', syncFooter);
+  syncFooter();
 
   // 4. Initialize Command Palette
   initCommandPalette();

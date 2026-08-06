@@ -16,5 +16,6 @@ export const DEFAULT_SETTINGS = {
   reducedMotion: false,
   highContrast: false,
   blindMode: false,
-  stopOnError: false
+  stopOnError: false,
+  fairPlay: true,
 };
