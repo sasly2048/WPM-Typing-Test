@@ -9,6 +9,7 @@
 import { html } from '../utils/dom.js';
 import { fireConfetti } from '../components/confetti.js';
 import { createLineChart, createRingChart, createBarChart } from '../components/chart.js';
+import { createReplay } from '../components/replay.js';
 import { getSessions, getPersonalBest } from '../services/history.js';
 import { logger } from '../services/instrumentation.js';
 
@@ -135,6 +136,14 @@ export function render(container) {
         </a>
       </div>
 
+      <section class="section" id="results-replay-section" hidden>
+        <h2 class="section__label">Replay</h2>
+        <p class="results__replay-hint">
+          Watch the run back to see where the time actually went.
+        </p>
+        <div class="card" id="results-replay"></div>
+      </section>
+
       <section class="section">
         <h2 class="section__label">Character breakdown</h2>
         <div class="card" id="results-breakdown"></div>
@@ -158,6 +167,20 @@ export function render(container) {
            : 'var(--color-error)',
     })
   );
+
+  /* Replay, when a timeline was captured for this run. Absent for sessions
+     restored from history, since only the most recent one keeps a timeline. */
+  let replay = null;
+  try {
+    const stored = JSON.parse(sessionStorage.getItem('lastReplay') || 'null');
+    if (stored?.timeline?.length) {
+      replay = createReplay(stored);
+      container.querySelector('#results-replay').appendChild(replay.el);
+      container.querySelector('#results-replay-section').hidden = false;
+    }
+  } catch (err) {
+    logger.warn('replay', 'Could not restore replay', { error: err.message });
+  }
 
   /* Character breakdown. */
   container.querySelector('#results-breakdown').appendChild(
@@ -239,6 +262,11 @@ export function render(container) {
   } catch { /* non-critical */ }
 
   if (window.lucide) window.lucide.createIcons();
+
+  // The replay drives a rAF loop; without this it survives navigation.
+  container._destroy = () => replay?.destroy();
 }
 
-export function destroy() {}
+export function destroy(container) {
+  if (container?._destroy) container._destroy();
+}

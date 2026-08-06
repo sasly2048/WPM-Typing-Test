@@ -358,6 +358,19 @@ export function render(container) {
 
     sessionStorage.setItem('lastSession', JSON.stringify(session));
 
+    // Keep the timeline for the most recent run so the results page can replay
+    // it. Bounded to one session on purpose — see the note in practice.js.
+    try {
+      sessionStorage.setItem('lastReplay', JSON.stringify({
+        timeline: s.timeline,
+        text: adapter.lines.join('\n'),
+        totalTimeMs: s.totalTimeMs,
+      }));
+    } catch (err) {
+      sessionStorage.removeItem('lastReplay');
+      logger.warn('replay', 'Timeline too large to store', { error: err.message });
+    }
+
     // Persist alongside prose sessions so the dashboard reflects code practice
     // too — previously code runs were recorded nowhere.
     try {

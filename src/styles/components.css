@@ -2559,6 +2559,74 @@ kbd, .kbd {
 }
 
 /* ==========================================================================
+   22b  Replay
+   ========================================================================== */
+
+.results__replay-hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: calc(var(--space-2) * -1) 0 var(--space-4);
+}
+
+.replay__stage {
+  position: relative;
+  padding: var(--space-4) 0 var(--space-5);
+}
+
+.replay__text {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--typing-untyped);
+  white-space: pre-wrap;
+  word-break: normal;
+  font-variant-ligatures: none;
+}
+
+.replay__char { position: relative; transition: color var(--duration-instant) var(--ease-out); }
+.replay__char.is-correct { color: var(--typing-correct); }
+
+.replay__char.is-incorrect {
+  color: var(--typing-incorrect);
+  background: color-mix(in srgb, var(--typing-incorrect) 16%, transparent);
+  border-radius: 2px;
+}
+
+.replay__caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 1.3em;
+  background: var(--caret-color);
+  border-radius: 1px;
+  pointer-events: none;
+  will-change: transform;
+  transition: transform var(--duration-instant) var(--ease-out);
+}
+
+.reduce-motion .replay__caret { transition: none; }
+
+.replay__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+  flex-wrap: wrap;
+}
+
+.replay__scrub { flex: 1; min-width: 140px; }
+
+.replay__time {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  min-width: 4ch;
+  text-align: right;
+}
+
+/* ==========================================================================
    23  Dashboard
    ========================================================================== */
 

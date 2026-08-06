@@ -408,6 +408,23 @@ export function render(container) {
     sessionStorage.setItem('lastSession', JSON.stringify(session));
     saveSession(session);
 
+    /* Replay needs the per-keystroke timeline, which is far too large to keep
+       for all 500 stored sessions — a 60s run is ~400 entries, and localStorage
+       has a ~5MB quota that, once exceeded, would break saving sessions at all.
+       So it is kept for the most recent run only, in sessionStorage. Replay is
+       a "look at what I just did" feature; nobody replays a three-week-old run.
+       A quota failure here must never take the result page down with it. */
+    try {
+      sessionStorage.setItem('lastReplay', JSON.stringify({
+        timeline: s.timeline,
+        text: adapter.words.join(' '),
+        totalTimeMs: s.totalTimeMs,
+      }));
+    } catch (err) {
+      sessionStorage.removeItem('lastReplay');
+      logger.warn('replay', 'Timeline too large to store', { error: err.message });
+    }
+
     checkAchievements(session, getStats())
       .then((unlocked) => {
         if (unlocked.length) {
