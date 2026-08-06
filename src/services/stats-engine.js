@@ -1,25 +1,50 @@
 /**
- * Calculates standard WPM.
- * standard word = 5 characters.
+ * Smallest elapsed time we will divide by, in seconds.
+ *
+ * `seconds === 0` alone is not enough of a guard: it catches the Infinity
+ * case but not a near-zero denominator, which yields a finite, plausible,
+ * completely wrong number (60 characters in 3ms reads as ~16,000 WPM). A
+ * finite wrong value is more dangerous than Infinity because nothing
+ * downstream rejects it — it gets rounded, saved to history, and skews every
+ * average permanently.
+ */
+const MIN_ELAPSED_SECONDS = 0.5;
+
+/**
+ * Upper bound on a reportable rate. The sustained human record is ~220 WPM;
+ * anything past this came from paste, key repeat, or synthetic input rather
+ * than typing.
+ */
+const MAX_PLAUSIBLE_WPM = 400;
+
+/**
  * @param {number} characters
  * @param {number} seconds
  * @returns {number}
  */
-export const calculateWPM = (characters, seconds) => {
-  if (seconds === 0) return 0;
-  return (characters / 5) / (seconds / 60);
+const rate = (characters, seconds) => {
+  if (!(characters > 0) || !(seconds > 0)) return 0;
+  const elapsed = Math.max(seconds, MIN_ELAPSED_SECONDS);
+  return Math.min((characters / 5) / (elapsed / 60), MAX_PLAUSIBLE_WPM);
 };
 
 /**
- * Calculates raw WPM (all typed chars).
+ * Calculates standard WPM (correct characters only).
+ * Standard word = 5 characters.
+ * @param {number} characters
+ * @param {number} seconds
+ * @returns {number}
+ */
+export const calculateWPM = (characters, seconds) => rate(characters, seconds);
+
+/**
+ * Calculates raw WPM (all typed characters, including mistakes).
  * @param {number} totalCharactersTyped
  * @param {number} seconds
  * @returns {number}
  */
-export const calculateRawWPM = (totalCharactersTyped, seconds) => {
-  if (seconds === 0) return 0;
-  return (totalCharactersTyped / 5) / (seconds / 60);
-};
+export const calculateRawWPM = (totalCharactersTyped, seconds) =>
+  rate(totalCharactersTyped, seconds);
 
 /**
  * Calculates accuracy percentage.
