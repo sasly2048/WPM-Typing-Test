@@ -1,45 +1,74 @@
 /* ==========================================================================
-   Base Styles - KeyFlow
+   Base element styles.
+   --font-ui resolves to sans in normal mode, mono in developer mode — so the
+   whole document changes voice with the surface, from one token.
    ========================================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
 
 html, body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   font-size: var(--text-base);
   line-height: var(--line-height-normal);
-  transition: background-color var(--duration-300) var(--ease-in-out),
-              color var(--duration-300) var(--ease-in-out);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Surface swaps are a deliberate transition, but only on colour — never on
+   layout, and never long enough to feel laggy. */
+body {
+  transition: background-color var(--duration-normal) var(--ease-out),
+              color var(--duration-normal) var(--ease-out);
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-primary);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  margin-bottom: var(--space-4);
   line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
-h5 { font-size: var(--text-lg); }
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+h5 { font-size: var(--text-md); }
 h6 { font-size: var(--text-base); }
+
+/* Developer mode tones down display sizes — an IDE has no hero type. */
+[data-surface="dev"] h1 { font-size: var(--text-xl); }
+[data-surface="dev"] h2 { font-size: var(--text-lg); }
+[data-surface="dev"] h3 { font-size: var(--text-md); }
 
 p {
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-4);
+  margin: 0 0 var(--space-4);
+  max-width: 72ch;
+  text-wrap: pretty;
 }
 
 a {
   color: var(--color-accent);
   text-decoration: none;
-  transition: color var(--duration-150) var(--ease-in-out);
+  transition: color var(--transition-hover);
 }
 
-a:hover {
-  color: var(--color-accent-hover);
+a:hover { color: var(--color-accent-hover); }
+
+/* Prose links stay underlined — colour alone is not an accessible affordance.
+   Scoped away from navigation, which conveys state through position and an
+   active marker rather than underlines. */
+p > a:not(.nav-link):not(.btn),
+li > a:not(.nav-link):not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
 }
 
 code, kbd, samp, pre {
@@ -47,31 +76,54 @@ code, kbd, samp, pre {
   font-size: 0.9em;
 }
 
+code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+pre {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--color-border-subtle);
+  overflow-x: auto;
+}
+
+pre code { padding: 0; background: none; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: var(--space-8) 0;
+}
+
 ::selection {
   background-color: var(--color-accent-subtle);
   color: var(--color-text-primary);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+img, svg, video, canvas { max-width: 100%; height: auto; }
 
-::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-}
+/* Scrollbars — themed per surface so the developer view reads as one piece. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
-}
+::-webkit-scrollbar-thumb:hover { background-color: var(--color-border-strong); background-clip: content-box; }
+::-webkit-scrollbar-corner { background: transparent; }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-bg-elevated) transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
+
+/* Developer mode: square scrollbars to match the terminal chrome. */
+[data-surface="dev"] ::-webkit-scrollbar-thumb { border-radius: 0; }

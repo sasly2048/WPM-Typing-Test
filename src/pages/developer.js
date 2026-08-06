@@ -1,3 +1,11 @@
+/**
+ * Developer workspace.
+ *
+ * An IDE shell: activity rail, language explorer, tab strip, gutter + editor,
+ * inspector dock, status bar. The visual identity comes from the developer
+ * token scope (set on <html> by the router), so nothing here hardcodes colour.
+ */
+
 import { html } from '../utils/dom.js';
 import { InputEngine } from '../engines/InputEngine.js';
 import { RenderEngine } from '../engines/RenderEngine.js';
@@ -8,468 +16,427 @@ import { MODES } from '../constants/config.js';
 import { tokenize } from '../syntax/tokenizer.js';
 import { javascript } from '../syntax/languages/javascript.js';
 import { python } from '../syntax/languages/python.js';
+import { createDevDock } from '../components/dev-dock.js';
+import { logger, recordInputLatency } from '../services/instrumentation.js';
+import { calculateConsistency } from '../services/stats-engine.js';
+import { saveSession } from '../services/history.js';
 
-const ALL_LANGUAGES = [
-  { id: 'javascript', label: 'JavaScript', ext: 'js', icon: 'file-code' },
-  { id: 'typescript', label: 'TypeScript', ext: 'ts', icon: 'file-code-2' },
-  { id: 'python', label: 'Python', ext: 'py', icon: 'file-terminal' },
-  { id: 'c', label: 'C', ext: 'c', icon: 'file-text' },
-  { id: 'cpp', label: 'C++', ext: 'cpp', icon: 'file-code' },
-  { id: 'java', label: 'Java', ext: 'java', icon: 'file-code' },
-  { id: 'go', label: 'Go', ext: 'go', icon: 'file-code-2' },
-  { id: 'rust', label: 'Rust', ext: 'rs', icon: 'file-cog' },
-  { id: 'kotlin', label: 'Kotlin', ext: 'kt', icon: 'file-code' },
-  { id: 'swift', label: 'Swift', ext: 'swift', icon: 'file-code' },
-  { id: 'html', label: 'HTML', ext: 'html', icon: 'file-type-2' },
-  { id: 'css', label: 'CSS', ext: 'css', icon: 'palette' },
-  { id: 'sql', label: 'SQL', ext: 'sql', icon: 'database' },
-  { id: 'json', label: 'JSON', ext: 'json', icon: 'file-json' },
-  { id: 'markdown', label: 'Markdown', ext: 'md', icon: 'file-text' },
-  { id: 'bash', label: 'Bash', ext: 'sh', icon: 'terminal' }
+const LANGUAGES = [
+  { id: 'javascript', label: 'javascript', ext: 'js',    icon: 'file-code' },
+  { id: 'typescript', label: 'typescript', ext: 'ts',    icon: 'file-code-2' },
+  { id: 'python',     label: 'python',     ext: 'py',    icon: 'file-terminal' },
+  { id: 'c',          label: 'c',          ext: 'c',     icon: 'file-text' },
+  { id: 'cpp',        label: 'cpp',        ext: 'cpp',   icon: 'file-code' },
+  { id: 'java',       label: 'java',       ext: 'java',  icon: 'file-code' },
+  { id: 'go',         label: 'go',         ext: 'go',    icon: 'file-code-2' },
+  { id: 'rust',       label: 'rust',       ext: 'rs',    icon: 'file-cog' },
+  { id: 'kotlin',     label: 'kotlin',     ext: 'kt',    icon: 'file-code' },
+  { id: 'swift',      label: 'swift',      ext: 'swift', icon: 'file-code' },
+  { id: 'html',       label: 'html',       ext: 'html',  icon: 'file-type-2' },
+  { id: 'css',        label: 'css',        ext: 'css',   icon: 'palette' },
+  { id: 'sql',        label: 'sql',        ext: 'sql',   icon: 'database' },
+  { id: 'json',       label: 'json',       ext: 'json',  icon: 'file-json' },
+  { id: 'markdown',   label: 'markdown',   ext: 'md',    icon: 'file-text' },
+  { id: 'bash',       label: 'bash',       ext: 'sh',    icon: 'terminal' },
 ];
 
-const styles = `
-.kf-cursor-workspace {
-  display: flex;
-  height: calc(100vh - 64px);
-  background-color: var(--surface-0);
-  color: var(--color-text-primary);
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  overflow: hidden;
-}
-
-.kf-dev-sidebar {
-  width: 240px;
-  background-color: var(--surface-1);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  user-select: none;
-}
-
-.kf-sidebar-header {
-  padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-secondary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.kf-file-tree {
-  padding: 0.5rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.kf-file-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 1rem;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.kf-file-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--color-text-primary);
-}
-
-.kf-file-item.active {
-  background: rgba(240, 169, 104, 0.1);
-  color: var(--color-accent);
-  border-left: 2px solid var(--color-accent);
-}
-
-.kf-dev-main-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.kf-dev-topbar {
-  display: flex;
-  background-color: var(--surface-1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.kf-dev-tabs {
-  display: flex;
-  overflow-x: auto;
-}
-
-.kf-dev-tab {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.25rem;
-  background-color: var(--surface-0);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  border-top: 2px solid var(--color-accent);
-  color: var(--color-text-primary);
-  font-size: 0.85rem;
-}
-
-.kf-dev-breadcrumbs {
-  padding: 0.4rem 1rem;
-  font-size: 0.75rem;
-  color: var(--color-text-tertiary);
-  background: var(--surface-0);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.kf-dev-editor-body {
-  flex: 1;
-  display: flex;
-  position: relative;
-  overflow: auto;
-  padding: 1.5rem 0;
-}
-
-.kf-dev-line-numbers {
-  display: flex;
-  flex-direction: column;
-  padding: 0 1.25rem;
-  color: var(--color-text-tertiary);
-  text-align: right;
-  user-select: none;
-  font-size: 1rem;
-  line-height: 1.6;
-  min-width: 3.5rem;
-}
-
-.kf-dev-code-area {
-  flex: 1;
-  position: relative;
-  font-size: 1rem;
-  line-height: 1.6;
-  outline: none;
-  cursor: text;
-}
-
-.kf-dev-syntax-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  white-space: pre;
-}
-
-.kf-dev-syntax-layer span.keyword { color: var(--color-accent); font-weight: 600; }
-.kf-dev-syntax-layer span.string { color: var(--color-success); }
-.kf-dev-syntax-layer span.comment { color: var(--color-text-secondary); font-style: italic; }
-.kf-dev-syntax-layer span.function { color: var(--color-info); }
-.kf-dev-syntax-layer span.number { color: var(--color-accent); }
-.kf-dev-syntax-layer span.operator { color: var(--color-text-secondary); }
-.kf-dev-syntax-layer span.identifier { color: var(--color-text-primary); }
-
-#kf-dev-render-area {
-  position: relative;
-  z-index: 10;
-  white-space: pre;
-}
-
-.kf-dev-code-area .keyflow-char.pending { opacity: 0.45; }
-.kf-dev-code-area .keyflow-char.correct { color: var(--color-text-primary); opacity: 1; }
-.kf-dev-code-area .keyflow-char.incorrect { color: var(--color-error); background: rgba(255, 59, 48, 0.2); }
-.kf-dev-code-area .keyflow-char.extra { color: var(--color-error); background: rgba(255, 59, 48, 0.2); }
-
-.kf-caret {
-  position: absolute;
-  width: 2px;
-  height: 1.6rem;
-  background-color: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
-  transition: transform 0.08s var(--ease-apple);
-  animation: kf-blink 1s infinite step-end;
-  z-index: 20;
-}
-
-@keyframes kf-blink { 50% { opacity: 0; } }
-
-.kf-dev-statusbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.35rem 1rem;
-  background-color: var(--surface-1);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--color-text-secondary);
-  font-size: 0.75rem;
-}
-
-.kf-status-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.kf-status-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.25rem;
-  background: rgba(255, 255, 255, 0.04);
-}
-`;
+const escapeHtml = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export function render(container) {
-  const styleEl = document.createElement('style');
-  styleEl.textContent = styles;
-  document.head.appendChild(styleEl);
+  let langId = localStorage.getItem('keyflow_dev_lang') || 'javascript';
+  const getLang = (id) => LANGUAGES.find((l) => l.id === id) || LANGUAGES[0];
 
-  let currentLangId = localStorage.getItem('keyflow_dev_lang') || 'javascript';
-
-  const getLangObj = (id) => ALL_LANGUAGES.find(l => l.id === id) || ALL_LANGUAGES[0];
+  let inputEngine = null;
+  const statsEngine = new StatsEngine();
+  let renderEngine = null;
+  let adapter = null;
+  let dock = null;
+  let locked = false;
+  let started = false;
 
   container.innerHTML = html`
-    <div class="kf-cursor-workspace" id="kf-dev-workspace">
-      <!-- File Explorer Sidebar -->
-      <aside class="kf-dev-sidebar">
-        <div class="kf-sidebar-header">
-          <span>Languages (${ALL_LANGUAGES.length})</span>
-          <i data-lucide="folder-tree" size="14"></i>
+    <div class="dev-shell" id="dev-shell">
+      <nav class="dev-rail" aria-label="Inspector panels">
+        <button class="dev-rail__btn active" data-rail="explorer" title="Explorer" aria-label="Toggle explorer">
+          <i data-lucide="files"></i>
+        </button>
+        <button class="dev-rail__btn" data-rail="logs" title="Logs" aria-label="Show logs">
+          <i data-lucide="scroll-text"></i>
+        </button>
+        <button class="dev-rail__btn" data-rail="json" title="Session JSON" aria-label="Show session JSON">
+          <i data-lucide="braces"></i>
+        </button>
+        <button class="dev-rail__btn" data-rail="storage" title="Storage records" aria-label="Show storage">
+          <i data-lucide="database"></i>
+        </button>
+        <button class="dev-rail__btn" data-rail="network" title="Network" aria-label="Show network">
+          <i data-lucide="globe"></i>
+        </button>
+        <button class="dev-rail__btn" data-rail="metrics" title="Metrics" aria-label="Show metrics">
+          <i data-lucide="activity"></i>
+        </button>
+        <div class="dev-rail__spacer"></div>
+      </nav>
+
+      <aside class="dev-explorer" aria-label="Languages">
+        <div class="dev-explorer__header">
+          <span>explorer</span>
+          <span>${LANGUAGES.length}</span>
         </div>
-        <div class="kf-file-tree">
-          ${ALL_LANGUAGES.map(lang => `
-            <div class="kf-file-item ${lang.id === currentLangId ? 'active' : ''}" data-lang="${lang.id}">
-              <i data-lucide="${lang.icon}" size="14"></i> ${lang.label} <span style="font-size: 0.7rem; color: var(--color-text-secondary); margin-left: auto;">.${lang.ext}</span>
+        <div class="dev-explorer__list" role="listbox" aria-label="Select language">
+          ${LANGUAGES.map((l) => `
+            <div class="dev-file ${l.id === langId ? 'active' : ''}"
+                 role="option" tabindex="0"
+                 aria-selected="${l.id === langId}" data-lang="${l.id}">
+              <i data-lucide="${l.icon}"></i>
+              <span>${l.label}</span>
+              <span class="dev-file__ext">.${l.ext}</span>
             </div>
           `).join('')}
         </div>
       </aside>
 
-      <!-- Main Editor Container -->
-      <div class="kf-dev-main-panel">
-        <div class="kf-dev-topbar" style="display: flex; align-items: center; justify-content: space-between;">
-          <div class="kf-dev-tabs" id="kf-active-tab-container">
-            <div class="kf-dev-tab">
-              <i data-lucide="${getLangObj(currentLangId).icon}" size="14" style="color: var(--color-accent)"></i>
-              <span id="kf-active-filename">${getLangObj(currentLangId).label}.${getLangObj(currentLangId).ext}</span>
-            </div>
+      <div class="dev-main">
+        <div class="dev-tabs">
+          <div class="dev-tab">
+            <i data-lucide="${getLang(langId).icon}"></i>
+            <span id="dev-filename">${getLang(langId).label}.${getLang(langId).ext}</span>
           </div>
-          <button class="refresh-btn" id="kf-dev-refresh-btn" style="margin-right: 1rem; padding: 0.35rem 0.75rem; font-size: 0.75rem;" title="Get New Snippet (Disabled while typing)">
-            <i data-lucide="rotate-cw" size="12"></i>
-            <span>New Snippet</span>
-          </button>
-        </div>
-
-        <div class="kf-dev-breadcrumbs" id="kf-breadcrumbs">
-          <span>src</span> &gt; <span>snippets</span> &gt; <span style="color: var(--color-text-primary)" id="kf-breadcrumb-active">${getLangObj(currentLangId).label}.${getLangObj(currentLangId).ext}</span>
-        </div>
-
-        <div class="kf-dev-editor-body">
-          <div class="kf-dev-line-numbers" id="kf-line-numbers"></div>
-          
-          <div class="kf-dev-code-area" id="kf-dev-target" tabindex="0">
-            <div class="kf-dev-syntax-layer" id="kf-syntax-layer"></div>
-            <div class="kf-caret" id="kf-caret"></div>
-            <div id="kf-dev-render-area"></div>
+          <div class="dev-tabs__actions">
+            <button class="btn btn-ghost btn-sm" id="dev-restart" title="New snippet (Tab)">
+              <i data-lucide="rotate-cw"></i>
+              <span>new</span>
+            </button>
           </div>
         </div>
 
-        <!-- Editor Status Bar -->
-        <footer class="kf-dev-statusbar">
-          <div class="kf-status-group">
-            <div class="kf-status-pill"><i data-lucide="git-branch" size="12"></i> main*</div>
-            <div class="kf-status-pill"><i data-lucide="check-circle-2" size="12" style="color: var(--color-success)"></i> 0 Errors</div>
-            <div class="kf-status-pill" id="kf-live-wpm">0 WPM</div>
-            <div class="kf-status-pill" id="kf-live-acc">100% Acc</div>
+        <div class="dev-breadcrumb">
+          <span>src</span>
+          <span class="dev-breadcrumb__sep">/</span>
+          <span>snippets</span>
+          <span class="dev-breadcrumb__sep">/</span>
+          <span class="dev-breadcrumb__current" id="dev-crumb">${getLang(langId).label}.${getLang(langId).ext}</span>
+        </div>
+
+        <div class="dev-editor">
+          <div class="dev-gutter" id="dev-gutter" aria-hidden="true"></div>
+          <div class="dev-code" id="dev-code" tabindex="0" role="textbox"
+               aria-label="Type the code shown">
+            <div class="dev-syntax-layer" id="dev-syntax" aria-hidden="true"></div>
+            <div class="caret" id="dev-caret"></div>
+            <div class="dev-typed-layer" id="dev-typed"></div>
           </div>
-          <div class="kf-status-group">
-            <div id="kf-ln-col">Ln 1, Col 1</div>
-            <div>UTF-8</div>
-            <div id="kf-status-lang">${getLangObj(currentLangId).label}</div>
-          </div>
-        </footer>
+        </div>
+
+        <div id="dev-dock-mount"></div>
       </div>
+
+      <footer class="dev-statusbar">
+        <div class="dev-statusbar__group">
+          <span class="dev-status-item"><i data-lucide="git-branch"></i> main</span>
+          <span class="dev-status-item" id="dev-errors"><i data-lucide="circle-x"></i> 0</span>
+          <span class="dev-status-item dev-status-item--accent" id="dev-wpm">0 wpm</span>
+          <span class="dev-status-item" id="dev-acc">100%</span>
+        </div>
+        <div class="dev-statusbar__group">
+          <span class="dev-status-item" id="dev-lncol">Ln 1, Col 1</span>
+          <span class="dev-status-item">spaces: 4</span>
+          <span class="dev-status-item">UTF-8</span>
+          <span class="dev-status-item" id="dev-lang">${getLang(langId).label}</span>
+        </div>
+      </footer>
     </div>
   `;
 
-  setTimeout(() => {
-    if (window.lucide) window.lucide.createIcons();
-  }, 20);
+  const $ = (sel) => container.querySelector(sel);
 
-  const workspace = container.querySelector('#kf-dev-workspace');
-  const targetEl = container.querySelector('#kf-dev-target');
-  const renderArea = container.querySelector('#kf-dev-render-area');
-  const caretEl = container.querySelector('#kf-caret');
-  const syntaxLayer = container.querySelector('#kf-syntax-layer');
-  const lineNumbersEl = container.querySelector('#kf-line-numbers');
-  const wpmEl = container.querySelector('#kf-live-wpm');
-  const accEl = container.querySelector('#kf-live-acc');
-  const lnColEl = container.querySelector('#kf-ln-col');
-  const statusLangEl = container.querySelector('#kf-status-lang');
-  const activeFilenameEl = container.querySelector('#kf-active-filename');
-  const breadcrumbActiveEl = container.querySelector('#kf-breadcrumb-active');
+  const shell    = $('#dev-shell');
+  const codeEl   = $('#dev-code');
+  const typedEl  = $('#dev-typed');
+  const syntaxEl = $('#dev-syntax');
+  const caretEl  = $('#dev-caret');
+  const gutterEl = $('#dev-gutter');
+  const wpmEl    = $('#dev-wpm');
+  const accEl    = $('#dev-acc');
+  const errEl    = $('#dev-errors');
+  const lnColEl  = $('#dev-lncol');
 
-  let inputEngine = null;
-  let renderEngine = new RenderEngine(renderArea, caretEl);
-  let statsEngine = new StatsEngine();
-  let adapter = null;
-  let isSessionLocked = false;
+  renderEngine = new RenderEngine(typedEl, caretEl);
 
-  async function startSession(langId = currentLangId) {
-    currentLangId = langId;
+  /* ── inspector dock ───────────────────────────────────────────────────── */
+
+  dock = createDevDock({
+    getSessionSnapshot: () => {
+      if (!adapter) return null;
+      const s = statsEngine.getDetailedStats();
+      return {
+        language: langId,
+        line: adapter.currentLineIndex + 1,
+        totalLines: adapter.lines.length,
+        wpm: s.wpm,
+        rawWpm: s.rawWpm,
+        accuracy: Number(s.accuracy.toFixed(2)),
+        errors: s.errors,
+        keystrokes: s.totalStrokes,
+        elapsedMs: Math.round(s.totalTimeMs),
+      };
+    },
+  });
+  $('#dev-dock-mount').appendChild(dock.el);
+
+  /* ── syntax layer ─────────────────────────────────────────────────────── */
+
+  /**
+   * Paint highlighted source beneath the typed layer.
+   *
+   * Both layers must share identical glyph metrics or they visibly ghost.
+   * RenderEngine substitutes NBSP for spaces, so this layer does the same —
+   * matching the font alone is not sufficient.
+   */
+  function paintSyntax(code) {
+    const langDef = langId === 'python' ? python : javascript;
+    let out = '';
+
+    try {
+      for (const token of tokenize(code, langDef)) {
+        const value = escapeHtml(token.value);
+        out += (token.type === 'text' || token.type === 'whitespace')
+          ? value
+          : `<span class="tok-${token.type}">${value}</span>`;
+      }
+    } catch (err) {
+      logger.warn('syntax', `Tokenizer failed for ${langId}`, { error: err.message });
+      out = escapeHtml(code);
+    }
+
+    syntaxEl.innerHTML = out;
+  }
+
+  function paintGutter(count, activeLine = 0) {
+    gutterEl.innerHTML = Array.from(
+      { length: count },
+      (_, i) => `<div class="dev-gutter__line${i === activeLine ? ' active' : ''}">${i + 1}</div>`
+    ).join('');
+  }
+
+  /* ── session lifecycle ────────────────────────────────────────────────── */
+
+  async function startSession(nextLang = langId) {
+    langId = nextLang;
     localStorage.setItem('keyflow_dev_lang', langId);
-    isSessionLocked = false;
+    locked = false;
+    started = false;
 
-    const langObj = getLangObj(langId);
-    if (activeFilenameEl) activeFilenameEl.textContent = `${langObj.label}.${langObj.ext}`;
-    if (breadcrumbActiveEl) breadcrumbActiveEl.textContent = `${langObj.label}.${langObj.ext}`;
-    if (statusLangEl) statusLangEl.textContent = langObj.label;
-
-    const devRefreshBtn = container.querySelector('#kf-dev-refresh-btn');
-    if (devRefreshBtn) devRefreshBtn.disabled = false;
+    const lang = getLang(langId);
+    $('#dev-filename').textContent = `${lang.label}.${lang.ext}`;
+    $('#dev-crumb').textContent = `${lang.label}.${lang.ext}`;
+    $('#dev-lang').textContent = lang.label;
 
     if (inputEngine) inputEngine.stop();
     statsEngine.reset();
-    targetEl.focus();
+    renderEngine.resetDiffState();
+    shell.classList.remove('is-typing');
 
-    const code = await getText(MODES.CODE, 'medium', { language: langId });
+    logger.info('session', `Loading ${langId} snippet`);
+
+    let code;
+    try {
+      code = await getText(MODES.CODE, 'medium', { language: langId });
+    } catch (err) {
+      logger.error('session', `Failed to load snippet for ${langId}`, { error: err.message });
+      syntaxEl.innerHTML = '';
+      typedEl.innerHTML = `<div class="dev-dock__empty">Could not load a ${escapeHtml(langId)} snippet.</div>`;
+      return;
+    }
+
     adapter = new CodeAdapter(code);
-    
-    renderSyntaxHighlighting(code, langId);
-    renderLineNumbers(adapter.lines.length);
+    paintSyntax(code);
+    paintGutter(adapter.lines.length, 0);
 
-    const { renderState, caretPosition } = adapter.getRenderState ? { renderState: adapter.getRenderState(), caretPosition: adapter.getCaretPosition() } : { renderState: [], caretPosition: { lineIndex:0, charIndex:0 } };
-    renderEngine.render(renderState);
-    requestAnimationFrame(() => updateCaretAndStatus(caretPosition));
+    renderEngine.render(adapter.getRenderState());
+    requestAnimationFrame(() => syncCaret(adapter.getCaretPosition()));
 
-    inputEngine = new InputEngine(targetEl, 
+    logger.info('session', `Ready — ${adapter.lines.length} lines, ${code.length} chars`, {
+      language: langId,
+    });
+
+    inputEngine = new InputEngine(
+      codeEl,
       (inputEvent) => {
-        isSessionLocked = true; // LOCK SESSION mid-typing
-        if (devRefreshBtn) devRefreshBtn.disabled = true;
-        const isCorrect = isInputCorrect(inputEvent, adapter);
-        const targetChar = getTargetChar(adapter);
-        statsEngine.recordKeystroke(inputEvent.key, targetChar, isCorrect);
+        const t0 = performance.now();
+
+        if (!started) {
+          started = true;
+          locked = true;
+          shell.classList.add('is-typing');
+          logger.debug('input', 'First keystroke — session locked');
+        }
+
+        const correct = isCorrect(inputEvent);
+        statsEngine.recordKeystroke(inputEvent.key, targetChar(), correct);
 
         const { renderState, caretPosition } = adapter.processInput(inputEvent);
-        renderEngine.render(renderState); 
-        requestAnimationFrame(() => updateCaretAndStatus(caretPosition));
-        updateLiveStats();
-        
-        if (checkCompletion(adapter)) endSession();
+        renderEngine.render(renderState);
+
+        requestAnimationFrame(() => {
+          syncCaret(caretPosition);
+          paintGutter(adapter.lines.length, caretPosition.lineIndex);
+        });
+
+        updateStatus();
+        recordInputLatency(t0);
+
+        if (isComplete()) endSession();
       },
-      (violationMsg) => console.warn("Fair play:", violationMsg)
+      (violation) => logger.warn('fairplay', violation)
     );
     inputEngine.start();
+    codeEl.focus();
   }
 
-  function renderSyntaxHighlighting(code, langId) {
-    try {
-      const langDef = langId === 'python' ? python : javascript;
-      const tokens = tokenize(code, langDef);
-      let htmlStr = '';
-      tokens.forEach(token => {
-        const val = token.value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        if (token.type === 'text' || token.type === 'whitespace') {
-          htmlStr += val;
-        } else {
-          htmlStr += `<span class="${token.type}">${val}</span>`;
-        }
-      });
-      syntaxLayer.innerHTML = htmlStr;
-    } catch (e) {
-      syntaxLayer.textContent = code;
-    }
-  }
-
-  function renderLineNumbers(count) {
-    lineNumbersEl.innerHTML = Array.from({ length: count }, (_, i) => `<div>${i + 1}</div>`).join('');
-  }
-
-  function updateCaretAndStatus(caretPosition) {
-    renderEngine.updateCaretPosition(caretPosition.lineIndex, caretPosition.charIndex);
-    lnColEl.textContent = `Ln ${caretPosition.lineIndex + 1}, Col ${caretPosition.charIndex + 1}`;
-  }
-
-  function isInputCorrect(inputEvent, adapter) {
-    const targetLine = adapter.lines[adapter.currentLineIndex] || "";
-    const typedLine = adapter.typedLines[adapter.currentLineIndex] || "";
+  function isCorrect(inputEvent) {
+    const target = adapter.lines[adapter.currentLineIndex] || '';
+    const typed = adapter.typedLines[adapter.currentLineIndex] || '';
     if (inputEvent.isBackspace || inputEvent.key === 'Tab') return false;
-    if (inputEvent.key === 'Enter') return typedLine === targetLine;
-    return targetLine[typedLine.length] === inputEvent.key;
-  }
-  
-  function getTargetChar(adapter) {
-    const targetLine = adapter.lines[adapter.currentLineIndex] || "";
-    const typedLine = adapter.typedLines[adapter.currentLineIndex] || "";
-    return targetLine[typedLine.length] || '\n';
+    if (inputEvent.key === 'Enter') return typed === target;
+    return target[typed.length] === inputEvent.key;
   }
 
-  function checkCompletion(adapter) {
-    return adapter.currentLineIndex >= adapter.lines.length - 1 && 
-           (adapter.typedLines[adapter.currentLineIndex] || "").length >= adapter.lines[adapter.currentLineIndex].length;
+  function targetChar() {
+    const target = adapter.lines[adapter.currentLineIndex] || '';
+    const typed = adapter.typedLines[adapter.currentLineIndex] || '';
+    return target[typed.length] || '\n';
   }
 
-  function updateLiveStats() {
-    const stats = statsEngine.getDetailedStats();
-    wpmEl.textContent = `${stats.wpm} WPM`;
-    accEl.textContent = `${stats.accuracy.toFixed(0)}% Acc`;
+  function isComplete() {
+    const last = adapter.lines.length - 1;
+    return (
+      adapter.currentLineIndex >= last &&
+      (adapter.typedLines[last] || '').length >= (adapter.lines[last] || '').length
+    );
+  }
+
+  function syncCaret({ lineIndex, charIndex }) {
+    renderEngine.updateCaretPosition(lineIndex, charIndex);
+    lnColEl.textContent = `Ln ${lineIndex + 1}, Col ${charIndex + 1}`;
+  }
+
+  function updateStatus() {
+    const s = statsEngine.getDetailedStats();
+    wpmEl.textContent = `${s.wpm} wpm`;
+    accEl.textContent = `${s.accuracy.toFixed(0)}%`;
+    errEl.textContent = `${s.errors} errors`;
+    errEl.classList.toggle('dev-status-item--error', s.errors > 0);
   }
 
   function endSession() {
     inputEngine.stop();
     statsEngine.finish();
-    const stats = statsEngine.getDetailedStats();
-    
-    sessionStorage.setItem('lastSession', JSON.stringify({
-      wpm: stats.wpm,
-      accuracy: stats.accuracy,
-      duration: Math.round(stats.totalTimeMs / 1000),
+    locked = false;
+
+    const s = statsEngine.getDetailedStats();
+    const session = {
+      wpm: s.wpm,
+      rawWpm: s.rawWpm,
+      accuracy: s.accuracy,
+      errors: s.errors,
+      consistency: s.speedCurve && s.speedCurve.length > 1
+        ? Math.round(calculateConsistency(s.speedCurve))
+        : 100,
+      duration: Math.round(s.totalTimeMs / 1000),
       mode: MODES.CODE,
-      timestamp: Date.now()
-    }));
-    
+      language: langId,
+      totalStrokes: s.totalStrokes,
+      timestamp: Date.now(),
+    };
+
+    logger.info('session', `Complete — ${session.wpm} wpm, ${session.accuracy.toFixed(1)}% accuracy`, {
+      language: langId,
+      errors: session.errors,
+    });
+
+    sessionStorage.setItem('lastSession', JSON.stringify(session));
+
+    // Persist alongside prose sessions so the dashboard reflects code practice
+    // too — previously code runs were recorded nowhere.
+    try {
+      saveSession(session);
+    } catch (err) {
+      logger.error('history', 'Failed to persist session', { error: err.message });
+    }
+
     window.location.hash = '#/results';
   }
 
-  // File tree language selection handler
-  const fileItems = container.querySelectorAll('.kf-file-item');
-  fileItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const lang = item.getAttribute('data-lang');
-      fileItems.forEach(fi => fi.classList.remove('active'));
-      item.classList.add('active');
-      startSession(lang);
+  /* ── interactions ─────────────────────────────────────────────────────── */
+
+  function selectLanguage(id) {
+    if (locked) {
+      logger.warn('ui', 'Language switch blocked — session in progress');
+      return;
+    }
+    container.querySelectorAll('.dev-file').forEach((f) => {
+      const on = f.dataset.lang === id;
+      f.classList.toggle('active', on);
+      f.setAttribute('aria-selected', String(on));
+    });
+    startSession(id);
+  }
+
+  container.querySelectorAll('.dev-file').forEach((file) => {
+    file.addEventListener('click', () => selectLanguage(file.dataset.lang));
+    file.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectLanguage(file.dataset.lang);
+      }
     });
   });
 
-  const devRefreshBtn = container.querySelector('#kf-dev-refresh-btn');
-  if (devRefreshBtn) {
-    devRefreshBtn.addEventListener('click', () => {
-      if (!isSessionLocked) {
-        startSession();
-      }
-    });
-  }
+  container.querySelectorAll('.dev-rail__btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.rail;
 
-  targetEl.addEventListener('click', () => targetEl.focus());
+      if (target === 'explorer') {
+        shell.classList.toggle('is-explorer-collapsed');
+        btn.classList.toggle('active', !shell.classList.contains('is-explorer-collapsed'));
+        return;
+      }
+
+      container.querySelectorAll('.dev-rail__btn').forEach((b) => {
+        if (b.dataset.rail !== 'explorer') b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      dock.show(target);
+    });
+  });
+
+  $('#dev-restart').addEventListener('click', () => {
+    if (!locked) startSession();
+  });
+
+  const onKeyDown = (e) => {
+    if (e.key === 'Tab' && !locked && document.activeElement !== codeEl) {
+      e.preventDefault();
+      startSession();
+    }
+  };
+  document.addEventListener('keydown', onKeyDown);
+
+  codeEl.addEventListener('click', () => codeEl.focus());
+
+  if (window.lucide) window.lucide.createIcons();
+
   startSession();
 
-  container.dataset.destroy = () => {
-    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  container._destroy = () => {
+    document.removeEventListener('keydown', onKeyDown);
     if (inputEngine) inputEngine.stop();
+    if (dock) dock.destroy();
   };
 }
 
 export function destroy(container) {
-  if (container.dataset.destroy) container.dataset.destroy();
+  if (container._destroy) container._destroy();
 }

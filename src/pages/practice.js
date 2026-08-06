@@ -1,19 +1,28 @@
-import { html, createElement } from '../utils/dom.js';
+/**
+ * Practice workspace — Normal mode.
+ *
+ * Distraction-free by construction: configuration is visible before you type
+ * and recedes once you start, leaving only the text. All chrome derives from
+ * the normal token scope.
+ */
+
+import { html } from '../utils/dom.js';
 import { InputEngine } from '../engines/InputEngine.js';
 import { RenderEngine } from '../engines/RenderEngine.js';
 import { StatsEngine } from '../engines/StatsEngine.js';
 import { WordsAdapter } from '../adapters/WordsAdapter.js';
 import { getText } from '../services/text-provider.js';
 import { contentEngine } from '../services/content-engine.js';
-import { createModeSelector } from '../components/mode-selector.js';
-import { createDifficultySelector } from '../components/difficulty-selector.js';
 import { saveSession, getStats, getPersonalBest } from '../services/history.js';
 import { checkAchievements } from '../services/achievements.js';
 import { calculateConsistency } from '../services/stats-engine.js';
 import { MODES, DIFFICULTIES } from '../constants/config.js';
 import { showToast } from '../components/toast.js';
 import { getSettings } from '../services/storage.js';
+import { logger, recordInputLatency } from '../services/instrumentation.js';
 import * as audio from '../services/audio.js';
+
+const DURATIONS = [15, 30, 60, 120];
 
 function computeConsistency(speedCurve) {
   if (!speedCurve || speedCurve.length < 2) return 100;
@@ -30,390 +39,305 @@ function countCharBreakdown(timeline) {
   return breakdown;
 }
 
-const styles = `
-.kf-workspace-practice {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: calc(100vh - 64px);
-  font-family: var(--font-sans, system-ui, sans-serif);
-}
-
-.kf-practice-header {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  opacity: 0.85;
-  transition: opacity 0.3s ease;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.kf-workspace-practice.is-typing .kf-practice-header {
-  opacity: 0.1;
-  pointer-events: none;
-}
-
-.kf-typing-container {
-  width: 100%;
-  position: relative;
-  font-size: 1.5rem;
-  line-height: 1.6;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  color: var(--color-text-secondary);
-  outline: none;
-  border-radius: 8px;
-  padding: 1.5rem;
-  background: var(--surface-2, #13131A);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.kf-typing-container .keyflow-line {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.kf-typing-container .keyflow-char {
-  position: relative;
-  border-radius: 2px;
-}
-
-.kf-typing-container .keyflow-char.correct { color: var(--color-text-primary, #e2e8f0); }
-.kf-typing-container .keyflow-char.incorrect { color: var(--color-error, #ef4444); background: rgba(239, 68, 68, 0.2); }
-.kf-typing-container .keyflow-char.extra { color: var(--color-error, #ef4444); background: rgba(239, 68, 68, 0.2); }
-.kf-typing-container .keyflow-char.missed { border-bottom: 2px solid var(--color-error, #ef4444); }
-.kf-typing-container .keyflow-char.pending { color: var(--color-text-tertiary, #64748b); }
-
-.kf-caret {
-  position: absolute;
-  width: 2px;
-  height: 1.5rem;
-  background-color: var(--color-accent, #f0a968);
-  box-shadow: 0 0 8px var(--color-accent, #f0a968);
-  transition: transform 0.08s var(--ease-apple);
-  animation: kf-blink 1s infinite step-end;
-  pointer-events: none;
-}
-
-.is-typing .kf-caret {
-  animation: none;
-  opacity: 1;
-}
-
-@keyframes kf-blink { 50% { opacity: 0; } }
-
-.kf-stats-bar-live {
-  display: flex;
-  gap: 2rem;
-  font-family: var(--font-mono, monospace);
-  font-size: 1.25rem;
-  color: var(--color-accent, #f0a968);
-  margin-top: 2rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.is-typing .kf-stats-bar-live { opacity: 1; }
-.blind-mode.is-typing .kf-stats-bar-live { opacity: 0 !important; pointer-events: none; }
-
-.refresh-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--surface-2, #13131A);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  color: var(--color-text-primary, #e2e2e2);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.refresh-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--color-accent, #f0a968);
-}
-
-.refresh-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.pb-badge {
-  display: none;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  background: var(--color-accent-subtle, rgba(240, 169, 104, 0.12));
-  color: var(--color-accent, #f0a968);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.pb-badge.visible {
-  display: inline-flex;
-}
-`;
-
 export function render(container) {
-  const styleEl = document.createElement('style');
-  styleEl.textContent = styles;
-  document.head.appendChild(styleEl);
+  let mode = MODES.PARAGRAPH;
+  const difficulty = DIFFICULTIES.MEDIUM;
+  let duration = 30;
+  const wordCount = 50;
+  let punctuation = false;
+  let numbers = false;
 
-  let currentMode = MODES.PARAGRAPH;
-  let currentDifficulty = DIFFICULTIES.MEDIUM;
-  let currentDuration = 30;
-  let currentWordCount = 50;
-  let currentPunctuation = false;
-  let currentNumbers = false;
-  let currentCustomText = '';
+  let inputEngine = null;
+  let adapter = null;
+  let started = false;
+
+  const statsEngine = new StatsEngine();
+  const settings = getSettings();
+  let audioReady = false;
 
   container.innerHTML = html`
-    <div class="kf-workspace-practice" id="kf-practice-workspace">
-      <div class="kf-practice-header" id="kf-config-header">
-        <div id="kf-mode-selector-mount"></div>
-        <span class="pb-badge" id="kf-pb-badge" title="Your personal best for this configuration"></span>
-        <button class="refresh-btn" id="kf-refresh-btn" title="Get New Snippet (Disabled while typing)">
-          <i data-lucide="rotate-cw" size="14"></i>
-          <span>New Snippet</span>
+    <div class="practice" id="practice">
+      <div class="practice__config" id="practice-config">
+        <div class="segmented" role="tablist" aria-label="Test length">
+          ${DURATIONS.map((d) => `
+            <button class="segmented__item ${d === duration ? 'active' : ''}"
+                    role="tab" data-duration="${d}"
+                    aria-selected="${d === duration}">${d}s</button>
+          `).join('')}
+        </div>
+
+        <span class="practice__config-divider" aria-hidden="true"></span>
+
+        <div class="segmented" role="group" aria-label="Text options">
+          <button class="segmented__item" data-toggle="punctuation" aria-pressed="false">
+            <i data-lucide="pilcrow"></i> punctuation
+          </button>
+          <button class="segmented__item" data-toggle="numbers" aria-pressed="false">
+            <i data-lucide="hash"></i> numbers
+          </button>
+        </div>
+
+        <span class="practice__config-divider" aria-hidden="true"></span>
+
+        <span class="badge badge--accent" id="practice-pb" hidden></span>
+
+        <button class="btn btn-ghost btn-sm" id="practice-restart" title="Restart (Tab)">
+          <i data-lucide="rotate-cw"></i>
+          <span>restart</span>
         </button>
       </div>
 
-      <div class="kf-typing-container" id="kf-target" tabindex="0">
-        <div class="kf-caret" id="kf-caret"></div>
-        <div id="kf-render-area"></div>
+      <div class="practice__surface">
+        <div class="typing-surface" id="practice-target" tabindex="0"
+             role="textbox" aria-label="Typing test text">
+          <div class="caret" id="practice-caret"></div>
+          <div id="practice-render"></div>
+        </div>
       </div>
 
-      <div class="kf-stats-bar-live">
-        <div><span id="kf-wpm">0</span> WPM</div>
-        <div><span id="kf-acc">100</span>% ACC</div>
+      <div class="practice__footer">
+        <div class="live-hud" id="practice-hud">
+          <div class="live-hud__item">
+            <span class="live-hud__value" id="practice-wpm">0</span>
+            <span class="live-hud__label">wpm</span>
+          </div>
+          <div class="live-hud__item">
+            <span class="live-hud__value" id="practice-acc">100</span>
+            <span class="live-hud__label">acc</span>
+          </div>
+          <div class="live-hud__item">
+            <span class="live-hud__value" id="practice-progress">0%</span>
+            <span class="live-hud__label">done</span>
+          </div>
+        </div>
+
+        <p class="practice__hint">
+          Start typing to begin · <kbd>Tab</kbd> to restart
+        </p>
       </div>
     </div>
   `;
 
-  setTimeout(() => {
-    if (window.lucide) window.lucide.createIcons();
-  }, 20);
+  const $ = (sel) => container.querySelector(sel);
 
-  const workspace = container.querySelector('#kf-practice-workspace');
-  const targetEl = container.querySelector('#kf-target');
-  const renderArea = container.querySelector('#kf-render-area');
-  const caretEl = container.querySelector('#kf-caret');
-  const wpmEl = container.querySelector('#kf-wpm');
-  const accEl = container.querySelector('#kf-acc');
-  const refreshBtn = container.querySelector('#kf-refresh-btn');
-  const pbBadge = container.querySelector('#kf-pb-badge');
-  const modeMount = container.querySelector('#kf-mode-selector-mount');
+  const root     = $('#practice');
+  const targetEl = $('#practice-target');
+  const renderEl = $('#practice-render');
+  const caretEl  = $('#practice-caret');
+  const wpmEl    = $('#practice-wpm');
+  const accEl    = $('#practice-acc');
+  const progEl   = $('#practice-progress');
+  const pbEl     = $('#practice-pb');
 
-  let inputEngine = null;
-  let renderEngine = new RenderEngine(renderArea, caretEl);
-  let statsEngine = new StatsEngine();
-  let adapter = null;
-  let soundSettings = getSettings();
-  let audioInitialized = false;
+  const renderEngine = new RenderEngine(renderEl, caretEl);
 
-  const initAudioOnce = () => {
-    if (audioInitialized) return;
-    audioInitialized = true;
+  /* Audio needs a user gesture before it can start on most browsers. */
+  const initAudio = () => {
+    if (audioReady) return;
+    audioReady = true;
     audio.init();
-    audio.setVolume(soundSettings.soundVolume);
+    audio.setVolume(settings.soundVolume);
   };
-  targetEl.addEventListener('keydown', initAudioOnce, { once: true });
-  targetEl.addEventListener('click', initAudioOnce, { once: true });
+  targetEl.addEventListener('keydown', initAudio, { once: true });
+  targetEl.addEventListener('click', initAudio, { once: true });
 
-  const modeSelector = createModeSelector({
-    activeMode: currentMode,
-    activeDuration: currentDuration,
-    activeWordCount: currentWordCount,
-    punctuation: currentPunctuation,
-    numbers: currentNumbers,
-    customText: currentCustomText,
-    onChange: ({ mode, duration, wordCount, punctuation, numbers, customText }) => {
-      currentMode = mode;
-      currentDuration = duration;
-      currentWordCount = wordCount;
-      currentPunctuation = punctuation;
-      currentNumbers = numbers;
-      currentCustomText = customText;
-      startSession();
-    }
-  });
-  modeMount.appendChild(modeSelector);
-
-  const diffSelector = createDifficultySelector({
-    difficulty: currentDifficulty,
-    onChange: (diff) => {
-      currentDifficulty = diff;
-      startSession();
-    }
-  });
-  modeMount.appendChild(diffSelector);
+  /* ── session ─────────────────────────────────────────────────────────── */
 
   async function startSession() {
     contentEngine.unlockSession();
-    if (refreshBtn) refreshBtn.disabled = false;
-
     if (inputEngine) inputEngine.stop();
+
     statsEngine.reset();
     renderEngine.resetDiffState();
-    workspace.classList.remove('is-typing');
-    workspace.classList.toggle('blind-mode', !!soundSettings.blindMode);
-    targetEl.focus();
+    started = false;
+    root.classList.remove('is-typing');
+    root.classList.toggle('blind-mode', !!settings.blindMode);
 
-    if (pbBadge) {
-      const pb = getPersonalBest(currentMode, {
-        targetDuration: currentDuration,
-        targetWordCount: currentWordCount,
-      });
-      if (pb > 0) {
-        pbBadge.textContent = `PB: ${pb} WPM`;
-        pbBadge.classList.add('visible');
-      } else {
-        pbBadge.classList.remove('visible');
-      }
+    const pb = getPersonalBest(mode, { targetDuration: duration, targetWordCount: wordCount });
+    if (pb > 0) {
+      pbEl.textContent = `PB ${pb} wpm`;
+      pbEl.hidden = false;
+    } else {
+      pbEl.hidden = true;
     }
 
-    const text = await getText(currentMode, currentDifficulty, {
-      duration: currentDuration,
-      wordCount: currentWordCount,
-      punctuation: currentPunctuation,
-      numbers: currentNumbers,
-      customText: currentCustomText
-    });
+    let text;
+    try {
+      text = await getText(mode, difficulty, {
+        duration, wordCount, punctuation, numbers, customText: '',
+      });
+    } catch (err) {
+      logger.error('session', 'Failed to load text', { error: err.message });
+      showToast({ message: 'Could not load a passage. Try again.', type: 'error' });
+      return;
+    }
 
     adapter = new WordsAdapter(text);
-    const { renderState, caretPosition } = adapter.getRenderState ? { renderState: adapter.getRenderState(), caretPosition: adapter.getCaretPosition() } : { renderState: [], caretPosition: { lineIndex:0, charIndex:0 } };
-    renderEngine.render(renderState);
-    requestAnimationFrame(() => renderEngine.updateCaretPosition(caretPosition.lineIndex, caretPosition.charIndex));
+    renderEngine.render(adapter.getRenderState());
+    requestAnimationFrame(() => {
+      const c = adapter.getCaretPosition();
+      renderEngine.updateCaretPosition(c.lineIndex, c.charIndex);
+    });
 
-    inputEngine = new InputEngine(targetEl,
+    logger.info('session', `Practice ready — ${adapter.words.length} words`);
+
+    inputEngine = new InputEngine(
+      targetEl,
       (inputEvent) => {
-        if (!workspace.classList.contains('is-typing')) {
-          workspace.classList.add('is-typing');
+        const t0 = performance.now();
+
+        if (!started) {
+          started = true;
+          root.classList.add('is-typing');
           contentEngine.lockSession();
-          if (refreshBtn) refreshBtn.disabled = true; // DISABLE REFRESH WHILE TYPING
         }
 
-        const isCorrect = isInputCorrect(inputEvent, adapter);
-        const targetChar = getTargetChar(adapter);
-        statsEngine.recordKeystroke(inputEvent.key, targetChar, isCorrect);
+        const correct = isCorrect(inputEvent);
+        statsEngine.recordKeystroke(inputEvent.key, targetChar(), correct);
 
-        if (soundSettings.soundEnabled && !inputEvent.isBackspace) {
-          if (isCorrect) audio.playKeyClick(soundSettings.soundProfile);
+        if (settings.soundEnabled && !inputEvent.isBackspace) {
+          if (correct) audio.playKeyClick(settings.soundProfile);
           else audio.playError();
         }
 
         const { renderState, caretPosition } = adapter.processInput(inputEvent);
-        renderEngine.render(renderState); 
-        requestAnimationFrame(() => renderEngine.updateCaretPosition(caretPosition.lineIndex, caretPosition.charIndex));
-        updateLiveStats();
-        
-        if (checkCompletion(adapter)) endSession();
+        renderEngine.render(renderState);
+        requestAnimationFrame(() =>
+          renderEngine.updateCaretPosition(caretPosition.lineIndex, caretPosition.charIndex)
+        );
+
+        updateHud();
+        recordInputLatency(t0);
+
+        if (isComplete()) endSession();
       },
-      (violationMsg) => showToast({ message: violationMsg, type: 'warning' })
+      (violation) => showToast({ message: violation, type: 'warning' })
     );
     inputEngine.start();
+    targetEl.focus();
   }
 
-  function isInputCorrect(inputEvent, adapter) {
-    const currentWord = adapter.words[adapter.currentWordIndex] || "";
-    const typedWord = adapter.typedWords[adapter.currentWordIndex] || "";
+  function isCorrect(inputEvent) {
+    const word = adapter.words[adapter.currentWordIndex] || '';
+    const typed = adapter.typedWords[adapter.currentWordIndex] || '';
     if (inputEvent.isBackspace) return false;
-    if (inputEvent.isSpace) return currentWord === typedWord;
-    return currentWord[typedWord.length] === inputEvent.key;
-  }
-  
-  function getTargetChar(adapter) {
-    if (adapter.words[adapter.currentWordIndex]) {
-      return adapter.words[adapter.currentWordIndex][adapter.typedWords[adapter.currentWordIndex]?.length || 0] || ' ';
-    }
-    return ' ';
+    if (inputEvent.isSpace) return word === typed;
+    return word[typed.length] === inputEvent.key;
   }
 
-  function checkCompletion(adapter) {
-    return adapter.currentWordIndex >= adapter.words.length - 1 && 
-           (adapter.typedWords[adapter.currentWordIndex] || "").length >= adapter.words[adapter.currentWordIndex].length;
+  function targetChar() {
+    const word = adapter.words[adapter.currentWordIndex];
+    if (!word) return ' ';
+    const typed = adapter.typedWords[adapter.currentWordIndex] || '';
+    return word[typed.length] || ' ';
   }
 
-  function updateLiveStats() {
-    const stats = statsEngine.getDetailedStats();
-    wpmEl.textContent = stats.wpm;
-    accEl.textContent = stats.accuracy.toFixed(0);
+  function isComplete() {
+    const last = adapter.words.length - 1;
+    return (
+      adapter.currentWordIndex >= last &&
+      (adapter.typedWords[last] || '').length >= (adapter.words[last] || '').length
+    );
+  }
+
+  function updateHud() {
+    const s = statsEngine.getDetailedStats();
+    wpmEl.textContent = s.wpm;
+    accEl.textContent = s.accuracy.toFixed(0);
+    progEl.textContent = `${Math.round((adapter.currentWordIndex / adapter.words.length) * 100)}%`;
   }
 
   function endSession() {
     inputEngine.stop();
     statsEngine.finish();
     contentEngine.unlockSession();
-    if (refreshBtn) refreshBtn.disabled = false;
-    if (soundSettings.soundEnabled) audio.playComplete();
+    if (settings.soundEnabled) audio.playComplete();
 
-    const stats = statsEngine.getDetailedStats();
-    const sessionData = {
-      wpm: stats.wpm,
-      rawWpm: stats.rawWpm,
-      accuracy: stats.accuracy,
-      errors: stats.errors,
-      consistency: computeConsistency(stats.speedCurve),
-      duration: Math.round(stats.totalTimeMs / 1000),
-      mode: currentMode,
-      difficulty: currentDifficulty,
-      targetDuration: currentDuration,
-      targetWordCount: currentWordCount,
-      chars: countCharBreakdown(stats.timeline),
-      pauseCount: stats.pauses.length,
-      totalStrokes: stats.totalStrokes,
-      timestamp: Date.now()
+    const s = statsEngine.getDetailedStats();
+    const session = {
+      wpm: s.wpm,
+      rawWpm: s.rawWpm,
+      accuracy: s.accuracy,
+      errors: s.errors,
+      consistency: computeConsistency(s.speedCurve),
+      duration: Math.round(s.totalTimeMs / 1000),
+      mode,
+      difficulty,
+      targetDuration: duration,
+      targetWordCount: wordCount,
+      chars: countCharBreakdown(s.timeline),
+      pauseCount: s.pauses.length,
+      totalStrokes: s.totalStrokes,
+      timestamp: Date.now(),
     };
-    sessionStorage.setItem('lastSession', JSON.stringify(sessionData));
-    saveSession(sessionData);
 
-    // Check for newly unlocked achievements against the just-saved history,
-    // stash them for results.js to surface — don't block navigation on it.
-    checkAchievements(sessionData, getStats())
-      .then((newlyUnlocked) => {
-        if (newlyUnlocked.length > 0) {
-          sessionStorage.setItem('newAchievements', JSON.stringify(newlyUnlocked));
+    logger.info('session', `Complete — ${session.wpm} wpm`, { accuracy: session.accuracy });
+
+    sessionStorage.setItem('lastSession', JSON.stringify(session));
+    saveSession(session);
+
+    checkAchievements(session, getStats())
+      .then((unlocked) => {
+        if (unlocked.length) {
+          sessionStorage.setItem('newAchievements', JSON.stringify(unlocked));
         }
       })
-      .catch((err) => console.warn('Achievement check failed:', err));
+      .catch((err) => logger.warn('achievements', 'Check failed', { error: err.message }));
 
     window.location.hash = '#/results';
   }
 
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      if (!contentEngine.isSessionLocked) {
-        startSession();
-      }
-    });
-  }
+  /* ── config interactions ─────────────────────────────────────────────── */
 
-  const keyHandler = (e) => {
+  container.querySelectorAll('[data-duration]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (contentEngine.isSessionLocked) return;
+      duration = Number(btn.dataset.duration);
+      container.querySelectorAll('[data-duration]').forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      startSession();
+    });
+  });
+
+  container.querySelectorAll('[data-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (contentEngine.isSessionLocked) return;
+      const key = btn.dataset.toggle;
+      const next = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', String(next));
+      btn.classList.toggle('active', next);
+      if (key === 'punctuation') punctuation = next;
+      if (key === 'numbers') numbers = next;
+      startSession();
+    });
+  });
+
+  $('#practice-restart').addEventListener('click', () => {
+    if (!contentEngine.isSessionLocked) startSession();
+  });
+
+  const onKeyDown = (e) => {
     if (e.key === 'Tab') {
       e.preventDefault();
       startSession();
     }
   };
-  document.addEventListener('keydown', keyHandler);
+  document.addEventListener('keydown', onKeyDown);
   targetEl.addEventListener('click', () => targetEl.focus());
-  
+
+  if (window.lucide) window.lucide.createIcons();
+
   startSession();
 
-  container.dataset.destroy = () => {
-    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  container._destroy = () => {
+    document.removeEventListener('keydown', onKeyDown);
     if (inputEngine) inputEngine.stop();
-    document.removeEventListener('keydown', keyHandler);
   };
 }
 
 export function destroy(container) {
-  if (container.dataset.destroy) container.dataset.destroy();
+  if (container._destroy) container._destroy();
 }

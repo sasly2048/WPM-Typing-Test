@@ -1,90 +1,155 @@
 /* ==========================================================================
-   Design Tokens - Foundation for KeyFlow
+   KeyFlow Design System — Token Foundation
+   --------------------------------------------------------------------------
+   Three layers, in strict order:
+
+     1. PRIMITIVES  raw values. Never referenced by a component.
+     2. SCALES      typography / spacing / motion. Mode-independent.
+     3. SEMANTICS   --color-accent, --surface-1, ... Components use ONLY these.
+
+   Semantics are re-declared per mode:
+     :root                        -> Normal mode, light  (default)
+     :root.theme-dark             -> Normal mode, dark
+     :root[data-surface="dev"]    -> Developer mode (/developer route only)
+
+   The dev block is written as :root[...] rather than [...] so it matches the
+   specificity of :root.theme-dark. Developer mode also sets .theme-dark (it is
+   always dark), and at lower specificity the dark block would win and drag the
+   accent back to amber. Equal specificity + later source order = dev wins.
+
+   Because every component consumes semantics, adding a mode is a token
+   re-declaration — not a second stylesheet.
    ========================================================================== */
 
 :root {
-  /* Colors - Base Palette */
-  --palette-gray-50: #f9fafb;
-  --palette-gray-100: #f3f4f6;
-  --palette-gray-200: #e5e7eb;
-  --palette-gray-300: #d1d5db;
-  --palette-gray-400: #9ca3af;
-  --palette-gray-500: #6b7280;
-  --palette-gray-600: #4b5563;
-  --palette-gray-700: #374151;
-  --palette-gray-800: #1f2937;
-  --palette-gray-900: #111827;
-  --palette-gray-950: #030712;
+  /* ─────────────────────────────────────────────────────────────────────
+     1. PRIMITIVES — raw palette. Do not use these in component CSS.
+     ───────────────────────────────────────────────────────────────────── */
 
-  --palette-violet-50: #f5f3ff;
-  --palette-violet-100: #ede9fe;
-  --palette-violet-200: #ddd6fe;
-  --palette-violet-300: #c4b5fd;
-  --palette-violet-400: #a78bfa;
-  --palette-violet-500: #8b5cf6;
-  --palette-violet-600: #7c3aed;
-  --palette-violet-700: #6d28d9;
-  --palette-violet-800: #5b21b6;
-  --palette-violet-900: #4c1d95;
-  --palette-violet-950: #2e1065;
+  /* Paper — warm neutral ramp for Normal mode light */
+  --p-paper-50:  #FDFCFA;
+  --p-paper-100: #FBFAF8;
+  --p-paper-200: #F5F3EF;
+  --p-paper-300: #EDEAE4;
+  --p-paper-400: #E6E2DC;
+  --p-paper-500: #D6D1C8;
 
-  /* Typography */
+  /* Ink — warm near-black ramp */
+  --p-ink-900: #171614;
+  --p-ink-800: #2A2825;
+  --p-ink-700: #45423D;
+  --p-ink-600: #6B665F;
+  --p-ink-500: #8C867D;
+  --p-ink-400: #ADA69C;
+
+  /* Carbon — Normal mode dark surfaces */
+  --p-carbon-900: #0C0C0D;
+  --p-carbon-800: #101011;
+  --p-carbon-700: #17171A;
+  --p-carbon-600: #1F1F23;
+  --p-carbon-500: #2A2A30;
+  --p-carbon-400: #3A3A42;
+
+  /* Amber — Normal mode accent */
+  --p-amber-700: #8F3F14;
+  --p-amber-600: #B4541E;
+  --p-amber-500: #CC6A2E;
+  --p-amber-400: #E08B4F;
+  --p-amber-300: #EDA972;
+
+  /* Phosphor — Developer mode accent */
+  --p-phos-500: #00E57A;
+  --p-phos-400: #35F58F;
+  --p-phos-300: #7DFFBA;
+
+  /* Developer mode chrome */
+  --p-term-950: #05070A;
+  --p-term-900: #0A0E14;
+  --p-term-800: #0F141C;
+  --p-term-700: #161D28;
+  --p-term-600: #1E2733;
+  --p-term-500: #2B3644;
+  --p-term-text: #C3D0E0;
+  --p-term-dim:  #7A8899;
+  --p-term-faint:#3E4A5A;
+
+  /* Signal — shared status hues, tuned per mode below */
+  --p-green-600: #1F7A4C;
+  --p-green-400: #35C97F;
+  --p-red-600:   #B3352E;
+  --p-red-400:   #E5584F;
+  --p-amber-sig: #C08A20;
+  --p-blue-600:  #2C6BB5;
+  --p-blue-400:  #58A6FF;
+  --p-cyan-400:  #4FD6E0;
+  --p-violet-400:#A78BFA;
+  --p-pink-400:  #F472B6;
+
+  /* ─────────────────────────────────────────────────────────────────────
+     2. SCALES — mode-independent
+     ───────────────────────────────────────────────────────────────────── */
+
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, Monaco, monospace;
-  
-  --text-xs: 0.75rem; /* 12px */
-  --text-sm: 0.875rem; /* 14px */
-  --text-base: 1rem; /* 16px */
-  --text-lg: 1.125rem; /* 18px */
-  --text-xl: 1.25rem; /* 20px */
-  --text-2xl: 1.5rem; /* 24px */
-  --text-3xl: 1.875rem; /* 30px */
-  --text-4xl: 2.25rem; /* 36px */
-  --text-5xl: 3rem; /* 48px */
-  
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
+
+  /* Body/UI font — swapped wholesale in Developer mode */
+  --font-ui: var(--font-sans);
+
+  /* Type scale — 1.200 minor third, 16px base */
+  --text-xs:   0.75rem;   /* 12 */
+  --text-sm:   0.8125rem; /* 13 */
+  --text-base: 0.9375rem; /* 15 */
+  --text-md:   1rem;      /* 16 */
+  --text-lg:   1.125rem;  /* 18 */
+  --text-xl:   1.375rem;  /* 22 */
+  --text-2xl:  1.75rem;   /* 28 */
+  --text-3xl:  2.25rem;   /* 36 */
+  --text-4xl:  3rem;      /* 48 */
+  --text-5xl:  3.75rem;   /* 60 */
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-bold:     700;
 
-  --line-height-none: 1;
-  --line-height-tight: 1.25;
-  --line-height-snug: 1.375;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.625;
-  --line-height-loose: 2;
+  --line-height-none:    1;
+  --line-height-tight:   1.2;
+  --line-height-snug:    1.35;
+  --line-height-normal:  1.55;
+  --line-height-relaxed: 1.7;
 
-  /* Spacing (4px grid system) */
-  --space-0: 0px;
-  --space-1: 0.25rem; /* 4px */
-  --space-2: 0.5rem; /* 8px */
-  --space-3: 0.75rem; /* 12px */
-  --space-4: 1rem; /* 16px */
-  --space-5: 1.25rem; /* 20px */
-  --space-6: 1.5rem; /* 24px */
-  --space-8: 2rem; /* 32px */
-  --space-10: 2.5rem; /* 40px */
-  --space-12: 3rem; /* 48px */
-  --space-16: 4rem; /* 64px */
-  --space-20: 5rem; /* 80px */
-  --space-24: 6rem; /* 96px */
-  --space-32: 8rem; /* 128px */
-  
-  /* Radii — professional, moderate scale */
-  --radius-sm: 0.5rem;   /* 8px */
-  --radius-md: 0.75rem;  /* 12px */
-  --radius-lg: 1rem;     /* 16px */
-  --radius-xl: 1.25rem;  /* 20px */
+  --tracking-tighter: -0.03em;
+  --tracking-tight:   -0.015em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.02em;
+  --tracking-caps:    0.08em;
+
+  /* Spacing — 4px grid */
+  --space-0:  0px;
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* Radii — Normal mode is soft; Developer mode overrides to near-square */
+  --radius-xs:   0.25rem;
+  --radius-sm:   0.375rem;
+  --radius-md:   0.625rem;
+  --radius-lg:   0.875rem;
+  --radius-xl:   1.125rem;
+  --radius-2xl:  1.5rem;
   --radius-full: 9999px;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
-  
-  /* Z-Index */
+
+  /* Z-index */
   --z-hide: -1;
   --z-base: 0;
   --z-elevated: 10;
@@ -93,250 +158,428 @@
   --z-overlay: 40;
   --z-modal: 50;
   --z-toast: 60;
-  
-  /* Animation */
-  --ease-linear: linear;
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Motion — productivity-first: short, decisive, never bouncy on UI chrome */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --ease-ritual: cubic-bezier(0.32, 0.72, 0, 1);
-  --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
-  
-  --duration-75: 75ms;
-  --duration-100: 100ms;
-  --duration-150: 150ms;
-  --duration-200: 200ms;
-  --duration-300: 300ms;
-  --duration-500: 500ms;
-  --duration-700: 700ms;
-  --duration-1000: 1000ms;
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-linear: linear;
 
-  /* Letter Spacing */
-  --tracking-tight: -0.025em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.01em;
+  --duration-instant: 80ms;
+  --duration-fast:    140ms;
+  --duration-normal:  220ms;
+  --duration-slow:    360ms;
+  --duration-slower:  560ms;
 
-  /* Semantic Transitions */
-  --transition-hover: var(--duration-150) var(--ease-in-out);
-  --transition-press: var(--duration-75) var(--ease-in-out);
-  --transition-dialog: var(--duration-200) var(--ease-out);
-  --transition-page: var(--duration-300) var(--ease-out);
+  --transition-hover:  var(--duration-fast) var(--ease-out);
+  --transition-press:  var(--duration-instant) var(--ease-out);
+  --transition-dialog: var(--duration-normal) var(--ease-out);
+  --transition-page:   var(--duration-slow) var(--ease-out);
 
-  /* Focus */
-  --focus-ring-color: var(--color-accent);
+  /* Focus ring — accessibility floor, identical logic in both modes */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-/* Alias Tokens for Compatibility */
---font-size-xs: var(--text-xs);
---font-size-sm: var(--text-sm);
---font-size-base: var(--text-base);
---font-size-lg: var(--text-lg);
---font-size-xl: var(--text-xl);
---font-size-2xl: var(--text-2xl);
---font-size-3xl: var(--text-3xl);
---font-size-4xl: var(--text-4xl);
---font-size-5xl: var(--text-5xl);
+  --focus-ring-color: var(--color-accent);
 
-/* Line-height aliases */
-/* Removed line-height alias block - redundant definitions */
-
-/* Radius alias */
---radius-2xl: var(--radius-xl);
-
+  /* Layout */
+  --navbar-height: 60px;
+  --content-max: 1160px;
+  --content-narrow: 760px;
 }
 
-/* Base Theme Defaults (Obsidian Ritualist) */
-:root {
-  /* Surface System — 5-level elevation hierarchy */
-  --surface-0: #060608;
-  --surface-1: #0D0D12;
-  --surface-2: #13131A;
-  --surface-3: #1A1A24;
-  --surface-4: #21212E;
+/* ==========================================================================
+   3a. SEMANTICS — NORMAL MODE / LIGHT (default)
+   Warm paper + ink. Light-first for long-session readability.
+   ========================================================================== */
 
-  /* Semantic Colors — derived from surface system */
-  --color-bg-primary: var(--surface-0);
+:root {
+  --surface-0: var(--p-paper-100); /* page */
+  --surface-1: var(--p-paper-50);  /* card */
+  --surface-2: var(--p-paper-200); /* inset / rail */
+  --surface-3: var(--p-paper-300); /* raised */
+  --surface-4: var(--p-paper-400); /* highest */
+
+  --color-bg-primary:   var(--surface-0);
   --color-bg-secondary: var(--surface-1);
-  --color-bg-tertiary: var(--surface-2);
-  --color-bg-elevated: var(--surface-3);
-  
-  --color-text-primary: #E2E2E2;
-  --color-text-secondary: #9A9A9A;
-  --color-text-tertiary: #404040;
-  --color-text-muted: var(--color-text-tertiary);
-  --color-text-inverse: #060608;
-  
-  --color-accent: #F0A968;
-  --color-accent-hover: #F5C093;
-  --color-accent-subtle: rgba(240, 169, 104, 0.12);
-  
-  --color-success: #4AA882;
-  --color-error: #D95050;
-  --color-warning: #C49550;
-  --color-info: #6B8FBF;
-  
-  --color-border: #222222;
-  --color-border-subtle: #1a1a1a;
-  
-  --color-surface: rgba(255, 255, 255, 0.04);
-  --color-surface-hover: rgba(255, 255, 255, 0.08);
-  
-  /* Typing Test Specific */
-  --typing-correct: var(--color-text-primary);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-1);
+
+  --color-text-primary:   var(--p-ink-900);
+  --color-text-secondary: var(--p-ink-600);
+  --color-text-tertiary:  var(--p-ink-500);
+  --color-text-muted:     var(--p-ink-400);
+  --color-text-inverse:   var(--p-paper-50);
+
+  --color-accent:        var(--p-amber-600);
+  --color-accent-hover:  var(--p-amber-700);
+  --color-accent-subtle: rgba(180, 84, 30, 0.10);
+  --color-accent-contrast: #FFFFFF;
+
+  --color-success: var(--p-green-600);
+  --color-error:   var(--p-red-600);
+  --color-warning: var(--p-amber-sig);
+  --color-info:    var(--p-blue-600);
+
+  --color-border:        var(--p-paper-400);
+  --color-border-strong: var(--p-paper-500);
+  --color-border-subtle: var(--p-paper-300);
+
+  --color-surface:       rgba(23, 22, 20, 0.04);
+  --color-surface-hover: rgba(23, 22, 20, 0.07);
+
+  /* Shadows — soft, warm-tinted. Light mode leans on shadow for elevation. */
+  --shadow-sm: 0 1px 2px rgba(23, 22, 20, 0.06);
+  --shadow-md: 0 2px 4px rgba(23, 22, 20, 0.06), 0 4px 12px rgba(23, 22, 20, 0.05);
+  --shadow-lg: 0 4px 8px rgba(23, 22, 20, 0.06), 0 12px 28px rgba(23, 22, 20, 0.08);
+  --shadow-xl: 0 8px 16px rgba(23, 22, 20, 0.07), 0 24px 56px rgba(23, 22, 20, 0.10);
+
+  /* Typing surface */
+  --typing-correct:   var(--p-ink-900);
   --typing-incorrect: var(--color-error);
-  --typing-untyped: var(--color-text-tertiary);
-  --typing-current: var(--color-text-primary);
-  --typing-extra: var(--color-error);
-  
+  --typing-untyped:   var(--p-ink-400);
+  --typing-current:   var(--p-ink-900);
+  --typing-extra:     var(--color-error);
+  --typing-font:      var(--font-mono);
+  --typing-font-size: 1.6rem;
+  --typing-line-height: 1.85;
+  --typing-width: 860px;
+
   --caret-color: var(--color-accent);
   --caret-width: 2px;
 
-  /* ── Chart / Analytics Colors — muted palette ── */
-  --color-chart-wpm: #6B8FBF;
-  --color-chart-accuracy: #5BA87A;
-  --color-chart-consistency: #9178B5;
-  --color-chart-mistakes: #C46464;
-  --color-chart-time: #C49550;
-  --color-chart-streak: #5A9DAD;
-  --color-chart-xp: #B8A04A;
-
-  /* ── Code Syntax Highlighting — muted palette ── */
-  --color-code-keyword: #B0A0C8;
-  --color-code-function: #8FA8C8;
-  --color-code-variable: #D8DAE0;
-  --color-code-string: #9AB88A;
-  --color-code-number: #C49078;
-  --color-code-comment: #6B7280;
-  --color-code-operator: #88B0C0;
-  --color-code-class: #C4A86A;
-  --color-code-boolean: #C07080;
-  --color-code-decorator: #78ADA0;
-
-  /* ── Button Tokens ── */
-  --button-height-xs: 28px;
-  --button-height-sm: 36px;
-  --button-height-md: 44px;
-  --button-height-lg: 52px;
-  --button-height-xl: 60px;
-  --button-radius: var(--radius-sm);
-  --button-padding-x: var(--space-4);
-  --button-padding-y: var(--space-3);
-  --button-font-size: var(--text-sm);
-  --button-font-weight: var(--font-weight-medium);
-  --button-letter-spacing: var(--tracking-wide);
-  --button-transition: var(--duration-150);
-  --button-primary-bg: var(--color-accent);
-  --button-primary-hover: var(--color-accent-hover);
-  --button-secondary-bg: transparent;
-  --button-danger-bg: var(--color-error);
-  --button-disabled-opacity: 0.4;
-
-  /* ── Input Tokens ── */
-  --input-height-sm: 36px;
-  --input-height-md: 44px;
-  --input-height-lg: 52px;
-  --input-radius: var(--radius-sm);
-  --input-padding-x: var(--space-4);
-  --input-padding-y: var(--space-3);
-  --input-bg: var(--surface-1);
-  --input-border: var(--color-border-subtle);
-  --input-border-hover: var(--color-border);
-  --input-border-focus: var(--color-accent);
-  --input-border-error: var(--color-error);
-  --input-border-success: var(--color-success);
-  --input-placeholder: var(--color-text-muted);
-  --input-text: var(--color-text-primary);
-  --input-helper: var(--color-text-secondary);
-  --input-transition: var(--duration-150);
-
-  /* ── Card Tokens ── */
-  --card-radius: var(--radius-md);
-  --card-padding: var(--space-6);
-  --card-padding-compact: var(--space-4);
-  --card-padding-large: var(--space-8);
-  --card-gap: var(--space-4);
-  --card-bg: var(--surface-1);
-  --card-border: var(--color-border-subtle);
-  --card-border-hover: var(--color-border);
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
-  --card-transition: var(--duration-150);
-  --card-selected-border: var(--color-accent);
-  --card-disabled-opacity: 0.4;
-
-  /* ── Dialog / Modal Tokens ── */
-  --dialog-radius: var(--radius-lg);
-  --dialog-padding: var(--space-8);
-  --dialog-width-sm: 400px;
-  --dialog-width-md: 640px;
-  --dialog-width-lg: 960px;
-  --overlay-bg: rgba(0,0,0,0.4);
-  --overlay-blur: 4px;
-  --dialog-shadow: 0 16px 48px rgba(0,0,0,0.2);
-
-  /* ── Navigation Tokens ── */
-  --navbar-height: 64px;
-  --sidebar-width: 280px;
-  --sidebar-collapsed: 72px;
-  --nav-item-height: 44px;
-  --nav-item-radius: var(--radius-sm);
-  --nav-gap: var(--space-1);
-  --tab-height: 44px;
-  --tab-indicator: 2px;
-  --drawer-width: 320px;
-  --menu-radius: var(--radius-md);
-  --menu-shadow: 0 8px 24px rgba(0,0,0,0.15);
-
-  /* ── Feedback Tokens ── */
-  --badge-radius: var(--radius-sm);
-  --badge-padding: var(--space-1) var(--space-2);
-  --badge-height-sm: 20px;
-  --badge-height-md: 24px;
-  --badge-height-lg: 28px;
-  --progress-height: 6px;
-  --progress-bg: rgba(255,255,255,0.06);
-  --progress-fill: var(--color-accent);
-  --spinner-size: 20px;
-  --spinner-speed: 800ms;
-  --skeleton-bg: rgba(255,255,255,0.06);
-  --skeleton-highlight: rgba(255,255,255,0.12);
-  --feedback-transition: var(--duration-150);
-
-  /* ── Typing Tokens ── */
-  --typing-line-height: 1.8;
-  --typing-width: 900px;
-  --typing-font-size: 24px;
-
-  /* ── Table Tokens ── */
-  --table-header-height: 52px;
-  --table-row-height: 48px;
-  --table-row-height-compact: 40px;
-  --table-radius: var(--radius-md);
-  --table-border: var(--color-border-subtle);
-  --table-hover: rgba(255,255,255,0.03);
-  --table-selected: rgba(240,169,104,0.08);
-  --table-header-bg: rgba(255,255,255,0.03);
-  --table-cell-padding: var(--space-4);
-  --table-transition: var(--duration-150);
-
-  /* ── Chart Tokens ── */
-  --chart-radius: var(--radius-md);
-  --chart-padding: var(--space-6);
-  --chart-grid: rgba(255,255,255,0.06);
+  /* Data visualisation — categorical, distinguishable at light luminance */
+  --color-chart-wpm:         var(--p-blue-600);
+  --color-chart-accuracy:    var(--p-green-600);
+  --color-chart-consistency: #7C5CBF;
+  --color-chart-mistakes:    var(--p-red-600);
+  --color-chart-time:        var(--p-amber-sig);
+  --color-chart-streak:      #2F8C99;
+  --color-chart-xp:          #96812A;
+  --chart-grid: rgba(23, 22, 20, 0.08);
   --chart-axis: var(--color-text-muted);
   --chart-label: var(--color-text-secondary);
-  --chart-tooltip-bg: var(--surface-3);
-  --chart-tooltip-radius: var(--radius-sm);
-  --chart-line-width: 2px;
-  --chart-dot-size: 4px;
-  --chart-animation: var(--duration-200);
-  --chart-legend-gap: var(--space-4);
+  --chart-tooltip-bg: var(--p-ink-900);
+  --chart-tooltip-text: var(--p-paper-50);
 
-  /* ── Heatmap Tokens ── */
-  --heatmap-cell: 14px;
-  --heatmap-gap: 3px;
-  --sparkline-height: 32px;
+  /* Syntax — used by the small code samples that appear in Normal mode */
+  --color-code-keyword:   #A3306E;
+  --color-code-function:  #2C6BB5;
+  --color-code-variable:  var(--p-ink-800);
+  --color-code-string:    #2F7A45;
+  --color-code-number:    #9A5518;
+  --color-code-comment:   var(--p-ink-500);
+  --color-code-operator:  var(--p-ink-700);
+  --color-code-class:     #8A6A16;
+  --color-code-boolean:   #A3306E;
+  --color-code-decorator: #2F8C99;
+
+  --overlay-bg: rgba(23, 22, 20, 0.32);
+  --overlay-blur: 6px;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   3b. SEMANTICS — NORMAL MODE / DARK
+   Same structure, carbon surfaces. Toggled by .theme-dark on <html>.
+   ========================================================================== */
+
+:root.theme-dark {
+  --surface-0: var(--p-carbon-900);
+  --surface-1: var(--p-carbon-800);
+  --surface-2: var(--p-carbon-700);
+  --surface-3: var(--p-carbon-600);
+  --surface-4: var(--p-carbon-500);
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-2);
+
+  --color-text-primary:   #EDEBE8;
+  --color-text-secondary: #A5A099;
+  --color-text-tertiary:  #7C766E;
+  --color-text-muted:     #5C574F;
+  --color-text-inverse:   var(--p-carbon-900);
+
+  --color-accent:        var(--p-amber-400);
+  --color-accent-hover:  var(--p-amber-300);
+  --color-accent-subtle: rgba(224, 139, 79, 0.14);
+  --color-accent-contrast: #1A1105;
+
+  --color-success: var(--p-green-400);
+  --color-error:   var(--p-red-400);
+  --color-warning: #E0B450;
+  --color-info:    var(--p-blue-400);
+
+  --color-border:        var(--p-carbon-500);
+  --color-border-strong: var(--p-carbon-400);
+  --color-border-subtle: var(--p-carbon-600);
+
+  --color-surface:       rgba(255, 255, 255, 0.04);
+  --color-surface-hover: rgba(255, 255, 255, 0.07);
+
+  /* Dark mode elevates with light borders, not shadow — shadow is invisible. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  --typing-correct:   #EDEBE8;
+  --typing-untyped:   #55504A;
+  --typing-current:   #EDEBE8;
+
+  --color-chart-wpm:         var(--p-blue-400);
+  --color-chart-accuracy:    var(--p-green-400);
+  --color-chart-consistency: var(--p-violet-400);
+  --color-chart-mistakes:    var(--p-red-400);
+  --color-chart-time:        #E0B450;
+  --color-chart-streak:      var(--p-cyan-400);
+  --color-chart-xp:          #D4BC55;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-tooltip-bg: var(--p-carbon-500);
+  --chart-tooltip-text: #EDEBE8;
+
+  --color-code-keyword:   #D98BC0;
+  --color-code-function:  var(--p-blue-400);
+  --color-code-variable:  #DEDAD4;
+  --color-code-string:    #8FCF9E;
+  --color-code-number:    #E0A16A;
+  --color-code-comment:   #6E685F;
+  --color-code-operator:  #B8B2AA;
+  --color-code-class:     #D9C070;
+  --color-code-boolean:   #D98BC0;
+  --color-code-decorator: var(--p-cyan-400);
+
+  --overlay-bg: rgba(0, 0, 0, 0.6);
 
   color-scheme: dark;
+}
+
+/* ==========================================================================
+   3c. SEMANTICS — DEVELOPER MODE
+   Scoped to [data-surface="dev"], set on <html> only while on /developer.
+   Terminal chrome: deep blue-black, phosphor accent, monospace everything,
+   square corners, hairline borders, zero soft shadow.
+   ========================================================================== */
+
+:root[data-surface="dev"] {
+  --surface-0: var(--p-term-950);
+  --surface-1: var(--p-term-900);
+  --surface-2: var(--p-term-800);
+  --surface-3: var(--p-term-700);
+  --surface-4: var(--p-term-600);
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-3);
+
+  --color-text-primary:   var(--p-term-text);
+  --color-text-secondary: var(--p-term-dim);
+  --color-text-tertiary:  var(--p-term-faint);
+  --color-text-muted:     #2F3A47;
+  --color-text-inverse:   var(--p-term-950);
+
+  --color-accent:        var(--p-phos-500);
+  --color-accent-hover:  var(--p-phos-400);
+  --color-accent-subtle: rgba(0, 229, 122, 0.10);
+  --color-accent-contrast: #04120A;
+
+  --color-success: var(--p-phos-500);
+  --color-error:   #FF5C5C;
+  --color-warning: #FFC145;
+  --color-info:    var(--p-cyan-400);
+
+  --color-border:        var(--p-term-500);
+  --color-border-strong: #3A4757;
+  --color-border-subtle: var(--p-term-600);
+
+  --color-surface:       rgba(0, 229, 122, 0.05);
+  --color-surface-hover: rgba(0, 229, 122, 0.10);
+
+  /* Terminal chrome: geometry over softness */
+  --radius-xs:  0px;
+  --radius-sm:  2px;
+  --radius-md:  3px;
+  --radius-lg:  4px;
+  --radius-xl:  4px;
+  --radius-2xl: 4px;
+
+  --shadow-sm: 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
+
+  /* Monospace as the UI face — the single strongest mode signal */
+  --font-ui: var(--font-mono);
+
+  --typing-correct:   var(--p-term-text);
+  --typing-incorrect: #FF5C5C;
+  --typing-untyped:   var(--p-term-faint);
+  --typing-current:   var(--color-accent);
+  --typing-extra:     #FF5C5C;
+  --typing-font:      var(--font-mono);
+  --typing-font-size: 1rem;
+  --typing-line-height: 1.65;
+
+  --caret-color: var(--color-accent);
+
+  /* Developer-mode data viz — high-chroma on near-black */
+  --color-chart-wpm:         var(--p-cyan-400);
+  --color-chart-accuracy:    var(--p-phos-500);
+  --color-chart-consistency: var(--p-violet-400);
+  --color-chart-mistakes:    #FF5C5C;
+  --color-chart-time:        #FFC145;
+  --color-chart-streak:      #58A6FF;
+  --color-chart-xp:          var(--p-pink-400);
+  --chart-grid: rgba(195, 208, 224, 0.07);
+  --chart-tooltip-bg: var(--p-term-700);
+  --chart-tooltip-text: var(--p-term-text);
+
+  /* Syntax highlighting — the centrepiece of Developer mode */
+  --color-code-keyword:   #FF7EDB;
+  --color-code-function:  #58A6FF;
+  --color-code-variable:  var(--p-term-text);
+  --color-code-string:    #A5E844;
+  --color-code-number:    #FFC145;
+  --color-code-comment:   #4A5768;
+  --color-code-operator:  #7DFFBA;
+  --color-code-class:     #FFD866;
+  --color-code-boolean:   #FF7EDB;
+  --color-code-decorator: var(--p-cyan-400);
+  --color-code-punctuation: var(--p-term-dim);
+
+  /* Log severity — Developer mode only */
+  --log-debug: var(--p-term-dim);
+  --log-info:  var(--p-cyan-400);
+  --log-warn:  #FFC145;
+  --log-error: #FF5C5C;
+  --log-trace: #7C5CBF;
+
+  --overlay-bg: rgba(5, 7, 10, 0.8);
+  --overlay-blur: 3px;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Component tokens — resolve from semantics, so they follow the mode.
+   ========================================================================== */
+
+:root {
+  /* Button */
+  --button-height-xs: 26px;
+  --button-height-sm: 32px;
+  --button-height-md: 38px;
+  --button-height-lg: 46px;
+  --button-radius: var(--radius-sm);
+  --button-font-size: var(--text-sm);
+  --button-font-weight: var(--font-weight-medium);
+
+  /* Input */
+  --input-height-sm: 32px;
+  --input-height-md: 38px;
+  --input-height-lg: 46px;
+  --input-radius: var(--radius-sm);
+  --input-bg: var(--surface-1);
+  --input-border: var(--color-border);
+  --input-border-focus: var(--color-accent);
+
+  /* Card */
+  --card-radius: var(--radius-lg);
+  --card-padding: var(--space-6);
+  --card-bg: var(--surface-1);
+  --card-border: var(--color-border-subtle);
+
+  /* Dialog */
+  --dialog-radius: var(--radius-xl);
+  --dialog-padding: var(--space-8);
+  --dialog-width-sm: 420px;
+  --dialog-width-md: 640px;
+  --dialog-width-lg: 960px;
+
+  /* Nav */
+  --nav-item-height: 34px;
+  --nav-item-radius: var(--radius-sm);
+
+  /* Feedback */
+  --badge-radius: var(--radius-full);
+  --progress-height: 5px;
+  --progress-bg: var(--color-surface);
+  --progress-fill: var(--color-accent);
+  --skeleton-bg: var(--color-surface);
+  --skeleton-highlight: var(--color-surface-hover);
+
+  /* Table */
+  --table-row-height: 42px;
+  --table-radius: var(--radius-md);
+  --table-header-bg: var(--surface-2);
+
+  /* Heatmap */
+  --heatmap-cell: 13px;
+  --heatmap-gap: 3px;
+}
+
+/* Developer mode squares off the pill-shaped bits too. */
+:root[data-surface="dev"] {
+  --badge-radius: 2px;
+  --card-radius: var(--radius-md);
+  --dialog-radius: var(--radius-md);
+  --progress-height: 3px;
+  --nav-item-radius: 2px;
+}
+
+/* ==========================================================================
+   Reduced motion — collapse all durations. Honours OS setting and the
+   .reduce-motion class main.js applies.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    0ms;
+    --duration-normal:  0ms;
+    --duration-slow:    0ms;
+    --duration-slower:  0ms;
+  }
+}
+
+:root.reduce-motion {
+  --duration-instant: 0ms;
+  --duration-fast:    0ms;
+  --duration-normal:  0ms;
+  --duration-slow:    0ms;
+  --duration-slower:  0ms;
+}
+
+/* ==========================================================================
+   Legacy aliases — old page-level <style> blocks still reference these.
+   Kept so nothing breaks mid-migration.
+   ========================================================================== */
+
+:root {
+  --font-size-xs:   var(--text-xs);
+  --font-size-sm:   var(--text-sm);
+  --font-size-base: var(--text-base);
+  --font-size-lg:   var(--text-lg);
+  --font-size-xl:   var(--text-xl);
+  --font-size-2xl:  var(--text-2xl);
+  --font-size-3xl:  var(--text-3xl);
+  --font-size-4xl:  var(--text-4xl);
+  --font-size-5xl:  var(--text-5xl);
+  --ease-apple:  var(--ease-out);
+  --ease-ritual: var(--ease-out);
+  --duration-75:   var(--duration-instant);
+  --duration-100:  var(--duration-instant);
+  --duration-150:  var(--duration-fast);
+  --duration-200:  var(--duration-normal);
+  --duration-300:  var(--duration-normal);
+  --duration-500:  var(--duration-slow);
+  --duration-700:  var(--duration-slower);
+  --duration-1000: var(--duration-slower);
+  --line-height-loose: 2;
+  --shadow-inner: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+  --sidebar-width: 260px;
 }

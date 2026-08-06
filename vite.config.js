@@ -22,9 +22,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Content JSON is split into its own chunk so the app shell isn't
+          // blocked on it. quotes.json was listed here but never existed in
+          // the repo, which failed the build outright.
           data: [
             resolve(__dirname, 'src/data/paragraphs.json'),
-            resolve(__dirname, 'src/data/quotes.json'),
             resolve(__dirname, 'src/data/code-snippets.json'),
             resolve(__dirname, 'src/data/words-common.json'),
           ],
