@@ -124,6 +124,18 @@
 
 .skip-link:focus { top: var(--space-4); }
 
+/* Standalone text links act as controls, so they carry a 24px minimum target
+   (WCAG 2.2 §2.5.8). Links inside a paragraph are exempt as inline content
+   and are deliberately not matched here. */
+.landing__mode-link,
+.landing__resume-link,
+.auth__switch-btn,
+.logo-link {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
+
 /* Global focus ring — one rule, every focusable element, both surfaces. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -334,8 +346,23 @@
   margin: 0 0 var(--space-3);
 }
 
-.footer__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.footer__list a { color: var(--color-text-secondary); font-size: var(--text-sm); display: inline-flex; align-items: center; gap: var(--space-2); }
+.footer__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+
+/* Padded to a 24px minimum height. WCAG 2.2 target-size can also be met via
+   spacing, but the 8px gap these had was not enough to qualify — so the
+   targets themselves grow instead. Negative inline margin keeps the text
+   optically aligned with the heading above. */
+.footer__list a {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 24px;
+  padding: var(--space-1) var(--space-2);
+  margin-left: calc(var(--space-2) * -1);
+  border-radius: var(--radius-xs);
+}
 .footer__list a:hover { color: var(--color-text-primary); }
 .footer__list i, .footer__list svg { width: 12px; height: 12px; }
 
@@ -573,6 +600,9 @@
 }
 
 /* Switch — settings toggles. */
+/* 44px tall via a transparent inset border so the visual switch stays 22px
+   while the hit area clears the WCAG 2.2 minimum. Sizing the visible control
+   up instead would coarsen the whole settings page. */
 .switch {
   position: relative;
   display: inline-flex;
@@ -586,6 +616,12 @@
   cursor: pointer;
   padding: 0;
   transition: background var(--transition-hover);
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  inset: -11px -6px;
 }
 
 .switch::after {
@@ -604,13 +640,26 @@
 .switch[aria-checked="true"]::after { transform: translateX(16px); }
 
 /* Range — volume, font size. */
+/* The visible track stays 4px, but the input itself is 24px tall with a
+   transparent box so dragging does not demand pixel-perfect aim. */
 .range {
   width: 100%;
-  height: 4px;
+  height: 24px;
   appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 4px;
   background: var(--color-border);
   border-radius: var(--radius-full);
-  cursor: pointer;
+}
+
+.range::-moz-range-track {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
 }
 
 .range::-webkit-slider-thumb {
@@ -621,6 +670,8 @@
   background: var(--color-accent);
   border: 2px solid var(--surface-0);
   box-shadow: var(--shadow-sm);
+  /* Re-centre on the 4px track: (4 - 15) / 2 */
+  margin-top: -5.5px;
 }
 
 .range::-moz-range-thumb {
@@ -1249,8 +1300,24 @@ kbd, .kbd {
   flex-shrink: 0;
 }
 
-.heatmap { display: flex; gap: var(--heatmap-gap); overflow-x: auto; padding-bottom: var(--space-2); }
-.heatmap__col { display: flex; flex-direction: column; gap: var(--heatmap-gap); }
+/* 26 week-columns exceed a phone's width, so the grid scrolls inside itself.
+   The columns must not shrink or the cells would deform into rectangles. */
+.heatmap {
+  display: flex;
+  gap: var(--heatmap-gap);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: thin;
+}
+
+.heatmap__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--heatmap-gap);
+  flex: 0 0 auto;
+}
+
+.heatmap__cell { flex: 0 0 auto; }
 
 .heatmap__cell {
   width: var(--heatmap-cell);
@@ -1489,12 +1556,17 @@ kbd, .kbd {
 .dev-gutter__line { font-variant-numeric: tabular-nums; }
 .dev-gutter__line.active { color: var(--color-accent); }
 
+/* Code lines are `white-space: pre` and can exceed the viewport, so the
+   editor must scroll horizontally. Without this the tail of every long line
+   is clipped with no way to reach it — which makes the workspace unusable on
+   a phone rather than merely cramped. min-content keeps the scroll width
+   driven by the longest line. */
 .dev-code {
   position: relative;
   flex: 1;
   padding: var(--space-4) var(--space-6) var(--space-4) var(--space-4);
   outline: none;
-  min-width: 0;
+  min-width: min-content;
 }
 
 /* Syntax layer sits under the typed layer; both use identical metrics so
@@ -1617,6 +1689,9 @@ kbd, .kbd {
 .dev-dock.is-collapsed { height: 32px; }
 .dev-dock.is-collapsed .dev-dock__body { display: none; }
 
+/* Five panel tabs plus the action buttons exceed a phone's width, so the
+   strip scrolls. Without this the clear/collapse controls sit past the edge
+   with no way to reach them. */
 .dev-dock__tabs {
   display: flex;
   align-items: center;
@@ -1625,7 +1700,17 @@ kbd, .kbd {
   height: 32px;
   border-bottom: 1px solid var(--color-border-subtle);
   flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.dev-dock__tabs::-webkit-scrollbar { display: none; }
+.dev-dock__tab { flex: 0 0 auto; }
+
+/* Actions stay pinned to the right on wide screens, but must not be pushed
+   off-canvas on narrow ones — so the auto margin only applies when there is
+   room to spare. */
+.dev-dock__actions { flex: 0 0 auto; }
 
 .dev-dock__tab {
   display: flex;
@@ -1881,6 +1966,19 @@ kbd, .kbd {
     max-height: 200px;
   }
 
+  /* The status bar carries more items than fit a phone. Scroll it rather than
+     dropping items — Ln/Col and the live WPM are the reason it exists. */
+  .dev-statusbar {
+    justify-content: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dev-statusbar::-webkit-scrollbar { display: none; }
+  .dev-statusbar__group { flex: 0 0 auto; }
+  .dev-status-item { flex: 0 0 auto; }
+
   .dev-main { grid-row: 2 / 3; }
   .dev-statusbar { grid-row: 3 / 4; }
   .dev-dock { height: 200px; }
@@ -1929,6 +2027,30 @@ kbd, .kbd {
   width: 1px;
   height: 18px;
   background: var(--color-border);
+}
+
+/* Custom-text panel. Only present in Custom mode, so it is laid out as a
+   block rather than squeezed into the control strip. */
+.practice__custom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 620px;
+  padding: var(--space-5);
+  background: var(--surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--card-radius);
+}
+
+.practice__custom[hidden] { display: none; }
+.practice__custom .textarea { width: 100%; }
+
+.practice.is-typing .practice__custom {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .practice__surface { width: 100%; }

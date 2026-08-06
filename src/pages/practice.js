@@ -18,11 +18,31 @@ import { checkAchievements } from '../services/achievements.js';
 import { calculateConsistency } from '../services/stats-engine.js';
 import { MODES, DIFFICULTIES } from '../constants/config.js';
 import { showToast } from '../components/toast.js';
-import { getSettings } from '../services/storage.js';
+import { getSettings, saveSettings } from '../services/storage.js';
 import { logger, recordInputLatency } from '../services/instrumentation.js';
 import * as audio from '../services/audio.js';
 
 const DURATIONS = [15, 30, 60, 120];
+const WORD_COUNTS = [10, 25, 50, 100];
+
+/**
+ * Modes differ in what "length" means, so each declares which length control
+ * it uses. `time` runs until the clock expires; `words` until a count is
+ * reached; `paragraph` and `quote` use a passage sized to the duration.
+ */
+const MODE_OPTIONS = [
+  { id: MODES.PARAGRAPH, label: 'prose',  icon: 'align-left',  length: 'duration', hint: 'Full passages of natural prose' },
+  { id: MODES.TIME,      label: 'time',   icon: 'timer',       length: 'duration', hint: 'Type until the clock runs out' },
+  { id: MODES.WORDS,     label: 'words',  icon: 'type',        length: 'words',    hint: 'Type a fixed number of words' },
+  { id: MODES.CUSTOM,    label: 'custom', icon: 'pencil-line', length: 'none',     hint: 'Practise on your own text' },
+];
+
+const DIFFICULTY_OPTIONS = [
+  { id: DIFFICULTIES.EASY,   label: 'easy',   hint: 'Common, short words' },
+  { id: DIFFICULTIES.MEDIUM, label: 'medium', hint: 'Everyday vocabulary' },
+  { id: DIFFICULTIES.HARD,   label: 'hard',   hint: 'Longer and less common words' },
+  { id: DIFFICULTIES.EXPERT, label: 'expert', hint: 'Technical and rare vocabulary' },
+];
 
 function computeConsistency(speedCurve) {
   if (!speedCurve || speedCurve.length < 2) return 100;
@@ -40,25 +60,42 @@ function countCharBreakdown(timeline) {
 }
 
 export function render(container) {
-  let mode = MODES.PARAGRAPH;
-  const difficulty = DIFFICULTIES.MEDIUM;
-  let duration = 30;
-  const wordCount = 50;
+  const saved = getSettings();
+
+  let mode = saved.mode || MODES.PARAGRAPH;
+  let difficulty = saved.difficulty || DIFFICULTIES.MEDIUM;
+  let duration = saved.duration || 30;
+  let wordCount = saved.wordCount || 50;
   let punctuation = false;
   let numbers = false;
+  let customText = '';
 
   let inputEngine = null;
   let adapter = null;
   let started = false;
 
   const statsEngine = new StatsEngine();
-  const settings = getSettings();
+  const settings = saved;
   let audioReady = false;
 
   container.innerHTML = html`
     <div class="practice" id="practice">
       <div class="practice__config" id="practice-config">
-        <div class="segmented" role="tablist" aria-label="Test length">
+        <div class="segmented" role="tablist" aria-label="Test mode">
+          ${MODE_OPTIONS.map((m) => `
+            <button class="segmented__item ${m.id === mode ? 'active' : ''}"
+                    role="tab" data-mode="${m.id}"
+                    aria-selected="${m.id === mode}" title="${m.hint}">
+              <i data-lucide="${m.icon}"></i> ${m.label}
+            </button>
+          `).join('')}
+        </div>
+
+        <span class="practice__config-divider" aria-hidden="true"></span>
+
+        <!-- Length control. Which unit applies depends on the mode, so only
+             the relevant one is shown rather than greying the other out. -->
+        <div class="segmented" role="tablist" aria-label="Test length" id="practice-length">
           ${DURATIONS.map((d) => `
             <button class="segmented__item ${d === duration ? 'active' : ''}"
                     role="tab" data-duration="${d}"
@@ -66,9 +103,27 @@ export function render(container) {
           `).join('')}
         </div>
 
+        <div class="segmented" role="tablist" aria-label="Word count" id="practice-words" hidden>
+          ${WORD_COUNTS.map((w) => `
+            <button class="segmented__item ${w === wordCount ? 'active' : ''}"
+                    role="tab" data-words="${w}"
+                    aria-selected="${w === wordCount}">${w}</button>
+          `).join('')}
+        </div>
+
         <span class="practice__config-divider" aria-hidden="true"></span>
 
-        <div class="segmented" role="group" aria-label="Text options">
+        <div class="segmented" role="tablist" aria-label="Difficulty">
+          ${DIFFICULTY_OPTIONS.map((d) => `
+            <button class="segmented__item ${d.id === difficulty ? 'active' : ''}"
+                    role="tab" data-difficulty="${d.id}"
+                    aria-selected="${d.id === difficulty}" title="${d.hint}">${d.label}</button>
+          `).join('')}
+        </div>
+
+        <span class="practice__config-divider" aria-hidden="true"></span>
+
+        <div class="segmented" role="group" aria-label="Text options" id="practice-options">
           <button class="segmented__item" data-toggle="punctuation" aria-pressed="false">
             <i data-lucide="pilcrow"></i> punctuation
           </button>
@@ -85,6 +140,15 @@ export function render(container) {
           <i data-lucide="rotate-cw"></i>
           <span>restart</span>
         </button>
+      </div>
+
+      <!-- Custom mode needs its own text, so it gets a panel instead of a
+           control strip. Hidden unless that mode is active. -->
+      <div class="practice__custom" id="practice-custom" hidden>
+        <label class="field__label" for="practice-custom-input">Your text</label>
+        <textarea class="textarea" id="practice-custom-input" rows="4"
+                  placeholder="Paste or type the passage you want to practise on…"></textarea>
+        <button class="btn btn-primary btn-sm" id="practice-custom-apply">Use this text</button>
       </div>
 
       <div class="practice__surface">
@@ -131,6 +195,12 @@ export function render(container) {
 
   const renderEngine = new RenderEngine(renderEl, caretEl);
 
+  /** Remember the configuration so the next visit opens where you left off. */
+  const persist = (patch) => {
+    Object.assign(settings, patch);
+    saveSettings(settings);
+  };
+
   /* Audio needs a user gesture before it can start on most browsers. */
   const initAudio = () => {
     if (audioReady) return;
@@ -164,7 +234,7 @@ export function render(container) {
     let text;
     try {
       text = await getText(mode, difficulty, {
-        duration, wordCount, punctuation, numbers, customText: '',
+        duration, wordCount, punctuation, numbers, customText,
       });
     } catch (err) {
       logger.error('session', 'Failed to load text', { error: err.message });
@@ -289,18 +359,49 @@ export function render(container) {
 
   /* ── config interactions ─────────────────────────────────────────────── */
 
-  container.querySelectorAll('[data-duration]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (contentEngine.isSessionLocked) return;
-      duration = Number(btn.dataset.duration);
-      container.querySelectorAll('[data-duration]').forEach((b) => {
-        const on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-selected', String(on));
+  /** Show only the length control that applies to the active mode. */
+  function syncConfigForMode() {
+    const spec = MODE_OPTIONS.find((m) => m.id === mode) || MODE_OPTIONS[0];
+    $('#practice-length').hidden = spec.length !== 'duration';
+    $('#practice-words').hidden = spec.length !== 'words';
+    $('#practice-custom').hidden = mode !== MODES.CUSTOM;
+    // Generated text options are meaningless for text the user supplied.
+    $('#practice-options').hidden = mode === MODES.CUSTOM;
+  }
+
+  /**
+   * Wire a segmented control. Selecting an option updates state, persists it,
+   * repaints selection, and restarts — config changes always start a clean
+   * run rather than mutating one in progress.
+   */
+  function wireGroup(attr, apply, { restart = true } = {}) {
+    const items = container.querySelectorAll(`[data-${attr}]`);
+    items.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (contentEngine.isSessionLocked) return;
+        apply(btn.dataset[attr]);
+        items.forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-selected', String(on));
+        });
+        syncConfigForMode();
+        if (restart) startSession();
       });
-      startSession();
     });
-  });
+  }
+
+  // Mode is wired with restart:false and restarts conditionally below —
+  // switching to Custom must not start a session before text is supplied.
+  wireGroup('mode', (v) => {
+    mode = v;
+    persist({ mode });
+    if (mode !== MODES.CUSTOM || customText.trim()) startSession();
+  }, { restart: false });
+
+  wireGroup('duration', (v) => { duration = Number(v); persist({ duration }); });
+  wireGroup('words', (v) => { wordCount = Number(v); persist({ wordCount }); });
+  wireGroup('difficulty', (v) => { difficulty = v; persist({ difficulty }); });
 
   container.querySelectorAll('[data-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -315,9 +416,21 @@ export function render(container) {
     });
   });
 
+  $('#practice-custom-apply').addEventListener('click', () => {
+    const value = $('#practice-custom-input').value.trim();
+    if (!value) {
+      showToast({ message: 'Enter some text to practise on.', type: 'warning' });
+      return;
+    }
+    customText = value;
+    startSession();
+  });
+
   $('#practice-restart').addEventListener('click', () => {
     if (!contentEngine.isSessionLocked) startSession();
   });
+
+  syncConfigForMode();
 
   const onKeyDown = (e) => {
     if (e.key === 'Tab') {
