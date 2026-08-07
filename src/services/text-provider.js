@@ -99,11 +99,28 @@ const getParagraphText = async (difficulty, poolKeySuffix, minWordCount = 0) => 
 
   const parts = [];
   let wordCount = 0;
-  do {
+
+  // getNonRepeatingItem returns null for an empty pool, and the previous
+  // `item.text` dereferenced it unguarded — a TypeError that killed the whole
+  // session load. An item with empty text was survivable but degraded: the
+  // loop ran once per missing word (450 iterations for a 300s test) and built
+  // an array of empty strings. Both are handled by bounding the loop and
+  // checking the item before use.
+  const MAX_PARAGRAPHS = 40;
+
+  for (let i = 0; i < MAX_PARAGRAPHS; i++) {
     const item = getNonRepeatingItem(`${poolKeySuffix}-${targetDifficulty}`, pool, (p) => p.id);
-    parts.push(item.text);
-    wordCount += item.text.split(/\s+/).length;
-  } while (wordCount < minWordCount);
+    const text = item?.text;
+    if (typeof text !== 'string' || !text.trim()) break;
+
+    parts.push(text);
+    wordCount += text.trim().split(/\s+/).length;
+    if (wordCount >= minWordCount) break;
+  }
+
+  if (!parts.length) {
+    return generateNonRepeatingWords(Math.max(minWordCount, 50), difficulty, `${poolKeySuffix}-empty`);
+  }
 
   return parts.join(' ');
 };
