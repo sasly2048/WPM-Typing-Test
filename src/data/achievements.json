@@ -3,56 +3,120 @@
     "id": "first_test",
     "title": "First Steps",
     "description": "Complete your first typing test",
-    "icon": "🎯",
+    "icon": "footprints",
     "category": "milestone",
     "condition": { "type": "tests_completed", "value": 1 }
   },
   {
-    "id": "speed_demon_50",
-    "title": "Speed Demon",
-    "description": "Reach 50 WPM in any mode",
-    "icon": "⚡",
-    "category": "speed",
-    "condition": { "type": "wpm_reached", "value": 50 }
-  },
-  {
-    "id": "speed_demon_100",
-    "title": "Sonic Typist",
-    "description": "Reach 100 WPM in any mode",
-    "icon": "🚀",
-    "category": "speed",
-    "condition": { "type": "wpm_reached", "value": 100 }
-  },
-  {
-    "id": "perfect_accuracy",
-    "title": "Flawless",
-    "description": "Complete a test with 100% accuracy",
-    "icon": "💎",
-    "category": "accuracy",
-    "condition": { "type": "perfect_test", "value": true }
-  },
-  {
-    "id": "streak_7",
-    "title": "Weekly Warrior",
-    "description": "Maintain a 7-day typing streak",
-    "icon": "🔥",
-    "category": "streak",
-    "condition": { "type": "streak_days", "value": 7 }
-  },
-  {
-    "id": "consistency_king",
-    "title": "Metronome",
-    "description": "Achieve a consistency score of 95% or higher",
-    "icon": "⏱️",
-    "category": "consistency",
-    "condition": { "type": "consistency_reached", "value": 95 }
+    "id": "tests_10",
+    "title": "Getting Warm",
+    "description": "Complete 10 typing tests",
+    "icon": "flame",
+    "category": "milestone",
+    "condition": { "type": "tests_completed", "value": 10 }
   },
   {
     "id": "tests_100",
     "title": "Centurion",
     "description": "Complete 100 tests",
-    "icon": "💯",
+    "icon": "medal",
     "category": "milestone",
     "condition": { "type": "tests_completed", "value": 100 }
+  },
+  {
+    "id": "speed_demon_50",
+    "title": "Cruising",
+    "description": "Reach 50 WPM in any mode",
+    "icon": "zap",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 50 }
+  },
+  {
+    "id": "speed_demon_80",
+    "title": "Fast Hands",
+    "description": "Reach 80 WPM in any mode",
+    "icon": "wind",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 80 }
+  },
+  {
+    "id": "speed_demon_100",
+    "title": "Sonic Typist",
+    "description": "Reach 100 WPM in any mode",
+    "icon": "rocket",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 100 }
+  },
+  {
+    "id": "speed_demon_130",
+    "title": "Blur",
+    "description": "Reach 130 WPM in any mode",
+    "icon": "gauge",
+    "category": "speed",
+    "condition": { "type": "wpm_reached", "value": 130 }
+  },
+  {
+    "id": "accuracy_95",
+    "title": "Precise",
+    "description": "Finish a test with 95% accuracy or better",
+    "icon": "target",
+    "category": "accuracy",
+    "condition": { "type": "accuracy_reached", "value": 95 }
+  },
+  {
+    "id": "accuracy_100",
+    "title": "Flawless",
+    "description": "Complete a test with 100% accuracy",
+    "icon": "gem",
+    "category": "accuracy",
+    "condition": { "type": "accuracy_reached", "value": 100 }
+  },
+  {
+    "id": "consistency_85",
+    "title": "Steady",
+    "description": "Achieve a consistency score of 85% or higher",
+    "icon": "activity",
+    "category": "consistency",
+    "condition": { "type": "consistency_reached", "value": 85 }
+  },
+  {
+    "id": "consistency_king",
+    "title": "Metronome",
+    "description": "Achieve a consistency score of 95% or higher",
+    "icon": "timer",
+    "category": "consistency",
+    "condition": { "type": "consistency_reached", "value": 95 }
+  },
+  {
+    "id": "streak_3",
+    "title": "Habit Forming",
+    "description": "Practise 3 days in a row",
+    "icon": "calendar-check",
+    "category": "streak",
+    "condition": { "type": "streak_days", "value": 3 }
+  },
+  {
+    "id": "streak_7",
+    "title": "Weekly Warrior",
+    "description": "Maintain a 7-day typing streak",
+    "icon": "calendar-days",
+    "category": "streak",
+    "condition": { "type": "streak_days", "value": 7 }
+  },
+  {
+    "id": "streak_30",
+    "title": "Unbroken",
+    "description": "Maintain a 30-day typing streak",
+    "icon": "trophy",
+    "category": "streak",
+    "condition": { "type": "streak_days", "value": 30 }
+  },
+  {
+    "id": "code_10",
+    "title": "Syntax Aware",
+    "description": "Complete 10 tests in the developer workspace",
+    "icon": "code-2",
+    "category": "developer",
+    "condition": { "type": "code_tests_completed", "value": 10 }
   }
 ]

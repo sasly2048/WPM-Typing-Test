@@ -1,245 +1,143 @@
+/**
+ * Appearance gallery.
+ *
+ * The old multi-theme list is gone: appearance is now two axes (light/dark
+ * plus a developer accent). This page previews them at a glance; Settings
+ * holds the same controls alongside everything else.
+ */
+
 import { html } from '../utils/dom.js';
-import { applyTheme } from '../services/theme.js';
+import {
+  getAppearance, setAppearance,
+  getDevAccent, setDevAccent, DEV_ACCENTS,
+} from '../services/theme.js';
 
-const styles = `
-.themes-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
-  color: var(--color-text-primary, #e2e2e2);
-}
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-.themes-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.themes-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #fff 0%, var(--color-accent, #f0a968) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
-}
-
-.themes-subtitle {
-  color: var(--color-text-secondary, #9a9a9a);
-  font-size: 1.1rem;
-}
-
-.themes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
-
-.theme-card {
-  border-radius: 0.875rem;
-  padding: 1.25rem;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.2s, border-color 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  position: relative;
-}
-
-.theme-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-}
-
-.theme-card.active {
-  border-color: var(--color-accent, #f0a968);
-  box-shadow: 0 0 20px rgba(240, 169, 104, 0.2);
-}
-
-.theme-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.theme-card-title {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.theme-active-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 0.25rem 0.6rem;
-  border-radius: 1rem;
-  background: var(--color-accent, #f0a968);
-  color: #000;
-}
-
-.theme-preview-box {
-  border-radius: 0.5rem;
-  padding: 1rem;
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 0.875rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.theme-swatches {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: auto;
-}
-
-.swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-`;
-
-const THEMES_LIST = [
+const MODES = [
   {
-    id: 'midnight',
-    name: 'Midnight',
-    bg: '#060608',
-    surface: '#0d0d12',
-    accent: '#f0a968',
-    text: '#e2e2e2',
-    syntax: ['#b0a0c8', '#9ab88a', '#9a9a9a']
+    id: 'light',
+    name: 'Light',
+    description: 'Warm paper and ink. Best for long sessions in daylight.',
+    sample: ['the quick brown ', 'fox jumps over'],
+    vars: '--pv-bg:#FBFAF8; --pv-surface:#FDFCFA; --pv-text:#171614; --pv-muted:#ADA69C; --pv-accent:#B4541E; --pv-border:#E6E2DC;',
   },
   {
-    id: 'graphite',
-    name: 'Graphite',
-    bg: '#0e0e0f',
-    surface: '#1c1c1f',
-    accent: '#b0b0b8',
-    text: '#e6e6e8',
-    syntax: ['#a29acb', '#6ec090', '#9a9a9e']
+    id: 'dark',
+    name: 'Dark',
+    description: 'Carbon surfaces with an amber accent. Low glare at night.',
+    sample: ['the quick brown ', 'fox jumps over'],
+    vars: '--pv-bg:#0C0C0D; --pv-surface:#101011; --pv-text:#EDEBE8; --pv-muted:#5C574F; --pv-accent:#E08B4F; --pv-border:#2A2A30;',
   },
   {
-    id: 'aurora',
-    name: 'Aurora',
-    bg: '#0a0a12',
-    surface: '#171728',
-    accent: '#9d7cf9',
-    text: '#e8e6f7',
-    syntax: ['#b79bfb', '#3ed6a8', '#a29fc4']
+    id: 'system',
+    name: 'System',
+    description: 'Follows your operating system setting automatically.',
+    sample: ['the quick brown ', 'fox jumps over'],
+    vars: '--pv-bg:#FBFAF8; --pv-surface:#FDFCFA; --pv-text:#171614; --pv-muted:#ADA69C; --pv-accent:#B4541E; --pv-border:#E6E2DC;',
   },
-  {
-    id: 'ocean',
-    name: 'Ocean',
-    bg: '#071012',
-    surface: '#112024',
-    accent: '#45c7c7',
-    text: '#dcf0f1',
-    syntax: ['#7fa3e0', '#4ec98f', '#86a8ab']
-  },
-  {
-    id: 'forest',
-    name: 'Forest',
-    bg: '#0a0f0a',
-    surface: '#151d15',
-    accent: '#7bc074',
-    text: '#e0e8de',
-    syntax: ['#a3b0e0', '#7bc074', '#96a693']
-  },
-  {
-    id: 'monokai',
-    name: 'Monokai',
-    bg: '#1e1f1c',
-    surface: '#2f302a',
-    accent: '#e6db74',
-    text: '#f8f8f2',
-    syntax: ['#f92672', '#a6e22e', '#a6a793']
-  },
-  {
-    id: 'terminal',
-    name: 'Terminal',
-    bg: '#000000',
-    surface: '#0c100c',
-    accent: '#39ff6a',
-    text: '#baf5ba',
-    syntax: ['#39ff6a', '#ffd166', '#6fae6f']
-  },
-  {
-    id: 'arctic',
-    name: 'Arctic',
-    bg: '#f7f9fb',
-    surface: '#eef2f6',
-    accent: '#1c7ed6',
-    text: '#14212e',
-    syntax: ['#6a3fd6', '#2f9e6f', '#4c5b6b']
-  },
-  {
-    id: 'sand',
-    name: 'Sand',
-    bg: '#faf6ee',
-    surface: '#f2ebdc',
-    accent: '#c26a3f',
-    text: '#3a2e20',
-    syntax: ['#8a5fb0', '#4f8f5e', '#6e5f4c']
-  }
 ];
 
+/** Miniature of the typing surface, so a choice can be judged before applying. */
+function preview({ id, name, description, vars, sample }) {
+  return `
+    <button class="theme-card" data-appearance="${esc(id)}" style="${esc(vars)}"
+            aria-pressed="false">
+      <span class="theme-card__canvas">
+        <span class="theme-card__bar">
+          <span class="theme-card__dot"></span>
+          <span class="theme-card__line"></span>
+        </span>
+        <span class="theme-card__text">
+          <span class="theme-card__typed">${esc(sample[0])}</span><span class="theme-card__caret"></span><span class="theme-card__pending">${esc(sample[1])}</span>
+        </span>
+        <span class="theme-card__hud">
+          <span class="theme-card__stat"></span>
+          <span class="theme-card__stat theme-card__stat--sm"></span>
+        </span>
+      </span>
+      <span class="theme-card__meta">
+        <span class="theme-card__name">${esc(name)}</span>
+        <span class="theme-card__desc">${esc(description)}</span>
+      </span>
+    </button>
+  `;
+}
+
 export function render(container) {
-  const styleEl = document.createElement('style');
-  styleEl.textContent = styles;
-  document.head.appendChild(styleEl);
-
-  const currentTheme = localStorage.getItem('keyflow_theme') || 'midnight';
-
   container.innerHTML = html`
-    <div class="themes-page">
-      <header class="themes-header">
-        <h1 class="themes-title">Theme Experience Gallery</h1>
-        <p class="themes-subtitle">Transform colors, syntax highlighting, glow effects, and cursor motion in one click.</p>
+    <div class="page page--narrow themes">
+      <header class="page-header">
+        <div>
+          <h1 class="page-header__title">Appearance</h1>
+          <p class="page-header__desc">
+            KeyFlow has two identities: a calm reading surface for prose, and a terminal
+            workspace for code. Choose how the reading surface looks — the developer
+            workspace is always dark.
+          </p>
+        </div>
       </header>
 
-      <div class="themes-grid">
-        ${THEMES_LIST.map(theme => `
-          <div class="theme-card ${currentTheme === theme.id ? 'active' : ''}" data-theme-id="${theme.id}" style="background: ${theme.surface}; color: ${theme.text}">
-            <div class="theme-card-header">
-              <span class="theme-card-title">${theme.name}</span>
-              ${currentTheme === theme.id ? '<span class="theme-active-badge">Active</span>' : ''}
-            </div>
+      <section class="section">
+        <h2 class="section__label">Reading surface</h2>
+        <div class="theme-grid">${MODES.map(preview).join('')}</div>
+      </section>
 
-            <div class="theme-preview-box" style="background: ${theme.bg}">
-              <div><span style="color: ${theme.syntax[0]}">const</span> <span style="color: ${theme.text}">flow</span> = <span style="color: ${theme.syntax[1]}">'addictive'</span>;</div>
-              <div style="color: ${theme.syntax[2]}; font-size: 0.75rem;">// 120 WPM • 99% Accuracy</div>
-            </div>
+      <section class="section">
+        <h2 class="section__label">Developer accent</h2>
+        <p class="themes__note">
+          Used for the caret, active file and status highlights in the developer workspace.
+        </p>
+        <div class="theme-grid theme-grid--accents">
+          ${Object.entries(DEV_ACCENTS).map(([id, a]) => `
+            <button class="theme-card theme-card--accent" data-accent="${esc(id)}" aria-pressed="false"
+                    style="--pv-bg:#05070A; --pv-surface:#0A0E14; --pv-text:#C3D0E0; --pv-muted:#3E4A5A; --pv-accent:${esc(a.accent)}; --pv-border:#1E2733;">
+              <span class="theme-card__canvas theme-card__canvas--code">
+                <span class="theme-card__code-line"><span class="theme-card__kw"></span><span class="theme-card__id"></span></span>
+                <span class="theme-card__code-line theme-card__code-line--indent"><span class="theme-card__str"></span></span>
+                <span class="theme-card__code-line"><span class="theme-card__id theme-card__id--sm"></span><span class="theme-card__caret"></span></span>
+              </span>
+              <span class="theme-card__meta">
+                <span class="theme-card__name">${esc(a.label)}</span>
+              </span>
+            </button>
+          `).join('')}
+        </div>
+      </section>
 
-            <div class="theme-swatches">
-              <div class="swatch" style="background: ${theme.bg}" title="Background"></div>
-              <div class="swatch" style="background: ${theme.surface}" title="Surface"></div>
-              <div class="swatch" style="background: ${theme.accent}" title="Accent"></div>
-              <div class="swatch" style="background: ${theme.text}" title="Text"></div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
+      <p class="themes__footnote">
+        Sound, blind mode and data controls live in <a href="#/settings">Settings</a>.
+      </p>
     </div>
   `;
 
-  const cards = container.querySelectorAll('.theme-card');
-  cards.forEach(card => {
+  const sync = (attr, current) => {
+    container.querySelectorAll(`[data-${attr}]`).forEach((el) => {
+      const on = el.dataset[attr] === current();
+      el.classList.toggle('is-selected', on);
+      el.setAttribute('aria-pressed', String(on));
+    });
+  };
+
+  container.querySelectorAll('[data-appearance]').forEach((card) => {
     card.addEventListener('click', () => {
-      const themeId = card.getAttribute('data-theme-id');
-      applyTheme(themeId);
-      cards.forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
+      setAppearance(card.dataset.appearance);
+      sync('appearance', getAppearance);
     });
   });
 
-  container.dataset.destroy = () => {
-    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
-  };
+  container.querySelectorAll('[data-accent]').forEach((card) => {
+    card.addEventListener('click', () => {
+      setDevAccent(card.dataset.accent);
+      sync('accent', getDevAccent);
+    });
+  });
+
+  sync('appearance', getAppearance);
+  sync('accent', getDevAccent);
+
+  if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy(container) {
-  if (container.dataset.destroy) container.dataset.destroy();
-}
+export function destroy() {}

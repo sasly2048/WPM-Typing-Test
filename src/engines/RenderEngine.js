@@ -85,7 +85,11 @@ export class RenderEngine {
                 const charEl = document.createElement('span');
                 charEl.className = `keyflow-char ${token.status}`;
                 // Use a non-breaking space for visual spacing
-                charEl.textContent = token.char === ' ' ? '\u00A0' : token.char;
+                // Real space, not NBSP. NBSP never offers a line-break opportunity, so
+// with one span per character the browser could only break mid-word.
+// Containers set `white-space: pre-wrap`, which keeps spaces visible
+// while still allowing breaks at them.
+charEl.textContent = token.char;
                 charEl.dataset.lineIndex = lineIndex;
                 charEl.dataset.charIndex = charIndex;
 
@@ -119,7 +123,11 @@ export class RenderEngine {
                     charEl.className = `keyflow-char ${token.status}`;
                 }
                 if (prevToken.char !== token.char) {
-                    charEl.textContent = token.char === ' ' ? '\u00A0' : token.char;
+                    // Real space, not NBSP. NBSP never offers a line-break opportunity, so
+// with one span per character the browser could only break mid-word.
+// Containers set `white-space: pre-wrap`, which keeps spaces visible
+// while still allowing breaks at them.
+charEl.textContent = token.char;
                 }
             });
         });

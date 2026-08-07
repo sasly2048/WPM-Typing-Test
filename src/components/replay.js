@@ -1,201 +1,183 @@
-export class TypingReplay {
-    /**
-     * @param {HTMLElement} container - The DOM element to render the replay into
-     * @param {Object} sessionData - Output from StatsEngine
-     * @param {String} originalText - The text that was typed
-     */
-    constructor(container, sessionData, originalText) {
-        this.container = container;
-        this.sessionData = sessionData;
-        this.originalText = originalText;
-        this.timeline = sessionData.timeline;
-        this.isPlaying = false;
-        this.currentIndex = 0;
-        this.replayStartTime = 0;
-        this.animationFrame = null;
-        this.containerRectCache = null;
-        
-        this.initDOM();
+/**
+ * Session replay.
+ *
+ * Plays back the keystroke timeline captured by StatsEngine so you can see
+ * *where* time went — the hesitation before a word, the burst through an easy
+ * phrase, the backspace cascade after a typo. An averaged WPM shows none of
+ * that.
+ *
+ * Position is derived from wall-clock deltas against a start reference rather
+ * than accumulated per frame, so pausing, scrubbing, speed changes and a
+ * throttled tab all stay true to the original timing.
+ */
+
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const SPEEDS = [0.5, 1, 2, 4];
+
+/**
+ * @param {object} opts
+ * @param {Array}  opts.timeline    StatsEngine timeline entries
+ * @param {string} opts.text        the passage that was typed
+ * @param {number} opts.totalTimeMs session duration
+ */
+export function createReplay({ timeline = [], text = '', totalTimeMs = 0, isCode = false } = {}) {
+  const el = document.createElement('div');
+  // Code keeps its own line structure and scrolls; prose wraps. These need
+  // opposite overflow behaviour, so the mode is carried on the element.
+  el.className = isCode ? 'replay replay--code' : 'replay';
+
+  if (!timeline.length || !text) {
+    el.innerHTML = '<div class="chart-empty">No replay data for this session.</div>';
+    return { el, destroy() {} };
+  }
+
+  const duration = totalTimeMs || timeline[timeline.length - 1]?.timestamp || 0;
+
+  let playing = false;
+  let speed = 1;
+  let cursor = 0;        // ms into the session
+  let startedAt = 0;     // performance.now() reference for the current run
+  let cursorAtStart = 0; // cursor when playback last started
+  let rafId = null;
+
+  el.innerHTML = `
+    <div class="replay__stage">
+      <div class="replay__text" id="replay-text">
+        ${text.split('').map((ch) =>
+          `<span class="replay__char">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`
+        ).join('')}
+      </div>
+      <div class="replay__caret" id="replay-caret" hidden></div>
+    </div>
+
+    <div class="replay__controls">
+      <button class="btn btn-secondary btn-sm" id="replay-toggle" aria-label="Play replay">
+        <i data-lucide="play"></i> <span>Play</span>
+      </button>
+
+      <input type="range" class="range replay__scrub" id="replay-scrub"
+             min="0" max="${Math.round(duration)}" value="0" step="10"
+             aria-label="Replay position">
+
+      <span class="replay__time" id="replay-time">0.0s</span>
+
+      <div class="segmented" role="group" aria-label="Playback speed">
+        ${SPEEDS.map((s) => `
+          <button class="segmented__item ${s === 1 ? 'active' : ''}"
+                  data-speed="${s}" aria-pressed="${s === 1}">${s}×</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  const chars = Array.from(el.querySelector('#replay-text').children);
+  const caret = el.querySelector('#replay-caret');
+  const scrub = el.querySelector('#replay-scrub');
+  const timeEl = el.querySelector('#replay-time');
+  const toggle = el.querySelector('#replay-toggle');
+
+  /**
+   * Paint the state at `ms` from scratch rather than incrementally, so
+   * scrubbing backwards is correct without replaying history in reverse.
+   */
+  function paint(ms) {
+    let typed = 0;
+    const status = new Array(chars.length).fill(null);
+
+    for (const entry of timeline) {
+      if (entry.timestamp > ms) break;
+      if (entry.char === 'Backspace') {
+        typed = Math.max(0, typed - 1);
+        status[typed] = null;
+        continue;
+      }
+      if (typed < status.length) {
+        status[typed] = entry.correct ? 'correct' : 'incorrect';
+      }
+      typed++;
     }
 
-    initDOM() {
-        this.container.innerHTML = `
-            <div class="replay-container" style="position: relative; font-family: monospace; font-size: 1.5rem; line-height: 2; padding: 20px; background: #1e1e1e; color: #666; border-radius: 8px; overflow: hidden;">
-                <div class="replay-controls" style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-                    <button id="replay-play-btn" style="padding: 5px 15px; cursor: pointer; background: #4caf50; color: white; border: none; border-radius: 4px;">Play</button>
-                    <button id="replay-pause-btn" style="padding: 5px 15px; cursor: pointer; background: #f44336; color: white; border: none; border-radius: 4px;">Pause</button>
-                    <button id="replay-reset-btn" style="padding: 5px 15px; cursor: pointer; background: #2196f3; color: white; border: none; border-radius: 4px;">Reset</button>
-                    <span id="replay-speed-indicator" style="color: #fff; margin-left: auto; font-size: 1rem;">WPM: 0</span>
-                </div>
-                <div id="replay-text-display" style="position: relative; white-space: pre-wrap; word-break: break-all;">
-                    ${this.originalText.split('').map((char, i) => `<span id="replay-char-${i}">${char}</span>`).join('')}
-                    <div id="replay-cursor" style="position: absolute; width: 2px; height: 1.5rem; background: #fff; display: none; transition: all 0.05s ease;"></div>
-                </div>
-                <canvas id="replay-speed-graph" width="600" height="100" style="margin-top: 20px; width: 100%; background: #2a2a2a; border-radius: 4px;"></canvas>
-            </div>
-        `;
+    chars.forEach((c, i) => {
+      c.className = 'replay__char' + (status[i] ? ` is-${status[i]}` : '');
+    });
 
-        this.textDisplay = this.container.querySelector('#replay-text-display');
-        this.cursor = this.container.querySelector('#replay-cursor');
-        this.speedIndicator = this.container.querySelector('#replay-speed-indicator');
-        this.canvas = this.container.querySelector('#replay-speed-graph');
-        this.ctx = this.canvas.getContext('2d');
-
-        this.container.querySelector('#replay-play-btn').addEventListener('click', () => this.play());
-        this.container.querySelector('#replay-pause-btn').addEventListener('click', () => this.pause());
-        this.container.querySelector('#replay-reset-btn').addEventListener('click', () => this.reset());
-
-        this.drawSpeedGraphStatic();
+    const target = chars[Math.min(typed, chars.length - 1)];
+    if (target) {
+      const box = target.getBoundingClientRect();
+      const stage = el.querySelector('.replay__stage').getBoundingClientRect();
+      caret.hidden = false;
+      caret.style.transform = `translate(${box.left - stage.left}px, ${box.top - stage.top}px)`;
     }
 
-    play() {
-        if (this.isPlaying || this.timeline.length === 0) return;
-        this.isPlaying = true;
-        
-        if (this.currentIndex >= this.timeline.length) {
-            this.reset();
-            this.isPlaying = true; // reset sets it to false, need to toggle back
-        }
+    timeEl.textContent = `${(ms / 1000).toFixed(1)}s`;
+    // Don't fight the user while they are dragging the scrubber.
+    if (document.activeElement !== scrub) scrub.value = Math.round(ms);
+  }
 
-        this.cursor.style.display = 'block';
-        
-        const currentEventTime = this.currentIndex < this.timeline.length ? this.timeline[this.currentIndex].timestamp : 0;
-        this.replayStartTime = performance.now() - currentEventTime;
-        this.containerRectCache = this.textDisplay.getBoundingClientRect();
+  function setToggle(icon, label) {
+    toggle.innerHTML = `<i data-lucide="${icon}"></i> <span>${label}</span>`;
+    toggle.setAttribute('aria-label', `${label} replay`);
+    if (window.lucide) window.lucide.createIcons();
+  }
 
-        const loop = () => {
-            if (!this.isPlaying) return;
+  function tick() {
+    cursor = cursorAtStart + (performance.now() - startedAt) * speed;
 
-            const now = performance.now();
-            const elapsed = now - this.replayStartTime;
-
-            while (this.currentIndex < this.timeline.length && this.timeline[this.currentIndex].timestamp <= elapsed) {
-                this.renderKeystroke(this.timeline[this.currentIndex], this.currentIndex);
-                this.currentIndex++;
-            }
-
-            if (this.currentIndex < this.timeline.length) {
-                this.animationFrame = requestAnimationFrame(loop);
-            } else {
-                this.isPlaying = false;
-            }
-        };
-
-        this.animationFrame = requestAnimationFrame(loop);
+    if (cursor >= duration) {
+      cursor = duration;
+      paint(cursor);
+      pause();
+      return;
     }
 
-    pause() {
-        this.isPlaying = false;
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-        }
-    }
+    paint(cursor);
+    rafId = requestAnimationFrame(tick);
+  }
 
-    reset() {
-        this.pause();
-        this.currentIndex = 0;
-        this.cursor.style.display = 'none';
-        this.speedIndicator.textContent = 'WPM: 0';
-        this.containerRectCache = null;
-        
-        for (let i = 0; i < this.originalText.length; i++) {
-            const span = this.container.querySelector(`#replay-char-${i}`);
-            if (span) {
-                span.style.color = '#666';
-                span.style.background = 'transparent';
-                span.textContent = this.originalText[i];
-            }
-        }
-        
-        this.drawSpeedGraphStatic();
-    }
+  function play() {
+    if (playing) return;
+    if (cursor >= duration) cursor = 0; // replay from the top once finished
+    playing = true;
+    cursorAtStart = cursor;
+    startedAt = performance.now();
+    setToggle('pause', 'Pause');
+    rafId = requestAnimationFrame(tick);
+  }
 
-    renderKeystroke(event, index) {
-        const span = this.container.querySelector(`#replay-char-${index}`);
-        if (!span) return;
+  function pause() {
+    playing = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    setToggle('play', 'Play');
+  }
 
-        if (event.correct) {
-            span.style.color = '#e2b714'; 
-        } else {
-            span.style.color = '#ca4754';
-            span.style.background = '#4a1e22';
-            span.textContent = event.char === ' ' ? '_' : event.char;
-        }
+  toggle.addEventListener('click', () => (playing ? pause() : play()));
 
-        // Move cursor relative to container
-        const spanRect = span.getBoundingClientRect();
-        const containerRect = this.containerRectCache || this.textDisplay.getBoundingClientRect();
-        this.cursor.style.left = `${spanRect.right - containerRect.left}px`;
-        this.cursor.style.top = `${spanRect.top - containerRect.top}px`;
+  scrub.addEventListener('input', () => {
+    cursor = Number(scrub.value);
+    cursorAtStart = cursor;
+    startedAt = performance.now();
+    paint(cursor);
+  });
 
-        // Update WPM Indicator 
-        const recentEvents = this.timeline.slice(Math.max(0, index - 10), index + 1);
-        if (recentEvents.length > 1) {
-            const timeDiff = (recentEvents[recentEvents.length - 1].timestamp - recentEvents[0].timestamp) / 60000;
-            if (timeDiff > 0) {
-                const currentWPM = Math.round((recentEvents.length / 5) / timeDiff);
-                this.speedIndicator.textContent = `WPM: ${currentWPM}`;
-            }
-        }
+  el.querySelectorAll('[data-speed]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      speed = Number(btn.dataset.speed);
+      // Re-anchor so the new speed applies from here rather than retroactively.
+      cursorAtStart = cursor;
+      startedAt = performance.now();
+      el.querySelectorAll('[data-speed]').forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    });
+  });
 
-        this.drawSpeedGraphProgress(event.timestamp);
-    }
+  paint(0);
+  if (window.lucide) window.lucide.createIcons();
 
-    drawSpeedGraphStatic() {
-        const { width, height } = this.canvas;
-        this.ctx.clearRect(0, 0, width, height);
-        
-        if (!this.sessionData.speedCurve || this.sessionData.speedCurve.length === 0) return;
-
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#444';
-        this.ctx.lineWidth = 2;
-
-        const maxTime = this.sessionData.totalTimeMs;
-        const maxWpm = Math.max(...this.sessionData.speedCurve.map(s => s.wpm), 100);
-
-        this.sessionData.speedCurve.forEach((point, i) => {
-            const x = (point.time / maxTime) * width;
-            const y = height - (point.wpm / maxWpm) * height;
-            
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        });
-        this.ctx.stroke();
-    }
-
-    drawSpeedGraphProgress(currentTimestamp) {
-        const { width, height } = this.canvas;
-        this.drawSpeedGraphStatic(); 
-        
-        if (!this.sessionData.speedCurve || this.sessionData.speedCurve.length === 0) return;
-
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#e2b714';
-        this.ctx.lineWidth = 3;
-
-        const maxTime = this.sessionData.totalTimeMs;
-        const maxWpm = Math.max(...this.sessionData.speedCurve.map(s => s.wpm), 100);
-        
-        this.sessionData.speedCurve.forEach((point, i) => {
-            if (point.time > currentTimestamp) return;
-
-            const x = (point.time / maxTime) * width;
-            const y = height - (point.wpm / maxWpm) * height;
-            
-            if (i === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        });
-        
-        this.ctx.stroke();
-
-        // Draw playhead
-        const currentX = (currentTimestamp / maxTime) * width;
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = '#fff';
-        this.ctx.lineWidth = 1;
-        this.ctx.moveTo(currentX, 0);
-        this.ctx.lineTo(currentX, height);
-        this.ctx.stroke();
-    }
+  return { el, destroy: pause };
 }

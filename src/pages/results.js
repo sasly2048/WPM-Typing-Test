@@ -1,326 +1,272 @@
-import { $, createElement, html, on } from '../utils/dom.js';
+/**
+ * Results — shown after every completed test.
+ *
+ * Hierarchy is deliberate: one hero number (WPM) carries the result, four
+ * supporting metrics qualify it, then history and breakdown provide context.
+ * Everything below the hero is progressive detail, not competition for it.
+ */
+
+import { html } from '../utils/dom.js';
 import { fireConfetti } from '../components/confetti.js';
-import { createLineChart, createBarChart, createRingChart } from '../components/chart.js';
-import { getSessions, recordPersonalBest } from '../services/history.js';
+import { createLineChart, createRingChart, createBarChart } from '../components/chart.js';
+import { createReplay } from '../components/replay.js';
+import { getSessions, getPersonalBest } from '../services/history.js';
+import { logger } from '../services/instrumentation.js';
 
-const styles = `
-.results-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  animation: fadeIn 0.5s ease-out;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-.results-hero {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: var(--color-bg-secondary);
-  padding: 3rem;
-  border-radius: 24px;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1);
-}
-.hero-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-.hero-stat .label {
-  font-size: 1.1rem;
-  color: var(--color-text-secondary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.hero-stat .value {
-  font-size: 5rem;
-  font-weight: 800;
-  color: var(--color-accent);
-  line-height: 1;
+const MODE_LABEL = {
+  paragraph: 'Prose',
+  words: 'Words',
+  quote: 'Quote',
+  code: 'Code',
+  custom: 'Custom',
+};
+
+function relativeTime(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
 }
 
-.results-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-@media (max-width: 768px) {
-  .results-details { grid-template-columns: 1fr; }
-}
-.chart-container, .breakdown-container {
-  background: var(--color-bg-secondary);
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--color-border);
-}
-.chart-container h3, .breakdown-container h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-  color: var(--color-text-primary);
-}
-
-.char-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.breakdown-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.breakdown-label {
-  width: 100px;
-  color: var(--color-text-secondary);
-}
-.breakdown-bar-bg {
-  flex: 1;
-  height: 8px;
-  background: var(--color-bg-tertiary);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.breakdown-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-}
-.fill-correct { background: var(--color-success); }
-.fill-incorrect { background: var(--color-error); }
-.fill-extra { background: var(--color-warning); }
-.fill-missed { background: var(--color-text-muted); }
-.breakdown-val {
-  width: 40px;
-  text-align: right;
-  font-weight: 600;
-}
-
-.results-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-.pb-indicator {
-  position: absolute;
-  top: -15px;
-  background: var(--color-accent);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  animation: bounce 1s infinite alternate;
-}
-@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
-`;
-
-let styleElement;
-
-/** Helper: compute simple rating based on WPM and accuracy */
-function computeRating(wpm, acc) {
-  if (wpm >= 120 && acc >= 95) return 'S';
-  if (wpm >= 100 && acc >= 92) return 'A';
-  if (wpm >= 80 && acc >= 85) return 'B';
-  return 'C';
+/** Plain-language read on the run, so the numbers mean something. */
+function verdict(session, previousBest) {
+  if (previousBest > 0 && session.wpm > previousBest) {
+    return { tone: 'success', text: `New personal best — ${session.wpm - previousBest} wpm faster than your previous record.` };
+  }
+  if (session.accuracy >= 98) {
+    return { tone: 'success', text: 'Excellent accuracy. Push your speed on the next run.' };
+  }
+  if (session.accuracy < 92) {
+    return { tone: 'warning', text: 'Accuracy is holding you back — slow down slightly and errors will drop.' };
+  }
+  if (session.consistency && session.consistency < 70) {
+    return { tone: 'warning', text: 'Your pace varied a lot. Aim for an even rhythm rather than bursts.' };
+  }
+  return { tone: 'info', text: 'Solid run. Keep the streak going.' };
 }
 
 export function render(container) {
-  // Attach styles
-  styleElement = document.createElement('style');
-  styleElement.textContent = styles;
-  document.head.appendChild(styleElement);
+  let session = null;
+  try {
+    session = JSON.parse(sessionStorage.getItem('lastSession') || 'null');
+  } catch {
+    session = null;
+  }
 
-  // Load session data
-  const rawData = sessionStorage.getItem('lastSession');
-  const session = rawData ? JSON.parse(rawData) : {};
+  if (!session) {
+    container.innerHTML = html`
+      <div class="page page--narrow">
+        <div class="empty-state">
+          <i class="empty-state__icon" data-lucide="file-question"></i>
+          <h2 class="empty-state__title">No results yet</h2>
+          <p class="empty-state__desc">Finish a typing test and your results will appear here.</p>
+          <a href="#/practice" class="btn btn-primary">Start a test</a>
+        </div>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
 
-  const netWpm = session.wpm || 0;
-  const rawWpm = session.rawWpm || netWpm;
-  const accuracy = session.accuracy !== undefined ? session.accuracy : 0;
-  const consistency = session.consistency !== undefined ? session.consistency : '—';
-  const timeSec = session.duration !== undefined ? session.duration : (session.time || 0);
-  const timeLabel = typeof timeSec === 'number' ? `${Math.round(timeSec)}s` : timeSec;
-  const errors = session.errors !== undefined ? session.errors : 0;
-  const rating = session.rating || computeRating(netWpm, accuracy);
+  const sessions = getSessions() || [];
+  // Exclude the run just saved so "previous best" is genuinely previous.
+  const priorSessions = sessions.filter((s) => s.timestamp !== session.timestamp);
+  const previousBest = priorSessions.reduce((m, s) => Math.max(m, s.wpm || 0), 0);
+  const isPB = previousBest > 0 && session.wpm > previousBest;
+  const v = verdict(session, previousBest);
 
-  // Personal best handling — keyed per mode + relevant config, so a 15s
-  // sprint and a 60s test each track their own best instead of colliding.
-  const isPersonalBest = recordPersonalBest(session.mode || 'default', {
-    targetDuration: session.targetDuration,
-    targetWordCount: session.targetWordCount,
-  }, netWpm);
-
-  // Session is already persisted by practice.js's endSession() before navigating
-  // here — do not save again, or every completed test gets double-counted.
-
-  const totalChars = session.chars ? (session.chars.correct + session.chars.incorrect + session.chars.extra + session.chars.missed) : 0;
   const chars = session.chars || { correct: 0, incorrect: 0, extra: 0, missed: 0 };
+  const modeLabel = MODE_LABEL[session.mode] || session.mode || 'Test';
 
   container.innerHTML = html`
-    <main id="main-content" class="results-page">
-      <div class="results-hero" role="status" aria-live="polite" aria-atomic="true">
-        ${isPersonalBest ? '<div class="pb-indicator">⭐ New Personal Best!</div>' : ''}
-        <div class="hero-stat"><span class="label">WPM</span><span class="value" id="wpm-counter">0</span></div>
-        <div class="hero-stat"><span class="label">Accuracy</span><span class="value" id="acc-counter">0%</span></div>
-        <div class="hero-stat"><span class="label">Consistency</span><span class="value" id="consistency-counter">${consistency}%</span></div>
-      </div>
-
-      <div class="summary-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem;">
-        <div class="hero-stat"><span class="label">Net WPM</span><span class="value" id="net-wpm-counter">${netWpm}</span></div>
-        <div class="hero-stat"><span class="label">Raw WPM</span><span class="value" id="raw-wpm-counter">${rawWpm}</span></div>
-        <div class="hero-stat"><span class="label">Time</span><span class="value" id="time-counter">${timeLabel}</span></div>
-        <div class="hero-stat"><span class="label">Errors</span><span class="value" id="errors-counter">${errors}</span></div>
-        <div class="hero-stat"><span class="label">Rating</span><span class="value" id="rating-counter">${rating}</span></div>
-      </div>
-
-      <div class="results-details" style="margin-top: 3rem;">
-          <div class="chart-container" id="wpm-chart-container">
-            <h3>WPM Over Time</h3>
-            <div class="chart-placeholder" style="height:200px; display:flex; align-items:center; justify-content:center; color: var(--color-text-muted);">Loading…</div>
+    <div class="page page--narrow results">
+      <header class="results__hero">
+        <div class="results__hero-main">
+          <span class="results__hero-label">Words per minute</span>
+          <div class="results__hero-value" id="results-wpm">0</div>
+          <div class="results__hero-meta">
+            <span class="badge">${esc(modeLabel)}</span>
+            ${session.language ? `<span class="badge">${esc(session.language)}</span>` : ''}
+            <span class="badge">${esc(session.duration)}s</span>
+            ${isPB ? '<span class="badge badge--accent">Personal best</span>' : ''}
           </div>
-          <div class="chart-container" id="accuracy-chart-container">
-            <h3>Accuracy Over Time</h3>
-            <div class="chart-placeholder" style="height:200px; display:flex; align-items:center; justify-content:center; color: var(--color-text-muted);">Loading…</div>
+        </div>
+        <div class="results__hero-ring" id="results-ring"></div>
+      </header>
+
+      <p class="results__verdict results__verdict--${v.tone}">${esc(v.text)}</p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat">
+            <span class="stat__label">Raw speed</span>
+            <span class="stat__value">${esc(Math.round(session.rawWpm ?? session.wpm))}<span class="stat__unit">wpm</span></span>
           </div>
-        <div class="breakdown-container">
-          <h3>Character Breakdown</h3>
-          <div class="char-breakdown">
-            <div class="breakdown-item"><span class="breakdown-label">Correct</span><div class="breakdown-bar-bg"><div class="breakdown-bar-fill fill-correct" style="width: ${(chars.correct/totalChars)*100}%"></div></div><span class="breakdown-val">${chars.correct}</span></div>
-            <div class="breakdown-item"><span class="breakdown-label">Incorrect</span><div class="breakdown-bar-bg"><div class="breakdown-bar-fill fill-incorrect" style="width: ${(chars.incorrect/totalChars)*100}%"></div></div><span class="breakdown-val">${chars.incorrect}</span></div>
-            <div class="breakdown-item"><span class="breakdown-label">Extra</span><div class="breakdown-bar-bg"><div class="breakdown-bar-fill fill-extra" style="width: ${(chars.extra/totalChars)*100}%"></div></div><span class="breakdown-val">${chars.extra}</span></div>
-            <div class="breakdown-item"><span class="breakdown-label">Missed</span><div class="breakdown-bar-bg"><div class="breakdown-bar-fill fill-missed" style="width: ${(chars.missed/totalChars)*100}%"></div></div><span class="breakdown-val">${chars.missed}</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat">
+            <span class="stat__label">Consistency</span>
+            <span class="stat__value">${esc(session.consistency ?? 100)}<span class="stat__unit">%</span></span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat">
+            <span class="stat__label">Errors</span>
+            <span class="stat__value">${esc(session.errors ?? 0)}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat">
+            <span class="stat__label">Keystrokes</span>
+            <span class="stat__value">${esc(session.totalStrokes ?? 0)}</span>
           </div>
         </div>
       </div>
 
-      <div class="analysis-section" style="margin-top: 3rem;">
-        <h3>Error Analysis</h3>
-        <p style="color: var(--color-text-secondary);" id="error-analysis-text">Analyzing...</p>
+      <div class="results__actions">
+        <a href="#${session.mode === 'code' ? '/developer' : '/practice'}" class="btn btn-primary btn-lg">
+          <i data-lucide="rotate-cw"></i> Next test
+        </a>
+        <a href="#/dashboard" class="btn btn-secondary btn-lg">
+          <i data-lucide="bar-chart-3"></i> Dashboard
+        </a>
       </div>
 
-      <div class="progress-section" style="margin-top: 3rem;">
-        <h3>Progress</h3>
-        <p style="color: var(--color-text-secondary);" id="progress-text">Loading progress...</p>
-      </div>
+      <section class="section" id="results-replay-section" hidden>
+        <h2 class="section__label">Replay</h2>
+        <p class="results__replay-hint">
+          Watch the run back to see where the time actually went.
+        </p>
+        <div class="card" id="results-replay"></div>
+      </section>
 
-      <div class="next-step-section" style="margin-top: 3rem; text-align: center;">
-        <h3>What Next?</h3>
-        <div class="results-actions" style="justify-content: center;">
-          <button class="btn btn-secondary" id="btn-retry">↻ Retry</button>
-          <button class="btn btn-secondary" id="btn-practice-weak">Practice Weak Keys</button>
-          <a href="#/typing" class="btn btn-primary">Next Test →</a>
-          <button class="btn btn-secondary" id="btn-share">📤 Share</button>
-        </div>
-      </div>
-    </main>
+      <section class="section">
+        <h2 class="section__label">Character breakdown</h2>
+        <div class="card" id="results-breakdown"></div>
+      </section>
+
+      <section class="section">
+        <h2 class="section__label">Recent history</h2>
+        <div class="chart-card" id="results-history"></div>
+      </section>
+    </div>
   `;
 
-  // Counter animation helper
-  const animateCounter = (selector, target, formatter) => {
-    const el = container.querySelector(selector);
-    if (!el) return;
-    let start = null;
-    const duration = 800;
-    const step = (timestamp) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      const value = Math.round(target * ease);
-      el.textContent = formatter(value);
-      if (progress < 1) requestAnimationFrame(step);
-      else el.textContent = formatter(target);
+  /* Ring gauge for accuracy. */
+  container.querySelector('#results-ring').appendChild(
+    createRingChart({
+      value: Math.round(session.accuracy ?? 0),
+      max: 100,
+      label: 'Accuracy',
+      color: session.accuracy >= 95 ? 'var(--color-success)'
+           : session.accuracy >= 88 ? 'var(--color-warning)'
+           : 'var(--color-error)',
+    })
+  );
+
+  /* Replay, when a timeline was captured for this run. Absent for sessions
+     restored from history, since only the most recent one keeps a timeline. */
+  let replay = null;
+  try {
+    const stored = JSON.parse(sessionStorage.getItem('lastReplay') || 'null');
+    if (stored?.timeline?.length) {
+      replay = createReplay(stored);
+      container.querySelector('#results-replay').appendChild(replay.el);
+      container.querySelector('#results-replay-section').hidden = false;
+    }
+  } catch (err) {
+    logger.warn('replay', 'Could not restore replay', { error: err.message });
+  }
+
+  /* Character breakdown. */
+  container.querySelector('#results-breakdown').appendChild(
+    createBarChart({
+      data: [chars.correct, chars.incorrect, chars.extra, chars.missed],
+      labels: ['Correct', 'Incorrect', 'Extra', 'Missed'],
+      label: 'Character breakdown',
+      // These categories mean opposite things, so they must not share a hue.
+      colors: [
+        'var(--color-success)',
+        'var(--color-error)',
+        'var(--color-warning)',
+        'var(--color-text-muted)',
+      ],
+    })
+  );
+
+  /* WPM across recent sessions, oldest first. */
+  const history = sessions.slice(-20);
+  container.querySelector('#results-history').appendChild(
+    createLineChart({
+      data: history.map((s) => s.wpm),
+      xLabels: history.map((s) => relativeTime(s.timestamp)),
+      label: 'WPM',
+      color: 'var(--color-chart-wpm)',
+    })
+  );
+
+  /* Count the hero number up. Communicates "this is the headline" without
+     a decorative animation, and it lands fast enough not to delay reading. */
+  const wpmEl = container.querySelector('#results-wpm');
+  const target = Math.round(session.wpm ?? 0);
+  const reduceMotion = document.documentElement.classList.contains('reduce-motion') ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduceMotion || target === 0) {
+    wpmEl.textContent = target;
+  } else {
+    const DURATION = 620;
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - t0) / DURATION, 1);
+      // easeOutExpo — fast start, settles precisely on the value.
+      const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      wpmEl.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
     };
-    requestAnimationFrame(step);
-  };
-
-  animateCounter('#wpm-counter', netWpm, (v) => v);
-  animateCounter('#acc-counter', accuracy, (v) => `${v}%`);
-  if (typeof consistency === 'number') {
-    animateCounter('#consistency-counter', consistency, (v) => `${v}%`);
+    requestAnimationFrame(tick);
   }
 
-  // Charts and analysis, deferred slightly so the counter animation starts first
-  setTimeout(() => {
-    const history = getSessions();
-
-    if (history.length > 1) {
-      const wpmData = history.map(s => s.wpm);
-      const chart = createLineChart({ data: wpmData, label: 'WPM', width: 400, height: 200 });
-      const containerEl = container.querySelector('#wpm-chart-container');
-      if (containerEl) {
-        const placeholder = containerEl.querySelector('.chart-placeholder');
-        if (placeholder) placeholder.remove();
-        containerEl.appendChild(chart);
-      }
-
-      const accuracyContainer = container.querySelector('#accuracy-chart-container');
-      if (accuracyContainer) {
-        const placeholder = accuracyContainer.querySelector('.chart-placeholder');
-        if (placeholder) placeholder.remove();
-        const accData = history.map(s => s.accuracy);
-        const accChart = createLineChart({ data: accData, label: 'Accuracy', width: 400, height: 200 });
-        accuracyContainer.appendChild(accChart);
-      }
-    } else {
-      const wpmPlaceholder = container.querySelector('#wpm-chart-container .chart-placeholder');
-      if (wpmPlaceholder) wpmPlaceholder.textContent = 'Not enough data for chart.';
-      const accPlaceholder = container.querySelector('#accuracy-chart-container .chart-placeholder');
-      if (accPlaceholder) accPlaceholder.textContent = 'Not enough data for chart.';
-    }
-
-    // Error analysis text
-    const errorEl = container.querySelector('#error-analysis-text');
-    if (errorEl) {
-      const parts = [];
-      if (chars.incorrect) parts.push(`${chars.incorrect} incorrect keystrokes`);
-      if (chars.extra) parts.push(`${chars.extra} extra characters`);
-      if (chars.missed) parts.push(`${chars.missed} missed characters`);
-      errorEl.textContent = parts.length ? parts.join(', ') + '.' : 'Great job! No notable errors.';
-    }
-
-    // Progress comparison
-    const progressEl = container.querySelector('#progress-text');
-    if (progressEl) {
-      if (history.length > 1) {
-        const last = history[history.length - 2];
-        const diffWpm = netWpm - last.wpm;
-        const diffAcc = accuracy - last.accuracy;
-        progressEl.textContent = `WPM ${diffWpm >= 0 ? '+' : ''}${diffWpm}, Accuracy ${diffAcc >= 0 ? '+' : ''}${diffAcc.toFixed(1)}% compared to previous session.`;
-      } else {
-        progressEl.textContent = 'This is your first recorded session.';
-      }
-    }
-  }, 120);
-
-  // Action listeners
-  container.querySelector('#btn-retry').addEventListener('click', () => {
-    window.location.hash = '#/typing?retry=true';
-  });
-  const practiceWeakBtn = container.querySelector('#btn-practice-weak');
-  if (practiceWeakBtn) {
-    practiceWeakBtn.addEventListener('click', () => {
-      window.location.hash = '#/typing?mode=weak-keys';
-    });
+  if (isPB) {
+    logger.info('results', `New personal best: ${session.wpm} wpm`);
+    try { fireConfetti(); } catch { /* decorative only */ }
   }
-  container.querySelector('#btn-share').addEventListener('click', () => {
-    const text = `KeyFlow - ${netWpm} WPM | ${accuracy}% Acc\nhttps://keyflow.app`;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = container.querySelector('#btn-share');
-      const original = btn.textContent;
-      btn.textContent = '✓ Copied!';
-      setTimeout(() => btn.textContent = original, 2000);
-    });
-  });
+
+  /* Surface achievements unlocked by this run. */
+  try {
+    const unlocked = JSON.parse(sessionStorage.getItem('newAchievements') || '[]');
+    if (unlocked.length) {
+      const section = document.createElement('section');
+      section.className = 'section';
+      section.innerHTML = `
+        <h2 class="section__label">Unlocked</h2>
+        <div class="grid grid--auto">
+          ${unlocked.map((a) => `
+            <div class="card achievement-card achievement-card--unlocked">
+              <i data-lucide="${esc(a.icon || 'award')}"></i>
+              <div>
+                <div class="card__title">${esc(a.title || a.name || 'Achievement')}</div>
+                <p class="card__desc">${esc(a.description || '')}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      container.querySelector('.results').appendChild(section);
+      sessionStorage.removeItem('newAchievements');
+    }
+  } catch { /* non-critical */ }
+
+  if (window.lucide) window.lucide.createIcons();
+
+  // The replay drives a rAF loop; without this it survives navigation.
+  container._destroy = () => replay?.destroy();
 }
 
-export function destroy() {
-  if (styleElement && styleElement.parentNode) styleElement.parentNode.removeChild(styleElement);
+export function destroy(container) {
+  if (container?._destroy) container._destroy();
 }

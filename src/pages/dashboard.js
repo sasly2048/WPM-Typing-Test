@@ -1,291 +1,297 @@
-import { $, createElement, html } from '../utils/dom.js';
-import { getSessions, getStats } from '../services/history.js';
+/**
+ * Dashboard — progress over time.
+ *
+ * Answers, in order: how fast am I, am I improving, how consistent am I, and
+ * where am I losing accuracy. Filters are stateful within the page so the
+ * whole view can be scoped to a mode or window without a reload.
+ */
 
-const styles = `
-.dashboard-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 5rem;
-  color: var(--color-text-primary);
+import { html } from '../utils/dom.js';
+import { getSessions, getStreakInfo, getHeatmapData } from '../services/history.js';
+import { createLineChart, createHeatmap } from '../components/chart.js';
+
+const esc = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+const RANGES = [
+  { id: '7',   label: '7 days',  days: 7 },
+  { id: '30',  label: '30 days', days: 30 },
+  { id: 'all', label: 'All',     days: null },
+];
+
+function formatDuration(seconds) {
+  if (!seconds) return '0m';
+  const h = Math.floor(seconds / 3600);
+  const m = Math.round((seconds % 3600) / 60);
+  return h ? `${h}h ${m}m` : `${m}m`;
 }
 
-.dashboard-header {
-  margin-bottom: 3rem;
+/** Mean WPM of the first vs last third — a trend that ignores single outliers. */
+function trend(sessions) {
+  if (sessions.length < 6) return null;
+  const third = Math.floor(sessions.length / 3);
+  const mean = (arr) => arr.reduce((s, x) => s + (x.wpm || 0), 0) / arr.length;
+  const early = mean(sessions.slice(0, third));
+  const late = mean(sessions.slice(-third));
+  if (!early) return null;
+  return { delta: late - early, pct: ((late - early) / early) * 100 };
 }
-
-.dashboard-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 0.5rem;
-}
-
-.dashboard-subtitle {
-  color: var(--color-text-secondary);
-  font-size: 1.1rem;
-}
-
-.dashboard-overview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
-}
-
-.stat-card-elevated {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.875rem;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  transition: transform 0.2s var(--ease-apple), border-color 0.2s;
-}
-
-.stat-card-elevated:hover {
-  transform: translateY(-4px);
-  border-color: rgba(240, 169, 104, 0.3);
-}
-
-.stat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.stat-value {
-  font-size: 2.25rem;
-  font-weight: 900;
-  color: var(--color-text-primary);
-  line-height: 1.1;
-}
-
-.stat-subtext {
-  font-size: 0.8rem;
-  color: var(--color-success);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.insights-row {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-@media (max-width: 900px) {
-  .insights-row { grid-template-columns: 1fr; }
-}
-
-.focus-score-card {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.875rem;
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.gauge-circle {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: conic-gradient(var(--color-accent) 0% 85%, rgba(255,255,255,0.05) 85% 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1.25rem 0;
-}
-
-.gauge-inner {
-  width: 106px;
-  height: 106px;
-  border-radius: 50%;
-  background: var(--surface-2);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.gauge-val {
-  font-size: 2rem;
-  font-weight: 900;
-  color: var(--color-accent);
-}
-
-.weak-keys-card {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.875rem;
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.weak-keys-list {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.weak-key-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.85rem;
-  background: rgba(255, 59, 48, 0.1);
-  border: 1px solid rgba(255, 59, 48, 0.3);
-  border-radius: 0.5rem;
-  color: var(--color-error);
-  font-family: var(--font-mono);
-  font-weight: 700;
-}
-
-.empty-dashboard-card {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  padding: 4rem 2rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-`;
 
 export function render(container) {
-  const styleEl = document.createElement('style');
-  styleEl.textContent = styles;
-  document.head.appendChild(styleEl);
+  let range = 'all';
+  let mode = 'all';
 
-  const stats = getStats();
-  const sessions = getSessions();
-  const hasSessions = sessions && sessions.length > 0;
+  const allSessions = getSessions() || [];
 
-  if (!hasSessions) {
+  if (!allSessions.length) {
     container.innerHTML = html`
-      <div class="dashboard-page">
-        <header class="dashboard-header">
-          <h1 class="dashboard-title">Performance Insights</h1>
-          <p class="dashboard-subtitle">Real-time metrics, pause timelines, and character heatmaps.</p>
+      <div class="page">
+        <header class="page-header">
+          <div>
+            <h1 class="page-header__title">Dashboard</h1>
+            <p class="page-header__desc">Your typing progress over time.</p>
+          </div>
         </header>
-
-        <div class="empty-dashboard-card">
-          <i aria-hidden="true" data-lucide="bar-chart-3" size="48" style="color: var(--color-accent)"></i>
-          <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0;">No Practice History Yet</h2>
-          <p style="color: #9a9a9a; max-width: 480px; margin: 0 auto 1rem;">Complete your first typing session in Practice or Developer Workspace to unlock your analytics and keyboard heatmaps.</p>
-          <a href="#/practice" class="btn btn-ember" style="padding: 0.85rem 2rem; font-size: 1rem;">Start Practice Session</a>
+        <div class="empty-state">
+          <i class="empty-state__icon" data-lucide="line-chart"></i>
+          <h2 class="empty-state__title">No sessions recorded</h2>
+          <p class="empty-state__desc">
+            Complete a typing test and your speed, accuracy and consistency will be tracked here.
+          </p>
+          <a href="#/practice" class="btn btn-primary">Start your first test</a>
         </div>
       </div>
     `;
-  } else {
-    container.innerHTML = html`
-      <div class="dashboard-page">
-        <header class="dashboard-header">
-          <h1 class="dashboard-title">Performance Insights</h1>
-          <p class="dashboard-subtitle">Deep analytics, finger heatmaps, and focus score tracking.</p>
-        </header>
-
-        <section class="dashboard-overview">
-          <div class="stat-card-elevated">
-            <div class="stat-header">
-              <span>Average WPM</span>
-              <i aria-hidden="true" data-lucide="zap" size="18" style="color: var(--color-accent)"></i>
-            </div>
-            <div class="stat-value">${Math.round(stats.avgWpm || 0)}</div>
-            <div class="stat-subtext"><i aria-hidden="true" data-lucide="activity" size="14"></i> Across ${stats.totalTests} sessions</div>
-          </div>
-
-          <div class="stat-card-elevated">
-            <div class="stat-header">
-              <span>Personal Best</span>
-              <i aria-hidden="true" data-lucide="trophy" size="18" style="color: var(--color-success)"></i>
-            </div>
-            <div class="stat-value">${Math.round(stats.bestWpm || 0)}</div>
-            <div class="stat-subtext">Peak speed reached</div>
-          </div>
-
-          <div class="stat-card-elevated">
-            <div class="stat-header">
-              <span>Accuracy Index</span>
-              <i aria-hidden="true" data-lucide="target" size="18" style="color: var(--color-info)"></i>
-            </div>
-            <div class="stat-value">${(stats.avgAccuracy || 0).toFixed(1)}%</div>
-            <div class="stat-subtext">Precision rating</div>
-          </div>
-
-          <div class="stat-card-elevated">
-            <div class="stat-header">
-              <span>Total Practice</span>
-              <i aria-hidden="true" data-lucide="clock" size="18" style="color: var(--color-accent)"></i>
-            </div>
-            <div class="stat-value">${Math.round((stats.totalTime || 0) / 60)}m</div>
-            <div class="stat-subtext">${stats.totalTests} total sessions</div>
-          </div>
-
-          <div class="stat-card-elevated">
-            <div class="stat-header">
-              <span>Day Streak</span>
-              <i aria-hidden="true" data-lucide="flame" size="18" style="color: var(--color-error)"></i>
-            </div>
-            <div class="stat-value">${stats.currentStreak || 0}</div>
-            <div class="stat-subtext">Best: ${stats.bestStreak || 0} days</div>
-          </div>
-        </section>
-
-        <section class="insights-row">
-          <div class="focus-score-card">
-            <h3 style="font-size: 1.1rem; font-weight: 700;">Focus Index</h3>
-            <div class="gauge-circle">
-              <div class="gauge-inner">
-                <span class="gauge-val">${stats.focusIndex === null ? '—' : stats.focusIndex}</span>
-                <span style="font-size: 0.75rem; color: #9a9a9a;">/ 100</span>
-              </div>
-            </div>
-            <p style="font-size: 0.85rem; color: #9a9a9a;">${stats.focusIndex === null ? 'Complete a test to start tracking pause-free execution.' : 'Derived from mid-session pause frequency across your recent tests.'}</p>
-          </div>
-
-          <div class="weak-keys-card">
-            <h3 style="font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-              <i aria-hidden="true" data-lucide="code-2" style="color: var(--color-accent)" size="18"></i> Target Practice Recommendations
-            </h3>
-            <p style="font-size: 0.85rem; color: #9a9a9a;">Practice special syntax characters in Developer Workspace to increase overall code speed:</p>
-            <div class="weak-keys-list">
-              <div class="weak-key-badge"><span>{ }</span> <span>Brackets</span></div>
-              <div class="weak-key-badge"><span>( )</span> <span>Params</span></div>
-              <div class="weak-key-badge"><span>=&gt;</span> <span>Arrows</span></div>
-              <div class="weak-key-badge"><span>;</span> <span>Semicolons</span></div>
-            </div>
-            <a href="#/developer" class="btn btn-ember" style="margin-top: auto; padding: 0.6rem 1.25rem; font-size: 0.85rem; align-self: flex-start;">Open Developer Workspace</a>
-          </div>
-        </section>
-      </div>
-    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
   }
 
-  setTimeout(() => {
-    if (window.lucide) window.lucide.createIcons();
-  }, 20);
+  const modes = ['all', ...new Set(allSessions.map((s) => s.mode).filter(Boolean))];
 
-  container.dataset.destroy = () => {
-    if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+  container.innerHTML = html`
+    <div class="page dashboard">
+      <header class="page-header">
+        <div>
+          <h1 class="page-header__title">Dashboard</h1>
+          <p class="page-header__desc">Your typing progress over time.</p>
+        </div>
+        <div class="page-header__actions">
+          <div class="segmented" role="tablist" aria-label="Time range">
+            ${RANGES.map((r) => `
+              <button class="segmented__item ${r.id === range ? 'active' : ''}"
+                      role="tab" data-range="${r.id}"
+                      aria-selected="${r.id === range}">${r.label}</button>
+            `).join('')}
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard__filters">
+        <div class="segmented" role="tablist" aria-label="Mode filter">
+          ${modes.map((m) => `
+            <button class="segmented__item ${m === mode ? 'active' : ''}"
+                    role="tab" data-mode="${esc(m)}"
+                    aria-selected="${m === mode}">${esc(m === 'all' ? 'All modes' : m)}</button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="stat-grid" id="dash-stats"></div>
+
+      <section class="section">
+        <div class="chart-card">
+          <div class="chart-card__header">
+            <h2 class="card__title">Speed over time</h2>
+            <div class="chart-legend">
+              <span class="chart-legend__item">
+                <span class="chart-legend__swatch" style="background:var(--color-chart-wpm)"></span> WPM
+              </span>
+            </div>
+          </div>
+          <div id="dash-wpm-chart"></div>
+        </div>
+      </section>
+
+      <div class="grid grid--2">
+        <section class="chart-card">
+          <div class="chart-card__header">
+            <h2 class="card__title">Accuracy</h2>
+            <div class="chart-legend">
+              <span class="chart-legend__item">
+                <span class="chart-legend__swatch" style="background:var(--color-chart-accuracy)"></span> %
+              </span>
+            </div>
+          </div>
+          <div id="dash-acc-chart"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-card__header">
+            <h2 class="card__title">Consistency</h2>
+            <div class="chart-legend">
+              <span class="chart-legend__item">
+                <span class="chart-legend__swatch" style="background:var(--color-chart-consistency)"></span> %
+              </span>
+            </div>
+          </div>
+          <div id="dash-cons-chart"></div>
+        </section>
+      </div>
+
+      <section class="section">
+        <div class="chart-card">
+          <div class="chart-card__header">
+            <h2 class="card__title">Activity</h2>
+            <span style="font-size:var(--text-xs);color:var(--color-text-tertiary)">Last 26 weeks</span>
+          </div>
+          <div id="dash-heatmap"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section__label">Recent sessions</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>When</th><th>Mode</th>
+                <th class="num">WPM</th><th class="num">Accuracy</th>
+                <th class="num">Consistency</th><th class="num">Errors</th>
+              </tr>
+            </thead>
+            <tbody id="dash-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  `;
+
+  /* ── rendering ───────────────────────────────────────────────────────── */
+
+  function filtered() {
+    const days = RANGES.find((r) => r.id === range)?.days;
+    const cutoff = days ? Date.now() - days * 86400000 : 0;
+    return allSessions.filter(
+      (s) => (!cutoff || s.timestamp >= cutoff) && (mode === 'all' || s.mode === mode)
+    );
+  }
+
+  function paint() {
+    const sessions = filtered();
+    const statsEl = container.querySelector('#dash-stats');
+
+    if (!sessions.length) {
+      statsEl.innerHTML = '';
+      ['#dash-wpm-chart', '#dash-acc-chart', '#dash-cons-chart'].forEach((sel) => {
+        container.querySelector(sel).innerHTML =
+          '<div class="chart-empty">No sessions match this filter.</div>';
+      });
+      container.querySelector('#dash-rows').innerHTML =
+        '<tr><td colspan="6" class="table__empty">No sessions match this filter.</td></tr>';
+      return;
+    }
+
+    const best = Math.max(...sessions.map((s) => s.wpm || 0));
+    const avg = sessions.reduce((sum, s) => sum + (s.wpm || 0), 0) / sessions.length;
+    const avgAcc = sessions.reduce((sum, s) => sum + (s.accuracy || 0), 0) / sessions.length;
+    const totalTime = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+    const streak = getStreakInfo();
+    const t = trend(sessions);
+
+    statsEl.innerHTML = `
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Best</span>
+          <span class="stat__value">${Math.round(best)}<span class="stat__unit">wpm</span></span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Average</span>
+          <span class="stat__value">${Math.round(avg)}<span class="stat__unit">wpm</span></span>
+          ${t ? `<span class="stat__delta stat__delta--${t.delta >= 0 ? 'up' : 'down'}">${t.delta >= 0 ? '▲' : '▼'} ${Math.abs(t.pct).toFixed(1)}% vs earlier</span>` : ''}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Accuracy</span>
+          <span class="stat__value">${avgAcc.toFixed(1)}<span class="stat__unit">%</span></span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Tests</span>
+          <span class="stat__value">${sessions.length}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Time practised</span>
+          <span class="stat__value">${formatDuration(totalTime)}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat">
+          <span class="stat__label">Streak</span>
+          <span class="stat__value">${streak.currentStreak}<span class="stat__unit">days</span></span>
+        </div>
+      </div>
+    `;
+
+    const label = (s) =>
+      new Date(s.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+    const charts = [
+      ['#dash-wpm-chart',  sessions.map((s) => Math.round(s.wpm || 0)),           'WPM',         'var(--color-chart-wpm)'],
+      ['#dash-acc-chart',  sessions.map((s) => Math.round(s.accuracy || 0)),      'Accuracy',    'var(--color-chart-accuracy)'],
+      ['#dash-cons-chart', sessions.map((s) => Math.round(s.consistency ?? 100)), 'Consistency', 'var(--color-chart-consistency)'],
+    ];
+
+    for (const [sel, data, name, color] of charts) {
+      const host = container.querySelector(sel);
+      host.innerHTML = '';
+      host.appendChild(createLineChart({ data, label: name, color, xLabels: sessions.map(label) }));
+    }
+
+    container.querySelector('#dash-rows').innerHTML = sessions
+      .slice(-15).reverse()
+      .map((s) => `
+        <tr>
+          <td>${new Date(s.timestamp).toLocaleString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+          })}</td>
+          <td>${esc(s.language || s.mode || '—')}</td>
+          <td class="num">${Math.round(s.wpm || 0)}</td>
+          <td class="num">${(s.accuracy || 0).toFixed(1)}%</td>
+          <td class="num">${s.consistency != null ? `${s.consistency}%` : '—'}</td>
+          <td class="num">${s.errors ?? 0}</td>
+        </tr>
+      `).join('');
+  }
+
+  container.querySelector('#dash-heatmap').appendChild(
+    createHeatmap({ days: getHeatmapData() })
+  );
+
+  const wireFilter = (attr, set) => {
+    container.querySelectorAll(`[${attr}]`).forEach((btn) => {
+      btn.addEventListener('click', () => {
+        set(btn.dataset[attr === 'data-range' ? 'range' : 'mode']);
+        container.querySelectorAll(`[${attr}]`).forEach((b) => {
+          const on = b === btn;
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-selected', String(on));
+        });
+        paint();
+      });
+    });
   };
+
+  wireFilter('data-range', (v) => { range = v; });
+  wireFilter('data-mode', (v) => { mode = v; });
+
+  paint();
+  if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy(container) {
-  if (container.dataset.destroy) container.dataset.destroy();
-}
+export function destroy() {}

@@ -55,10 +55,12 @@ export class StatsEngine {
     }
     this.strokesInInterval++;
 
-    // Calculate rolling net WPM for the speed curve (errors excluded, matching final score)
+    // Rolling net WPM for the speed curve (errors excluded, matching the final
+    // score). Routed through calculateWPM so the near-zero-denominator floor
+    // and the plausibility ceiling apply here too — the consistency score is
+    // derived from this curve, so an unclamped spike would corrupt it.
     if (now - this.lastIntervalTime >= this.speedInterval) {
-      const charsPerMin = (this.correctStrokesInInterval / (now - this.lastIntervalTime)) * 60000;
-      const wpm = charsPerMin / 5; // standard 5 chars per word
+      const wpm = calculateWPM(this.correctStrokesInInterval, (now - this.lastIntervalTime) / 1000);
       this.speedCurve.push({ time: now - this.startTime, wpm });
       this.lastIntervalTime = now;
       this.strokesInInterval = 0;
@@ -81,8 +83,7 @@ export class StatsEngine {
     // Record remaining strokes in the last partial interval
     if (this.strokesInInterval > 0 && this.lastIntervalTime) {
        const now = performance.now();
-       const charsPerMin = (this.correctStrokesInInterval / (now - this.lastIntervalTime)) * 60000;
-       const wpm = charsPerMin / 5;
+       const wpm = calculateWPM(this.correctStrokesInInterval, (now - this.lastIntervalTime) / 1000);
        this.speedCurve.push({ time: now - this.startTime, wpm });
     }
   }

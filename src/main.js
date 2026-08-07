@@ -12,9 +12,9 @@ import { addRoute, setContainer, initRouter, navigate, onRouteChange, getCurrent
 import { createNav } from './components/nav.js';
 import { createFooter } from './components/footer.js';
 import { createCommandPalette } from './components/command-palette.js';
-import { applyTheme, initTheme } from './services/theme.js';
-import { createTerminal } from './components/fx/terminal.js';
+import { initTheme, setSurfaceForRoute, setAppearance, toggleAppearance, setDevAccent } from './services/theme.js';
 import { onAuthChange, signOut } from './services/auth.js';
+import { initInstrumentation, logger } from './services/instrumentation.js';
 
 /**
  * Lazy-load page modules for code splitting and high performance.
@@ -102,56 +102,6 @@ function createLazyPage(path) {
 
 
 
-const MODE_TRANSITIONS = {
-  '/practice->/developer': {
-    command: 'keyflow switch --workspace=developer',
-    lines: [
-      'Loading syntax highlighter...',
-      'Indexing language snippets...',
-      'Developer workspace ready.',
-    ],
-  },
-  '/developer->/practice': {
-    command: 'keyflow switch --workspace=practice',
-    lines: [
-      'Loading prose engine...',
-      'Restoring practice session...',
-      'Practice workspace ready.',
-    ],
-  },
-};
-
-let activeTerminal = null;
-
-function showModeTransition(fromPath, toPath) {
-  const key = `${fromPath}->${toPath}`;
-  const script = MODE_TRANSITIONS[key];
-  if (!script) return;
-
-  if (activeTerminal) {
-    activeTerminal.destroy();
-    activeTerminal = null;
-  }
-
-  const overlay = document.createElement('div');
-  overlay.className = 'kf-terminal-overlay';
-
-  const terminal = createTerminal({
-    command: script.command,
-    lines: script.lines,
-    onComplete: () => {
-      setTimeout(() => {
-        overlay.remove();
-        if (activeTerminal === terminal) activeTerminal = null;
-      }, 350);
-    },
-  });
-
-  overlay.appendChild(terminal.el);
-  document.body.appendChild(overlay);
-  activeTerminal = terminal;
-}
-
 function initAccessibility() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (reducedMotion.matches) {
@@ -194,8 +144,8 @@ function initCommandPalette() {
     },
     {
       category: 'Navigation',
-      label: 'Themes Gallery',
-      description: 'Explore live themes (Midnight, Aurora, Ocean, Arctic, and more)',
+      label: 'Appearance & Themes',
+      description: 'Light, dark, and developer accent options',
       icon: '<i data-lucide="palette"></i>',
       action: () => navigate('/themes')
     },
@@ -207,18 +157,53 @@ function initCommandPalette() {
       action: () => navigate('/settings')
     },
     {
-      category: 'Themes',
-      label: 'Switch to Midnight',
-      description: 'Deep navy, teal accent',
-      icon: '<i data-lucide="sparkles"></i>',
-      action: () => applyTheme('midnight')
+      category: 'Appearance',
+      label: 'Toggle Light / Dark',
+      description: 'Switch the normal-mode appearance',
+      icon: '<i data-lucide="sun-moon"></i>',
+      action: () => toggleAppearance()
     },
     {
-      category: 'Themes',
-      label: 'Switch to Aurora',
-      description: 'Near-black with violet/teal accents',
+      category: 'Appearance',
+      label: 'Use Light Appearance',
+      description: 'Warm paper surfaces, ink text',
+      icon: '<i data-lucide="sun"></i>',
+      action: () => setAppearance('light')
+    },
+    {
+      category: 'Appearance',
+      label: 'Use Dark Appearance',
+      description: 'Carbon surfaces, amber accent',
       icon: '<i data-lucide="moon"></i>',
-      action: () => applyTheme('aurora')
+      action: () => setAppearance('dark')
+    },
+    {
+      category: 'Appearance',
+      label: 'Match System Appearance',
+      description: 'Follow the OS light/dark setting',
+      icon: '<i data-lucide="monitor"></i>',
+      action: () => setAppearance('system')
+    },
+    {
+      category: 'Developer Mode',
+      label: 'Developer Accent: Phosphor',
+      description: 'Classic terminal green',
+      icon: '<i data-lucide="terminal"></i>',
+      action: () => setDevAccent('phosphor')
+    },
+    {
+      category: 'Developer Mode',
+      label: 'Developer Accent: Amber',
+      description: 'Vintage CRT amber',
+      icon: '<i data-lucide="terminal"></i>',
+      action: () => setDevAccent('amber')
+    },
+    {
+      category: 'Developer Mode',
+      label: 'Developer Accent: Cyan',
+      description: 'Cool cyan on near-black',
+      icon: '<i data-lucide="terminal"></i>',
+      action: () => setDevAccent('cyan')
     }
   ];
 
@@ -243,6 +228,7 @@ function init() {
 
   initTheme();
   initAccessibility();
+  initInstrumentation();
 
   app.innerHTML = '';
 
@@ -261,9 +247,16 @@ function init() {
   app.appendChild(pageContainer);
   setContainer(pageContainer);
 
-  // 3. Render Footer
+  // 3. Render Footer. Hidden in the developer workspace, which is a
+  //    full-height IDE shell with its own status bar.
   const footerComponent = createFooter();
   app.appendChild(footerComponent);
+
+  const syncFooter = () => {
+    footerComponent.hidden = document.documentElement.getAttribute('data-surface') === 'dev';
+  };
+  window.addEventListener('keyflow:surface-change', syncFooter);
+  syncFooter();
 
   // 4. Initialize Command Palette
   initCommandPalette();
@@ -276,8 +269,11 @@ function init() {
   // 6. Listen to route changes to update active state on Nav, and show a
   // brief terminal-style loading state when switching between the Practice
   // and Developer workspaces.
-  let previousPath = window.location.hash.replace('#', '') || '/';
   onRouteChange((newPath) => {
+    // The surface swap must happen before the page paints, otherwise the
+    // developer workspace renders one frame with normal-mode tokens.
+    setSurfaceForRoute(newPath);
+
     const navLinks = document.querySelectorAll('nav a');
     navLinks.forEach(link => {
       const target = link.getAttribute('href').replace('#', '') || '/';
@@ -285,8 +281,7 @@ function init() {
       else link.classList.remove('active');
     });
 
-    showModeTransition(previousPath, newPath);
-    previousPath = newPath;
+    logger.debug('router', `Navigated to ${newPath}`);
   });
 
   // 7. Wait for Firebase to resolve the initial auth state before starting
