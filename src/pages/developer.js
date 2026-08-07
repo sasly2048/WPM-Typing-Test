@@ -365,6 +365,7 @@ export function render(container) {
         timeline: s.timeline,
         text: adapter.lines.join('\n'),
         totalTimeMs: s.totalTimeMs,
+        isCode: true,
       }));
     } catch (err) {
       sessionStorage.removeItem('lastReplay');

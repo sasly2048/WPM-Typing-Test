@@ -2568,11 +2568,29 @@ kbd, .kbd {
   margin: calc(var(--space-2) * -1) 0 var(--space-4);
 }
 
+/* Prose and code need opposite behaviour and cannot share one rule: giving
+   the stage `overflow-x: auto` grants it unbounded layout width, so pre-wrap
+   never finds a wrap point. The content declares which it needs instead.
+   Default (prose) wraps within the card. */
 .replay__stage {
   position: relative;
   padding: var(--space-4) 0 var(--space-5);
+  min-width: 0;
+  overflow: hidden;
 }
 
+/* Code has no spaces to break on, so it scrolls rather than wraps. */
+.replay--code .replay__stage {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.replay--code .replay__text { white-space: pre; }
+
+/* One span per character, so the browser may break between any two glyphs.
+   `overflow-wrap: break-word` would allow breaking mid-word ("req / uest");
+   `normal` restricts breaks to the space spans, keeping words intact — the
+   same fix the practice surface uses. */
 .replay__text {
   font-family: var(--font-mono);
   font-size: 1.05rem;
@@ -2580,6 +2598,8 @@ kbd, .kbd {
   color: var(--typing-untyped);
   white-space: pre-wrap;
   word-break: normal;
+  overflow-wrap: normal;
+  max-width: 100%;
   font-variant-ligatures: none;
 }
 

@@ -22,9 +22,11 @@ const SPEEDS = [0.5, 1, 2, 4];
  * @param {string} opts.text        the passage that was typed
  * @param {number} opts.totalTimeMs session duration
  */
-export function createReplay({ timeline = [], text = '', totalTimeMs = 0 } = {}) {
+export function createReplay({ timeline = [], text = '', totalTimeMs = 0, isCode = false } = {}) {
   const el = document.createElement('div');
-  el.className = 'replay';
+  // Code keeps its own line structure and scrolls; prose wraps. These need
+  // opposite overflow behaviour, so the mode is carried on the element.
+  el.className = isCode ? 'replay replay--code' : 'replay';
 
   if (!timeline.length || !text) {
     el.innerHTML = '<div class="chart-empty">No replay data for this session.</div>';
