@@ -7,9 +7,25 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+
+    "test": "npm run test:unit",
+    "test:unit": "node src/engines/StatsEngine.test.js && node src/services/stats-engine.test.js && node src/services/pool-shuffler.test.js && node src/services/text-provider.test.js && node src/services/completion.test.js && node src/services/storage.test.js && node src/services/typing-events.test.js && node src/services/adaptive.test.js && node src/adapters/CodeAdapter.test.js && node src/audit/foundation.test.js",
+    "audit:lifecycle": "node src/audit/lifecycle.mjs",
+    "audit:perf": "node src/audit/perf.mjs",
+
+    "//audit": "Browser checks. Need a server: `npm run build && npm run preview -- --port 4400` in another shell, then `npm run audit`.",
+    "audit": "npm run test:unit && npm run audit:foundation && npm run audit:lifecycle && npm run audit:perf",
+    "audit:foundation": "node src/audit/foundation.test.js",
+    "audit:ci": "npm run audit && npm run audit:responsive && npm run audit:modes && npm run audit:timer && npm run audit:replay && npm run audit:targets",
+    "audit:responsive": "node audit-responsive.mjs http://localhost:4400",
+    "audit:modes": "node verify-modes.mjs http://localhost:4400",
+    "audit:timer": "node verify-timer.mjs http://localhost:4400",
+    "audit:replay": "node verify-replay.mjs http://localhost:4400",
+    "audit:targets": "node verify-switches.mjs http://localhost:4400"
   },
   "devDependencies": {
+    "playwright": "^1.62.1",
     "terser": "^5.49.0",
     "vite": "^6.3.5"
   },

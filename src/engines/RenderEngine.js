@@ -85,7 +85,11 @@ export class RenderEngine {
                 const charEl = document.createElement('span');
                 charEl.className = `keyflow-char ${token.status}`;
                 // Use a non-breaking space for visual spacing
-                charEl.textContent = token.char === ' ' ? '\u00A0' : token.char;
+                // Real space, not NBSP. NBSP never offers a line-break opportunity, so
+// with one span per character the browser could only break mid-word.
+// Containers set `white-space: pre-wrap`, which keeps spaces visible
+// while still allowing breaks at them.
+charEl.textContent = token.char;
                 charEl.dataset.lineIndex = lineIndex;
                 charEl.dataset.charIndex = charIndex;
 
@@ -119,7 +123,11 @@ export class RenderEngine {
                     charEl.className = `keyflow-char ${token.status}`;
                 }
                 if (prevToken.char !== token.char) {
-                    charEl.textContent = token.char === ' ' ? '\u00A0' : token.char;
+                    // Real space, not NBSP. NBSP never offers a line-break opportunity, so
+// with one span per character the browser could only break mid-word.
+// Containers set `white-space: pre-wrap`, which keeps spaces visible
+// while still allowing breaks at them.
+charEl.textContent = token.char;
                 }
             });
         });
@@ -143,51 +151,83 @@ export class RenderEngine {
 
     /**
      * Moves the absolute positioned caret to the current typing position.
+     *
+     * Vertical alignment uses the *line* element (keyflow-line), not
+     * the character — the line's top edge is a stable anchor regardless
+     * of which character is the caret target, so the caret never drifts
+     * a pixel or two between keystrokes as different characters have
+     * slightly different glyph metrics.
+     *
      * @param {number} lineIndex - The target line index.
      * @param {number} charIndex - The target character index.
      */
     updateCaretPosition(lineIndex, charIndex) {
         if (!this.caret) return;
-        
+
+        const lineEl = this.lineElements[lineIndex];
+        const chars = this.charElements[lineIndex];
+        if (!lineEl || !chars) return;
+
         let targetEl;
         let isEndOfLine = false;
-
-        if (this.charElements[lineIndex] && this.charElements[lineIndex][charIndex]) {
-            targetEl = this.charElements[lineIndex][charIndex];
-        } else if (this.charElements[lineIndex] && charIndex > 0) {
-            // Position after the last character in the line
-            targetEl = this.charElements[lineIndex][charIndex - 1];
+        if (chars[charIndex]) {
+            targetEl = chars[charIndex];
+        } else if (charIndex > 0 && chars[charIndex - 1]) {
+            targetEl = chars[charIndex - 1];
             isEndOfLine = true;
         }
+        if (!targetEl) return;
 
-        if (targetEl) {
-            const rect = targetEl.getBoundingClientRect();
-            const containerRect = this.container.getBoundingClientRect();
+        const containerRect = this.container.getBoundingClientRect();
+        const lineRect = lineEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
 
-            let left = rect.left - containerRect.left;
-            if (isEndOfLine) {
-                left += rect.width;
-            }
-            
-            this.caret.style.transform = `translate(${left}px, ${rect.top - containerRect.top}px)`;
-            
-            this._scrollToCaret(targetEl);
-        }
+        const left = (targetRect.left - containerRect.left) + (isEndOfLine ? targetRect.width : 0);
+        // Anchor the caret to the line's top edge. Combined with a
+        // caret height set to the full line-height, this gives a
+        // pixel-perfect alignment that does not depend on the
+        // current character's glyph metrics.
+        const top = lineRect.top - containerRect.top;
+
+        this.caret.style.transform = `translate(${left}px, ${top}px)`;
+        this.caret.style.height = `${lineRect.height}px`;
+
+        this._scrollToCaret(targetEl);
     }
 
     /**
      * Ensures the caret is visible within the scrolling container.
+     *
+     * Walks up from the target to find the first scrollable ancestor
+     * and keeps the caret line in view there. The text surface itself
+     * has a max-height in CSS, so this matters once a session runs long
+     * enough to wrap the text past the visible area — without it the
+     * user types off-screen and loses track of where they are.
+     *
      * @private
-     * @param {HTMLElement} targetEl 
+     * @param {HTMLElement} targetEl
      */
     _scrollToCaret(targetEl) {
-        const containerRect = this.container.getBoundingClientRect();
-        const elRect = targetEl.getBoundingClientRect();
-
-        if (elRect.bottom > containerRect.bottom) {
-            this.container.scrollTop += (elRect.bottom - containerRect.bottom);
-        } else if (elRect.top < containerRect.top) {
-            this.container.scrollTop -= (containerRect.top - elRect.top);
+        // Find the scrollable ancestor. The text container sits inside
+        // .practice__surface which has the overflow:auto; the immediate
+        // parent is .typing-surface which is a positioning context for
+        // the caret, so it is intentionally not scrollable. We walk up
+        // until we find an element that actually overflows.
+        let scroller = this.container.parentElement;
+        while (scroller && scroller !== document.body) {
+            const style = getComputedStyle(scroller);
+            if (style.overflowY === 'auto' || style.overflowY === 'scroll') break;
+            scroller = scroller.parentElement;
         }
+        if (!scroller || scroller === document.body) return;
+
+        // Place the caret ~25% from the top of the visible window, so the
+        // user can read what they just typed AND see what's coming up.
+        const scrollerRect = scroller.getBoundingClientRect();
+        const elRect = targetEl.getBoundingClientRect();
+        const targetLine = scrollerRect.top + scrollerRect.height * 0.25;
+        const delta = elRect.top - targetLine;
+
+        scroller.scrollBy({ top: delta, behavior: 'auto' });
     }
 }

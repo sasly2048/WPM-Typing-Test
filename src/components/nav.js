@@ -1,4 +1,5 @@
 import { createElement, html, on } from '../utils/dom.js';
+import { toggleAppearance, getResolvedAppearance, getSurface } from '../services/theme.js';
 
 export function createNav({ currentPath = '/', onNavigate, user = null, onSignOut }) {
   const nav = createElement('nav', { className: 'site-nav' });
@@ -45,6 +46,12 @@ export function createNav({ currentPath = '/', onNavigate, user = null, onSignOu
           <i data-lucide="search"></i>
           <span class="cmd-text">Search...</span>
           <kbd class="cmd-kbd">⌘K</kbd>
+        </button>
+
+        <button class="icon-btn" id="nav-appearance-btn"
+                aria-label="Toggle light or dark appearance"
+                title="Toggle appearance">
+          <i data-lucide="${getResolvedAppearance() === 'dark' ? 'sun' : 'moon'}"></i>
         </button>
 
         <a href="#/settings" class="icon-btn" aria-label="Settings">
@@ -94,6 +101,26 @@ export function createNav({ currentPath = '/', onNavigate, user = null, onSignOu
     on(cmdBtn, 'click', () => {
       window.dispatchEvent(new CustomEvent('keyflow:command-palette'));
     });
+  }
+
+  // Appearance toggle. Hidden in developer mode — that surface is always dark,
+  // so offering a light switch there would be a control that does nothing.
+  const appearanceBtn = nav.querySelector('#nav-appearance-btn');
+  if (appearanceBtn) {
+    const syncAppearanceBtn = () => {
+      appearanceBtn.hidden = getSurface() === 'dev';
+      const icon = getResolvedAppearance() === 'dark' ? 'sun' : 'moon';
+      appearanceBtn.innerHTML = `<i data-lucide="${icon}"></i>`;
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    on(appearanceBtn, 'click', () => {
+      toggleAppearance();
+      syncAppearanceBtn();
+    });
+
+    window.addEventListener('keyflow:surface-change', syncAppearanceBtn);
+    syncAppearanceBtn();
   }
 
   const signOutBtn = nav.querySelector('#nav-sign-out-btn');

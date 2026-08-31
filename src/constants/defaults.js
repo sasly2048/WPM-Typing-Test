@@ -12,9 +12,13 @@ export const DEFAULT_SETTINGS = {
   smoothCaret: true,
   soundEnabled: true,
   soundVolume: 0.5,
+  typingVolume: 0.4,
+  feedbackVolume: 0.7,
+  uiVolume: 0.3,
   soundProfile: 'mechanical',
   reducedMotion: false,
   highContrast: false,
   blindMode: false,
-  stopOnError: false
+  stopOnError: false,
+  fairPlay: true,
 };

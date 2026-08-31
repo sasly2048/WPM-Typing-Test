@@ -1,226 +1,1202 @@
 [
   {
     "id": 1,
-    "text": "The wind howled through the ancient trees, their branches scraping against the old mansion's windows like skeletal fingers. Inside, a solitary candle flickered, casting long, dancing shadows on the peeling wallpaper. A sudden draft extinguished the flame, plunging the room into darkness.",
-    "source": "Original",
+    "text": "All happy families are alike; each unhappy family is unhappy in its own way. Everything was in confusion in the Oblonskys' house. The wife had discovered that the husband was carrying on an intrigue with a French girl, who had been a governess in their family, and she had announced to her husband that she could not go on living in the same house with him.",
+    "source": "Anna Karenina, Leo Tolstoy",
     "difficulty": "medium",
     "category": "literature"
   },
   {
     "id": 2,
-    "text": "Quantum mechanics is a fundamental theory in physics that provides a description of the physical properties of nature at the scale of atoms and subatomic particles. It is the foundation of all quantum physics including quantum chemistry, quantum field theory, quantum technology, and quantum information science.",
-    "source": "Science Encyclopedia",
-    "difficulty": "hard",
-    "category": "science"
+    "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of light, it was the season of darkness, it was the spring of hope, it was the winter of despair.",
+    "source": "A Tale of Two Cities, Charles Dickens",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 3,
-    "text": "The sun rises in the east and sets in the west. Every morning birds sing their cheerful songs to welcome the new day. Children play in the park until it gets dark, when they head home for dinner.",
-    "source": "Original",
-    "difficulty": "easy",
-    "category": "nature"
+    "text": "In my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since. Whenever you feel like criticizing any one, he told me, just remember that all the people in this world haven't had the advantages that you've had.",
+    "source": "The Great Gatsby, F. Scott Fitzgerald",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 4,
-    "text": "Artificial intelligence algorithms are increasingly being deployed in various sectors, from healthcare diagnostics to autonomous vehicles. While the potential benefits are immense, it raises profound ethical and philosophical questions about agency, liability, and the nature of consciousness itself.",
-    "source": "Tech Journal",
-    "difficulty": "hard",
-    "category": "technology"
+    "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters.",
+    "source": "Pride and Prejudice, Jane Austen",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 5,
-    "text": "To be or not to be, that is the question: Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or to take arms against a sea of troubles and by opposing end them.",
-    "source": "Hamlet, William Shakespeare",
+    "text": "Call me Ishmael. Some years ago, never mind how long precisely, having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation.",
+    "source": "Moby-Dick, Herman Melville",
     "difficulty": "medium",
     "category": "literature"
   },
   {
     "id": 6,
-    "text": "Software engineering is the systematic application of engineering approaches to the development of software. A software engineer is a person who applies the principles of software engineering to design, develop, maintain, test, and evaluate computer software.",
-    "source": "Tech Fundamentals",
-    "difficulty": "medium",
-    "category": "technology"
+    "text": "The Man in Black fled across the desert, and the Gunslinger followed. Across a landscape of salt and silence, through corridors of stone and wind, the pursuit wound on beneath a sky the color of burnt bone.",
+    "source": "The Dark Tower, Stephen King",
+    "difficulty": "easy",
+    "category": "literature"
   },
   {
     "id": 7,
-    "text": "The industrial revolution marked a major turning point in history; almost every aspect of daily life was influenced in some way. In particular, average income and population began to exhibit unprecedented sustained growth. Standard of living for the general population began to increase consistently for the first time in history.",
-    "source": "History Almanac",
-    "difficulty": "hard",
-    "category": "history"
+    "text": "It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors of Victory Mansions, though not quickly enough to prevent a swirl of gritty dust from entering along with him.",
+    "source": "1984, George Orwell",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 8,
-    "text": "Photosynthesis is a process used by plants and other organisms to convert light energy into chemical energy. This chemical energy is later released to fuel the organisms' activities. This process is largely responsible for producing and maintaining the oxygen content of the Earth's atmosphere.",
-    "source": "Biology Textbook",
-    "difficulty": "medium",
-    "category": "science"
+    "text": "Many years later, as he faced the firing squad, Colonel Aureliano Buendia was to remember that distant afternoon when his father took him to discover ice. At that time Macondo was a village of twenty adobe houses, built on the bank of a river of clear water that ran along a bed of polished stones.",
+    "source": "One Hundred Years of Solitude, Gabriel García Márquez",
+    "difficulty": "hard",
+    "category": "literature"
   },
   {
     "id": 9,
-    "text": "In economics, inflation is a general increase in the prices of goods and services in an economy. When the general price level rises, each unit of currency buys fewer goods and services. Consequently, inflation corresponds to a reduction in the purchasing power of money.",
-    "source": "Economics Daily",
-    "difficulty": "medium",
-    "category": "business"
+    "text": "It was a pleasure to burn. It was a special pleasure to see things eaten, to see things blackened and changed. With the brass nozzle in his fists, with this great python spitting its venomous kerosene upon the world, the blood pounded in his head, and his hands were the hands of some amazing conductor playing all the symphonies of blazing and burning.",
+    "source": "Fahrenheit 451, Ray Bradbury",
+    "difficulty": "hard",
+    "category": "literature"
   },
   {
     "id": 10,
-    "text": "Machine learning is a field of inquiry devoted to understanding and building methods that learn, that is, methods that leverage data to improve performance on some set of tasks. It is seen as a part of artificial intelligence. Machine learning algorithms build a model based on sample data.",
-    "source": "AI Weekly",
-    "difficulty": "hard",
-    "category": "technology"
+    "text": "We were about to give up and call it a night when somebody threw a chair through the window. There was a tremendous crash, and we all ducked, and a second later a man in a checked suit came tumbling through the frame. He landed hard on his hands and knees, raised his head, and looked around.",
+    "source": "The Maltese Falcon, Dashiell Hammett",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 11,
-    "text": "Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information, extorting money from users via ransomware, or interrupting normal business processes.",
-    "source": "Cyber Info",
+    "text": "He was an inch, perhaps two, under six feet, powerfully built, and he advanced straight at you with a slight stoop in his shoulders, a black beard, slightly streaked with gray, an immense beak of a nose, and large gray eyes that had a steely glint.",
+    "source": "The Adventures of Sherlock Holmes, Arthur Conan Doyle",
     "difficulty": "medium",
-    "category": "technology"
+    "category": "literature"
   },
   {
     "id": 12,
-    "text": "The Renaissance was a fervent period of European cultural, artistic, political and economic rebirth following the Middle Ages. Generally described as taking place from the 14th century to the 17th century, the Renaissance promoted the rediscovery of classical philosophy, literature and art.",
-    "source": "History Encyclopedia",
+    "text": "Whether I shall turn out to be the hero of my own life, or whether that station will be held by anybody else, these pages must show. To begin my life with the beginning of my life, I record that I was born, as I have been informed and believe, on a Friday, at twelve o'clock at night.",
+    "source": "David Copperfield, Charles Dickens",
     "difficulty": "hard",
-    "category": "history"
+    "category": "literature"
   },
   {
     "id": 13,
-    "text": "Deep learning architectures such as deep neural networks, deep belief networks, and recurrent neural networks have been applied to fields including computer vision, speech recognition, natural language processing, and audio recognition. They have produced results comparable to and in some cases surpassing human expert performance.",
-    "source": "AI Research",
-    "difficulty": "hard",
-    "category": "technology"
+    "text": "When Mary Lennox was sent to Misselthwaite Manor to live with her uncle everybody said she was the most disagreeable-looking child ever seen. It was true, too. She had a little thin face and a little thin body, thin light hair and a sour expression. Her hair was yellow, and her face was yellow because she had been ill in London.",
+    "source": "The Secret Garden, Frances Hodgson Burnett",
+    "difficulty": "medium",
+    "category": "literature"
   },
   {
     "id": 14,
-    "text": "A supply chain is a system of organizations, people, activities, information, and resources involved in supplying a product or service to a consumer. Supply chain activities involve the transformation of natural resources, raw materials, and components into a finished product.",
-    "source": "Business Review",
-    "difficulty": "medium",
-    "category": "business"
+    "text": "I am an invisible man. No, I am not a spook like those who haunted Edgar Allan Poe; nor am I one of your Hollywood movie ectoplasms. I am a man of substance, of flesh and bone, fiber and liquids, and I might even be said to possess a mind. I am invisible, understand, simply because people refuse to see me.",
+    "source": "Invisible Man, Ralph Ellison",
+    "difficulty": "hard",
+    "category": "literature"
   },
   {
     "id": 15,
-    "text": "Stoicism is a school of Hellenistic philosophy which was founded by Zeno of Citium in Athens in the early 3rd century BC. It is a philosophy of personal ethics informed by its system of logic and its views on the natural world.",
-    "source": "Philosophy Basics",
-    "difficulty": "hard",
+    "text": "I was born in the Year 1632, in the City of York, of a good Family, tho' not of that Country, my Father being a Foreigner of Bremen, who settled first at Hull. He got a good Estate by Merchandise, and leaving off his Trade, lived afterwards at York; from whence he had married my Mother, whose Relations were named Robinson.",
+    "source": "Robinson Crusoe, Daniel Defoe",
+    "difficulty": "medium",
     "category": "literature"
   },
   {
     "id": 16,
-    "text": "Global warming is the long-term heating of Earth's climate system observed since the pre-industrial period due to human activities, primarily fossil fuel burning. This increases heat-trapping greenhouse gas levels in Earth's atmosphere.",
-    "source": "Nature Journal",
+    "text": "All this happened, more or less. The war parts, anyway, are pretty much true. One thing I have never stated publicly, in fact, is that I am, by blood, a member of the Tonkinese royal family. However, that's a rather peripheral matter and not really worth mentioning. It's a strange war.",
+    "source": "The Things They Carried, Tim O'Brien",
     "difficulty": "medium",
-    "category": "nature"
+    "category": "literature"
   },
   {
     "id": 17,
-    "text": "Venture capital is a form of private equity financing that is provided by venture capital firms or funds to startups, early-stage, and emerging companies that have been deemed to have high growth potential or which have demonstrated high growth. Venture capital firms or funds invest in these early-stage companies in exchange for equity.",
-    "source": "Finance World",
-    "difficulty": "hard",
-    "category": "business"
-  },
-  {
-    "id": 18,
-    "text": "Cryptography is the practice and study of techniques for secure communication in the presence of adversarial behavior. More generally, cryptography is about constructing and analyzing protocols that prevent third parties or the public from reading private messages.",
-    "source": "Security Weekly",
-    "difficulty": "hard",
-    "category": "technology"
-  },
-  {
-    "id": 19,
-    "text": "The Roman Empire was the post-Republican period of ancient Rome. As a polity it included large territorial holdings around the Mediterranean Sea in Europe, Northern Africa, and Western Asia ruled by emperors. The first two centuries of the empire saw a period of unprecedented stability and prosperity.",
-    "source": "Historical Times",
-    "difficulty": "medium",
-    "category": "history"
-  },
-  {
-    "id": 20,
-    "text": "DNA, or deoxyribonucleic acid, is a molecule composed of two polynucleotide chains that coil around each other to form a double helix. The molecule carries genetic instructions for the development, functioning, growth and reproduction of all known organisms and many viruses.",
-    "source": "Genetics Guide",
-    "difficulty": "hard",
-    "category": "science"
-  },
-  {
-    "id": 21,
-    "text": "Existentialism is a form of philosophical inquiry that explores the problem of human existence and centers on the lived experience of the thinking, feeling, acting individual. In the view of the existentialist, the individual's starting point is characterized by what has been called the existential attitude.",
-    "source": "Philosophy Digest",
+    "text": "Far out in the uncharted backwaters of the unfashionable end of the Western Spiral arm of the Galaxy lies a small unregarded yellow sun. Orbiting this at a distance of roughly ninety-eight million miles is an utterly insignificant little blue-green planet whose ape-descended life forms are so amazingly primitive that they still think digital watches are a pretty neat idea.",
+    "source": "The Hitchhiker's Guide to the Galaxy, Douglas Adams",
     "difficulty": "hard",
     "category": "literature"
   },
   {
-    "id": 22,
-    "text": "A computer virus is a type of computer program that, when executed, replicates itself by modifying other computer programs and inserting its own code. If this replication succeeds, the affected areas are then said to be infected with a computer virus.",
-    "source": "Security Basics",
-    "difficulty": "medium",
-    "category": "technology"
+    "id": 18,
+    "text": "Quantum entanglement is a phenomenon by which two particles become linked such that the quantum state of one instantly determines the state of the other, regardless of the distance separating them. This nonlocal correlation has been experimentally confirmed in numerous tests of Bell inequalities, ruling out local hidden variable theories.",
+    "source": "Quantum Mechanics Primer",
+    "difficulty": "hard",
+    "category": "science"
   },
   {
-    "id": 23,
-    "text": "Natural selection is the differential survival and reproduction of individuals due to differences in phenotype. It is a key mechanism of evolution, the change in the heritable traits characteristic of a population over generations. Charles Darwin popularized the term natural selection.",
-    "source": "Biology Review",
+    "id": 19,
+    "text": "The CRISPR-Cas9 system, originally discovered as a bacterial immune mechanism against viral infection, has been repurposed as a programmable genome editing tool. By designing a short guide RNA complementary to a target DNA sequence, researchers can direct the Cas9 enzyme to make precise cuts at almost any location in a genome.",
+    "source": "Molecular Biology Today",
+    "difficulty": "hard",
+    "category": "science"
+  },
+  {
+    "id": 20,
+    "text": "Photosynthesis is the biochemical process by which green plants, algae, and certain bacteria convert light energy into chemical energy, producing glucose from carbon dioxide and water in the presence of chlorophyll. The overall reaction can be summarized as six molecules of carbon dioxide plus six molecules of water, in the presence of light, yielding one molecule of glucose and six molecules of oxygen.",
+    "source": "Biology Fundamentals",
     "difficulty": "medium",
     "category": "science"
   },
   {
-    "id": 24,
-    "text": "The Cold War was a period of geopolitical tension between the United States and the Soviet Union and their respective allies, the Western Bloc and the Eastern Bloc. The term cold is used because there was no large-scale fighting directly between the two superpowers.",
-    "source": "Modern History",
+    "id": 21,
+    "text": "Plate tectonics describes the large-scale movement of seven major and several minor lithospheric plates that comprise the outer shell of Earth. These plates float atop the semi-fluid asthenosphere and interact at their boundaries, producing earthquakes, volcanic activity, mountain building, and the drifting of continents over geological timescales.",
+    "source": "Earth Sciences",
+    "difficulty": "hard",
+    "category": "science"
+  },
+  {
+    "id": 22,
+    "text": "The Doppler effect is the change in observed frequency of a wave when the source and the observer are in relative motion. As a fire engine approaches, the pitch of its siren sounds higher than when it recedes. The same principle explains redshift in astronomy, where light from distant galaxies is shifted toward longer wavelengths as the universe expands.",
+    "source": "Wave Physics",
     "difficulty": "medium",
-    "category": "history"
+    "category": "science"
+  },
+  {
+    "id": 23,
+    "text": "DNA replication proceeds with remarkable fidelity. DNA polymerase III in prokaryotes, and its eukaryotic counterparts, achieve error rates as low as one mistake per billion base pairs. This accuracy is maintained through a combination of intrinsic proofreading activity and post-replicative mismatch repair pathways that scan newly synthesized DNA for errors.",
+    "source": "Genetics Review",
+    "difficulty": "hard",
+    "category": "science"
+  },
+  {
+    "id": 24,
+    "text": "Black holes are regions of spacetime where gravity is so strong that nothing, not even light, can escape from within the event horizon. They form when massive stars collapse at the end of their life cycles, and supermassive versions, containing millions to billions of solar masses, are now believed to inhabit the centers of most large galaxies.",
+    "source": "Astrophysics Now",
+    "difficulty": "medium",
+    "category": "science"
   },
   {
     "id": 25,
-    "text": "Microeconomics is a branch of economics that studies the behavior of individuals and firms in making decisions regarding the allocation of scarce resources and the interactions among these individuals and firms. It focuses on the study of markets and prices.",
-    "source": "Econ 101",
-    "difficulty": "medium",
-    "category": "business"
+    "text": "The second law of thermodynamics states that the total entropy of an isolated system can never decrease over time. Many natural processes appear to contradict this when observed locally, but they are always accompanied by greater increases in entropy elsewhere, ensuring that the universal total continues its inexorable climb toward maximum disorder.",
+    "source": "Thermodynamics Textbook",
+    "difficulty": "hard",
+    "category": "science"
   },
   {
     "id": 26,
-    "text": "Software testing is an investigation conducted to provide stakeholders with information about the quality of the software product or service under test. Software testing can also provide an objective, independent view of the software to allow the business to appreciate and understand the risks of software implementation.",
-    "source": "QA Journal",
+    "text": "Containers package an application together with its dependencies, libraries, and configuration files into a single immutable image. This image can then be run consistently across any environment that supports the container runtime, eliminating the classic problem of code that works on one machine but breaks on another.",
+    "source": "Modern DevOps",
     "difficulty": "medium",
     "category": "technology"
   },
   {
     "id": 27,
-    "text": "The Milky Way is the galaxy that includes our Solar System, with the name describing the galaxy's appearance from Earth: a hazy band of light seen in the night sky formed from stars that cannot be individually distinguished by the naked eye.",
-    "source": "Astronomy Now",
-    "difficulty": "easy",
-    "category": "science"
-  },
-  {
-    "id": 28,
-    "text": "Phishing is a type of social engineering where an attacker sends a fraudulent message designed to trick a human victim into revealing sensitive information to the attacker or to deploy malicious software on the victim's infrastructure like ransomware.",
-    "source": "Cyber Alert",
+    "text": "TypeScript extends JavaScript by adding optional static typing, classes, interfaces, and modern language features that compile down to plain JavaScript. It enables developers to catch errors at compile time, provides better tooling support, and makes large codebases significantly more maintainable without changing the runtime behavior of the underlying application.",
+    "source": "TypeScript Handbook",
     "difficulty": "medium",
     "category": "technology"
   },
   {
-    "id": 29,
-    "text": "Romanticism was an artistic, literary, musical, and intellectual movement that originated in Europe towards the end of the 18th century. It was characterized by its emphasis on emotion and individualism, as well as glorification of all the past and nature.",
-    "source": "Arts & Culture",
+    "id": 28,
+    "text": "A load balancer distributes incoming network traffic across multiple backend servers to ensure no single server bears too much load. Modern load balancers use sophisticated algorithms considering server health, current load, geographic proximity, and even content type to optimize both performance and reliability of the overall system.",
+    "source": "Distributed Systems Weekly",
     "difficulty": "hard",
-    "category": "literature"
+    "category": "technology"
+  },
+  {
+    "id": 29,
+    "text": "WebAssembly is a binary instruction format that serves as a portable compilation target for high-level languages like C, C++, and Rust. It enables near-native performance in web browsers, allowing computationally intensive applications such as games, simulations, and image editors to run on the web without sacrificing responsiveness or interactivity.",
+    "source": "Web Platform News",
+    "difficulty": "hard",
+    "category": "technology"
   },
   {
     "id": 30,
-    "text": "Blockchain is a distributed ledger with growing lists of records that are securely linked together via cryptographic hashes. Each block contains a cryptographic hash of the previous block, a timestamp, and transaction data, generally represented as a Merkle tree.",
-    "source": "Tech Innovations",
+    "text": "GraphQL is a query language for APIs and a runtime for executing those queries against your data. Unlike traditional REST endpoints that return fixed data structures, GraphQL lets clients request exactly the data they need, eliminating over-fetching and under-fetching while providing strong type safety through its schema definition language.",
+    "source": "API Design Patterns",
     "difficulty": "hard",
     "category": "technology"
   },
   {
     "id": 31,
-    "text": "Marketing is the process of exploring, creating, and delivering value to meet the needs of a target market in terms of goods and services; potentially including selection of a target audience; selection of certain attributes or themes to emphasize in advertising; operation of advertising campaigns; and design of products and packaging.",
-    "source": "Business Insights",
+    "text": "Rust is a systems programming language focused on safety, speed, and concurrency. It achieves memory safety without garbage collection through a sophisticated ownership system enforced at compile time, preventing entire classes of bugs that have plagued C and C++ codebases for decades while delivering performance comparable to native compiled code.",
+    "source": "Systems Programming",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 32,
+    "text": "Kubernetes orchestrates containerized applications across clusters of machines, handling deployment, scaling, healing, and rolling updates automatically. Its declarative configuration model lets you describe the desired state of your system, and Kubernetes continually works to reconcile the actual state with that desired intent.",
+    "source": "Cloud Native Computing",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 33,
+    "text": "A single-page application loads a single HTML document and dynamically updates the page as the user interacts with it, rather than fetching entirely new pages from the server. This approach enables smoother, more app-like experiences, but requires careful management of routing, state, and historical navigation in the browser.",
+    "source": "Web Engineering",
+    "difficulty": "medium",
+    "category": "technology"
+  },
+  {
+    "id": 34,
+    "text": "Compound interest is the interest calculated on the initial principal and also on the accumulated interest of previous periods. Given enough time, even modest interest rates produce dramatic growth, which is why financial advisors consistently emphasize the importance of starting to save and invest as early as possible in one's career.",
+    "source": "Personal Finance 101",
+    "difficulty": "medium",
+    "category": "business"
+  },
+  {
+    "id": 35,
+    "text": "Opportunity cost represents the value of the next best alternative that must be forgone when a choice is made. Every decision, from which job to take to which product feature to build first, carries an opportunity cost, and effective leaders learn to make these tradeoffs explicitly rather than letting them happen by default.",
+    "source": "Strategic Management",
     "difficulty": "hard",
     "category": "business"
   },
   {
-    "id": 32,
-    "text": "The Great Depression was a severe worldwide economic depression that took place mostly during the 1930s, beginning in the United States. The timing of the Great Depression varied across the world; in most countries, it started in 1929 and lasted until the late 1930s.",
+    "id": 36,
+    "text": "Diversification reduces portfolio risk by spreading investments across different assets whose returns are not perfectly correlated. The principle behind diversification is that losses in some holdings can be offset by gains in others, smoothing overall returns and reducing the impact of any single bad outcome on the investor's total wealth.",
+    "source": "Investment Basics",
+    "difficulty": "medium",
+    "category": "business"
+  },
+  {
+    "id": 37,
+    "text": "The Silk Road was an ancient network of trade routes connecting the East and West, stretching from China through Central Asia, the Indian subcontinent, Persia, and the Mediterranean. For more than fifteen centuries, it carried not just silk and spices, but also ideas, religions, technologies, and unfortunately, plagues.",
+    "source": "World History",
+    "difficulty": "medium",
+    "category": "history"
+  },
+  {
+    "id": 38,
+    "text": "The Industrial Revolution, beginning in late eighteenth-century Britain, transformed agrarian, handcraft economies into industrial, machine-driven ones. It brought unprecedented productivity, urbanization, and technological change, but also harsh working conditions, child labor, and the social dislocation that accompanied the wholesale reorganization of daily life.",
     "source": "Economic History",
     "difficulty": "medium",
     "category": "history"
+  },
+  {
+    "id": 39,
+    "text": "The Cold War was a period of geopolitical tension between the United States and its allies on one side, and the Soviet Union and its satellite states on the other. Although direct military conflict between the superpowers was largely avoided, the era was defined by proxy wars, an arms race, space exploration, and intense ideological competition.",
+    "source": "Modern History",
+    "difficulty": "medium",
+    "category": "history"
+  },
+  {
+    "id": 40,
+    "text": "The fall of Constantinople in 1453 to the Ottoman Empire marked the end of the Byzantine Empire and is often cited as a key event leading to the Age of Discovery. With traditional overland trade routes to Asia now under Ottoman control, European powers began seeking sea routes that would eventually connect them directly to the riches of the East.",
+    "source": "Renaissance Studies",
+    "difficulty": "hard",
+    "category": "history"
+  },
+  {
+    "id": 41,
+    "text": "Birds of paradise are a family of birds found primarily in New Guinea and surrounding islands. The males are famous for their extraordinarily elaborate plumage and courtship displays, which can involve dancing, contorting their bodies into impossible shapes, and showing off iridescent feathers that shimmer with every color of the rainbow.",
+    "source": "Ornithology Today",
+    "difficulty": "medium",
+    "category": "nature"
+  },
+  {
+    "id": 42,
+    "text": "Coral reefs cover less than one percent of the ocean floor, yet they support nearly a quarter of all marine species. These underwater cities are built by tiny colonial animals called coral polyps, which secrete calcium carbonate skeletons that accumulate over thousands of years to form the massive reef structures we recognize today.",
+    "source": "Marine Biology",
+    "difficulty": "medium",
+    "category": "nature"
+  },
+  {
+    "id": 43,
+    "text": "The northern lights, or aurora borealis, are displays of colored light in the night sky caused by the collision of charged particles from the sun with atoms high in the Earth's atmosphere. The most common color is a pale green, but vibrant reds, blues, and violets also appear when different gases are excited at different altitudes.",
+    "source": "Earth Phenomena",
+    "difficulty": "medium",
+    "category": "nature"
+  },
+  {
+    "id": 44,
+    "text": "Octopuses are among the most intelligent invertebrates on the planet. They have been observed using tools, solving mazes, escaping from sealed containers, and even exhibiting distinct individual personalities. With nine brains, blue blood, and the ability to change color in a fraction of a second, they are genuinely alien compared to most animals we know.",
+    "source": "Ocean Life",
+    "difficulty": "medium",
+    "category": "nature"
+  },
+  {
+    "id": 45,
+    "text": "Trees communicate with one another through an underground network of fungal threads known as the mycorrhizal network. Through this so-called wood wide web, a forest's trees can share nutrients, water, and chemical warning signals about pests and disease. Older, larger trees often use it to subsidize younger saplings that struggle for sunlight.",
+    "source": "Forest Ecology",
+    "difficulty": "medium",
+    "category": "nature"
+  },
+  {
+    "id": 46,
+    "text": "Mount Everest, the highest mountain on Earth above sea level, stands at eight thousand eight hundred and forty-eight meters. Climbers face extreme cold, hurricane-force winds, oxygen deprivation, and the constant threat of avalanches, yet thousands attempt the summit every year, drawn by the challenge and the view from the top of the world.",
+    "source": "Geography",
+    "difficulty": "easy",
+    "category": "nature"
+  },
+  {
+    "id": 47,
+    "text": "Rainforests are home to more than half of the world's plant and animal species, despite covering only about six percent of Earth's land surface. Their layered structure, from the emergent canopy down to the shaded forest floor, creates countless microhabitats, each adapted to a particular amount of light, moisture, and temperature.",
+    "source": "Ecosystems",
+    "difficulty": "easy",
+    "category": "nature"
+  },
+  {
+    "id": 48,
+    "text": "The unexamined life is not worth living, Socrates famously declared at his trial. Two and a half thousand years later, this remains one of the most provocative demands in philosophy. To live without ever questioning your assumptions, your motives, or the meaning of what you do, is to drift through existence rather than truly inhabit it.",
+    "source": "Greek Philosophy",
+    "difficulty": "hard",
+    "category": "philosophy"
+  },
+  {
+    "id": 49,
+    "text": "What we observe is not nature itself, but nature exposed to our method of questioning. Our scientific theories are not descriptions of reality as it is, but useful maps that allow us to navigate it predictably. The danger arises when we mistake the map for the territory, and forget that every measurement reveals as much about the measurer as the measured.",
+    "source": "Epistemology Notes",
+    "difficulty": "hard",
+    "category": "philosophy"
+  },
+  {
+    "id": 50,
+    "text": "I think, therefore I am. This single sentence by René Descartes survives the most radical skeptical attack: even if I am deceived about everything else, the very act of being deceived requires a thinking subject who is being deceived. From this indubitable foundation, Descartes attempted to rebuild the entire structure of human knowledge.",
+    "source": "Modern Philosophy",
+    "difficulty": "hard",
+    "category": "philosophy"
+  },
+  {
+    "id": 51,
+    "text": "The cat sat on the mat and watched the rain fall steadily against the window. Outside, the garden was drenched and quiet, save for the dripping of water from the eaves. A robin sat on the fence, shaking the droplets from its feathers, and looked back at the cat with what seemed like mild curiosity.",
+    "source": "Original",
+    "difficulty": "easy",
+    "category": "general"
+  },
+  {
+    "id": 52,
+    "text": "Coffee is brewed by forcing hot water through roasted and ground coffee beans. The earliest credible evidence of coffee drinking appears in fifteenth-century Yemen, where Sufi monasteries used it to stay awake during night prayers. From there, the habit spread through the Middle East, into Europe, and eventually across the entire world.",
+    "source": "Food History",
+    "difficulty": "easy",
+    "category": "general"
+  },
+  {
+    "id": 53,
+    "text": "Lighthouses have guided ships safely to harbors for thousands of years. The Pharos of Alexandria, built in ancient Egypt around two hundred and eighty BCE, stood over one hundred meters tall and was among the tallest man-made structures on Earth for many centuries. Modern lighthouses use automated electric lamps and radio beacons.",
+    "source": "Maritime History",
+    "difficulty": "easy",
+    "category": "general"
+  },
+  {
+    "id": 54,
+    "text": "Reading is the single most effective way to expand your mind, deepen your empathy, and accumulate the kind of nuanced knowledge that simply cannot be transmitted through a video or a podcast. A good book rewards you with the time and attention of a master, condensed into a few hundred pages you can revisit whenever you wish.",
+    "source": "Reader's Almanac",
+    "difficulty": "medium",
+    "category": "general"
+  },
+  {
+    "id": 55,
+    "text": "The piano has eighty-eight keys, but the infinite music that can be made from them has filled concert halls for more than three hundred years. From Bach to Brubeck, from Chopin to Coltrane arrangements, the instrument has proven to be one of the most expressive and versatile ever invented, capable of solo virtuosity or accompaniment alike.",
+    "source": "Music Notes",
+    "difficulty": "medium",
+    "category": "general"
+  },
+  {
+    "id": 56,
+    "text": "Effective debugging is as much about mindset as it is about technique. The moment you find yourself absolutely certain a bug cannot possibly be in a particular function, that function is the first place you should look. The bug, more often than not, hides precisely in the code you stopped questioning because you wrote it yourself.",
+    "source": "Software Engineering Wisdom",
+    "difficulty": "medium",
+    "category": "technology"
+  },
+  {
+    "id": 57,
+    "text": "A good API is the art of drawing lines that other programmers can lean against. It hides the messy internals behind a small, predictable surface, lets users compose its primitives in unexpected ways, and admits defeat gracefully when misused. Designing one takes ten times more thought than implementing it, and that ratio never changes.",
+    "source": "API Design Notes",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 58,
+    "text": "The best writing is rewriting. First drafts are where you figure out what you actually want to say. Second drafts are where you figure out how to say it. Third drafts are where you discover that the first two were not really the same piece at all, and the real article only emerges once the unnecessary scaffolding has been knocked away.",
+    "source": "On Writing",
+    "difficulty": "medium",
+    "category": "literature"
+  },
+  {
+    "id": 59,
+    "text": "Walk a little slower, the city is full of so much to see. Notice the way the light catches the windows at five o'clock, the elderly couple sharing a newspaper on a bench, the busker playing the same four chords over and over until they somehow become the most beautiful thing you have heard in days. None of it costs anything.",
+    "source": "Original",
+    "difficulty": "easy",
+    "category": "general"
+  },
+  {
+    "id": 60,
+    "text": "Public libraries are among the great unsung institutions of civilization. For the price of a library card, anyone can borrow the accumulated wisdom of the species, free to read, learn, and argue with the dead. The internet has changed the format of research, but it has not changed the alchemy of sitting with a difficult book until it gives up its secrets.",
+    "source": "Civic Life",
+    "difficulty": "medium",
+    "category": "general"
+  },
+  {
+    "id": 61,
+    "text": "Byzantine fault tolerance is the property of a distributed system that allows it to reach consensus despite some participants failing or acting maliciously, provided that fewer than one third of them are compromised. Practical Byzantine Fault Tolerance algorithms underpin many modern distributed databases and cryptocurrency networks, allowing thousands of untrusted nodes to agree on a single shared state.",
+    "source": "Distributed Systems",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 62,
+    "text": "The lambda calculus, invented by Alonzo Church in the nineteen thirties, is a formal system for expressing computation based on function abstraction and application. Despite its extreme minimalism, it is Turing complete and forms the theoretical foundation for almost every functional programming language in use today, from Haskell to modern JavaScript patterns.",
+    "source": "Computer Science Theory",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 63,
+    "text": "Homomorphic encryption permits computation on encrypted data without first decrypting it, producing an encrypted result that, when decrypted, matches the result of the same operations performed on the plaintext. This remarkable cryptographic primitive promises a future in which cloud services can process sensitive information without ever having access to it in readable form.",
+    "source": "Cryptography Review",
+    "difficulty": "hard",
+    "category": "science"
+  },
+  {
+    "id": 64,
+    "text": "The German philosopher Immanuel Kant spent his entire career in the quiet Baltic city of Königsberg, yet his ideas reshaped the entire landscape of Western thought. His critical philosophy attempted to draw the precise limits of human knowledge, arguing that while we can never know things as they are in themselves, we can and must take responsibility for the moral law within.",
+    "source": "Continental Philosophy",
+    "difficulty": "hard",
+    "category": "philosophy"
+  },
+  {
+    "id": 65,
+    "text": "End-to-end encryption ensures that only the communicating users can read the messages they exchange, with the service provider holding no keys and seeing no plaintext content. Combined with forward secrecy, which generates fresh encryption keys for every session, it provides robust protection even against adversaries who later compromise long-term keys or seize servers.",
+    "source": "Security Engineering",
+    "difficulty": "hard",
+    "category": "technology"
+  },
+  {
+    "id": 66,
+    "text": "Habits are the compound interest of self-improvement. Small daily actions, repeated consistently, produce results that feel almost magical in retrospect but are entirely mathematical in execution. The trick is not in finding the perfect routine, but in finding any routine you can sustain long enough for the curve to bend in your favor.",
+    "source": "Self-Mastery",
+    "difficulty": "medium",
+    "category": "general"
+  },
+  {
+    "id": 67,
+    "text": "An orchestra tunes to the oboe, not the piano, because the oboe produces a clear, sustained pitch that other instruments can match. Similarly, in a well-run software team, every other part of the system orients itself around the simplest, most predictable component. Complexity should always sit at the edges, never in the center.",
+    "source": "Engineering Culture",
+    "difficulty": "medium",
+    "category": "technology"
+  },
+  {
+    "id": 68,
+    "text": "The best advice for writing clearly is to write for a specific person. Not an audience, not a target demographic, but one person you know, who would actually read the words you are writing, who has a name and a life and opinions of their own. Once you imagine them clearly, every paragraph decision becomes dramatically easier.",
+    "source": "On Communication",
+    "difficulty": "medium",
+    "category": "literature"
+  },
+  {
+    "id": 69,
+    "text": "Open source software has won the infrastructure of the modern internet. The Linux kernel, the Apache web server, the Python and JavaScript languages, the Kubernetes orchestrator, the PostgreSQL database: nearly every significant piece of technology you use today is built on the volunteer labor of strangers who decided their work should be free.",
+    "source": "Open Source Quarterly",
+    "difficulty": "medium",
+    "category": "technology"
+  },
+  {
+    "id": 70,
+    "text": "A great debugger does not hunt bugs; they ask the program what is wrong. They reduce the problem until it fits on a single screen, they read the actual error message instead of guessing at it, and they distrust every assumption they have made. The bug is rarely where you think it is, and almost never in the part you wrote most recently.",
+    "source": "Software Craft",
+    "difficulty": "medium",
+    "category": "technology"
+  },
+  {
+    "id": 71,
+    "text": "Bees communicate through dance, sharing directions to flowers with their sisters. A single bee can visit hundreds of blossoms in a single morning, carrying pollen from one to the next and helping plants bear fruit. Their work is so essential that without them, a third of the food we eat would disappear.",
+    "source": "Bee behaviour, public knowledge",
+    "difficulty": "easy",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 304,
+    "license": "original"
+  },
+  {
+    "id": 72,
+    "text": "The moon does not make its own light. It reflects the sun's light, the way a mirror reflects the sun in a window. When the moon is full, we see the entire face of the moon lit by the sun. As the moon travels around the Earth, we see different shapes called phases.",
+    "source": "Astronomy for beginners, public knowledge",
+    "difficulty": "easy",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 264,
+    "license": "original"
+  },
+  {
+    "id": 73,
+    "text": "Trees drink water through their roots and breathe through their leaves. In summer, a single large tree can drink hundreds of litres of water in a single day. The water travels up the trunk and out through tiny holes in the leaves, cooling the air around the tree as it goes.",
+    "source": "Tree biology, public knowledge",
+    "difficulty": "easy",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 274,
+    "license": "original"
+  },
+  {
+    "id": 74,
+    "text": "Rain is water that has travelled a long way. The sun heats water in oceans and lakes until it rises into the air as a gas called water vapour. High in the sky, the air is cold, and the water vapour turns back into tiny drops of water. When enough drops gather, they fall as rain.",
+    "source": "The water cycle, public knowledge",
+    "difficulty": "easy",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 279,
+    "license": "original"
+  },
+  {
+    "id": 75,
+    "text": "Penguins cannot fly, but they are expert swimmers. Their wings have become flippers, perfectly shaped for cutting through cold ocean water. On land, penguins waddle from side to side to keep their balance. Some penguins live where the temperature drops to minus forty, and they survive by huddling together for warmth.",
+    "source": "Penguin biology, public knowledge",
+    "difficulty": "easy",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 318,
+    "license": "original"
+  },
+  {
+    "id": 76,
+    "text": "A rainbow appears when sunlight passes through falling rain. The light bends as it enters each drop, splits into its colours on the back of the drop, and bends again as it leaves. That is why a rainbow is always a perfect arc, and why you can never run to the end of one.",
+    "source": "Atmospheric optics, public knowledge",
+    "difficulty": "easy",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 271,
+    "license": "original"
+  },
+  {
+    "id": 77,
+    "text": "Spiders make silk from glands in their abdomen. The liquid silk hardens the moment it touches the air, becoming a thread thinner than a human hair. Some spiders make webs of perfect symmetry, while others make tangled cobwebs that work just as well for catching prey.",
+    "source": "Spider biology, public knowledge",
+    "difficulty": "easy",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 267,
+    "license": "original"
+  },
+  {
+    "id": 78,
+    "text": "The Great Wall of China stretches more than twenty thousand kilometres. It was built over many centuries by many dynasties, mostly to keep out invaders from the north. The wall is not a single structure but a chain of walls, towers, and natural barriers, much of it made of rammed earth and stone.",
+    "source": "Great Wall history, public knowledge",
+    "difficulty": "easy",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 297,
+    "license": "original"
+  },
+  {
+    "id": 79,
+    "text": "The printing press changed the world. Before it was invented, every book had to be copied by hand, so a single book could take months to produce. With the press, hundreds of copies could be made in a day. Knowledge spread faster than ever before, and ordinary people began to read.",
+    "source": "History of printing, public knowledge",
+    "difficulty": "easy",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 281,
+    "license": "original"
+  },
+  {
+    "id": 80,
+    "text": "The ancient Egyptians built the pyramids more than four thousand years ago. The largest, the Great Pyramid, stood a hundred and forty-six metres high and weighed about six million tonnes. The builders did not have iron tools or wheels, yet the stones fit together so well that not even a knife blade fits between them.",
+    "source": "Pyramids, public knowledge",
+    "difficulty": "easy",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 318,
+    "license": "original"
+  },
+  {
+    "id": 81,
+    "text": "A budget is a plan for money. Most people make one without calling it that. They decide how much to spend on rent, on food, and on fun, and they try not to run out before the next payday. A good budget keeps small surprises from becoming big problems.",
+    "source": "Personal finance, public knowledge",
+    "difficulty": "easy",
+    "category": "business",
+    "wordCount": "original",
+    "charCount": 251,
+    "license": "original"
+  },
+  {
+    "id": 82,
+    "text": "Saving money is easier when you do it first. Pay yourself before you pay anyone else. Even a small amount saved every week grows over the years into something much larger, because of a quiet magic called compound interest.",
+    "source": "Personal finance, public knowledge",
+    "difficulty": "easy",
+    "category": "business",
+    "wordCount": "original",
+    "charCount": 222,
+    "license": "original"
+  },
+  {
+    "id": 83,
+    "text": "A small business often succeeds because the owner knows the customers by name. They remember what people like, what they asked about last time, and what made them smile. That kind of attention is hard to copy and hard to buy.",
+    "source": "Small business, public knowledge",
+    "difficulty": "easy",
+    "category": "business",
+    "wordCount": "original",
+    "charCount": 225,
+    "license": "original"
+  },
+  {
+    "id": 84,
+    "text": "Bread is one of the oldest foods. For thousands of years, people have mixed flour with water, kneaded it, and baked it. Every culture has its own bread, from the round loaves of France to the long flatbreads of the Middle East to the steam buns of China.",
+    "source": "Bread history, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 254,
+    "license": "original"
+  },
+  {
+    "id": 85,
+    "text": "Music is something almost every human enjoys. Even very young children respond to rhythm and melody. There is no culture, ancient or modern, that has no music at all. The instruments may look different, but the impulse to make sound that means something is universal.",
+    "source": "Music, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 267,
+    "license": "original"
+  },
+  {
+    "id": 86,
+    "text": "Dogs were the first animals humans ever tamed, long before sheep or cows. The bond between people and dogs is so old that no one knows when it began. Dogs can read human faces, hear human voices, and understand the mood of the people they live with.",
+    "source": "Dog history, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 249,
+    "license": "original"
+  },
+  {
+    "id": 87,
+    "text": "All children, except one, grow up. They soon know that they will grow up, and the way Wendy knew was this. One day when she was two years old she was playing in a garden, and she plucked another flower and ran with it to her mother. I suppose she must have looked rather delightful, for Mrs. Darling put her hand to her heart and cried, 'Oh, why can't you remain like this for ever!'",
+    "source": "Peter Pan, J. M. Barrie (1911)",
+    "difficulty": "easy",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 383,
+    "license": "original"
+  },
+  {
+    "id": 88,
+    "text": "In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.",
+    "source": "The Hobbit, J. R. R. Tolkien (1937)",
+    "difficulty": "easy",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 247,
+    "license": "original"
+  },
+  {
+    "id": 89,
+    "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of light, it was the season of darkness, it was the spring of hope, it was the winter of despair.",
+    "source": "A Tale of Two Cities, Charles Dickens (1859)",
+    "difficulty": "easy",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 286,
+    "license": "original"
+  },
+  {
+    "id": 90,
+    "text": "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, and what is the use of a book, thought Alice, without pictures or conversation?",
+    "source": "Alice's Adventures in Wonderland, Lewis Carroll (1865)",
+    "difficulty": "easy",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 298,
+    "license": "original"
+  },
+  {
+    "id": 91,
+    "text": "The deep sea is the largest habitat on Earth and the least explored. Sunlight does not reach below about a thousand metres, so most of the deep ocean is in permanent darkness. The animals that live there have adapted in extraordinary ways: some produce their own light through bioluminescence, others have enormous mouths and stretchy stomachs to catch any meal that comes along.",
+    "source": "Deep sea biology, public knowledge",
+    "difficulty": "medium",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 379,
+    "license": "original"
+  },
+  {
+    "id": 92,
+    "text": "A forest is more than a collection of trees. Below the visible canopy, a forest is a network of roots, fungi, insects, and microbes, all trading nutrients and signals with one another. The mycorrhizal fungi that thread through the soil are connected to the roots of most trees, moving sugar from one plant to another and sharing warnings about insects and drought.",
+    "source": "Forest ecology, public knowledge",
+    "difficulty": "medium",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 364,
+    "license": "original"
+  },
+  {
+    "id": 93,
+    "text": "Coral reefs cover less than one percent of the ocean floor, yet they support nearly a quarter of all marine species. The reef itself is built by tiny colonial animals called coral polyps, which secrete calcium carbonate skeletons that accumulate over thousands of years to form the massive structures we recognise today.",
+    "source": "Marine biology, public knowledge",
+    "difficulty": "medium",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 320,
+    "license": "original"
+  },
+  {
+    "id": 94,
+    "text": "Tundras are the cold, treeless plains found near the poles and on the tops of high mountains. The soil beneath the surface is frozen for most of the year, in a layer called permafrost. Only the top few inches thaw in summer, and that thin active layer supports a surprising abundance of life: lichens, mosses, low shrubs, and animals that have learned to live on the short growing season.",
+    "source": "Tundra ecology, public knowledge",
+    "difficulty": "medium",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 388,
+    "license": "original"
+  },
+  {
+    "id": 95,
+    "text": "Migratory birds navigate using the stars, the sun, and the Earth's magnetic field. Some species travel thousands of kilometres between their summer and winter homes, navigating with a precision that human navigators would envy. The young birds learn the route by following older birds, but some species seem to inherit a rough compass that they refine as they mature.",
+    "source": "Bird migration, public knowledge",
+    "difficulty": "medium",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 367,
+    "license": "original"
+  },
+  {
+    "id": 96,
+    "text": "The human brain is the most complex object we have ever studied. It contains roughly eighty-six billion neurons, each connected to thousands of others. The patterns of these connections change with every thought, every memory, every skill learned. We are, in a very real sense, our wiring.",
+    "source": "Neuroscience, public knowledge",
+    "difficulty": "medium",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 289,
+    "license": "original"
+  },
+  {
+    "id": 97,
+    "text": "Earth's atmosphere is a thin layer of gas wrapped around the planet, held in place by gravity. The bottom layer, the troposphere, contains the air we breathe and almost all our weather. Above it, the stratosphere holds the ozone layer that shields us from harmful ultraviolet rays, and higher still the air becomes too thin to breathe.",
+    "source": "Atmospheric science, public knowledge",
+    "difficulty": "medium",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 335,
+    "license": "original"
+  },
+  {
+    "id": 98,
+    "text": "Black holes are regions of space where gravity is so strong that nothing, not even light, can escape. They form when massive stars collapse at the end of their lives. The boundary of a black hole, called the event horizon, marks the point of no return: anything that crosses it is gone forever.",
+    "source": "Astrophysics, public knowledge",
+    "difficulty": "medium",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 294,
+    "license": "original"
+  },
+  {
+    "id": 99,
+    "text": "Photosynthesis is the process by which plants, algae, and certain bacteria turn sunlight into chemical energy. The plant takes in carbon dioxide from the air and water from the soil, and uses the energy of sunlight to combine them into sugar. The waste product is oxygen, which is released into the air for animals to breathe.",
+    "source": "Biology, public knowledge",
+    "difficulty": "medium",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 326,
+    "license": "original"
+  },
+  {
+    "id": 100,
+    "text": "The speed of light in a vacuum is the same for every observer, no matter how fast they are moving. This strange fact, first measured in the late nineteenth century, is the foundation of Einstein's theory of relativity. It leads to time dilation: a clock moving relative to you ticks more slowly than a clock at rest with you.",
+    "source": "Relativity, public knowledge",
+    "difficulty": "medium",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 325,
+    "license": "original"
+  },
+  {
+    "id": 101,
+    "text": "The internet is a network of networks. Every device that connects to it speaks a common language, a set of rules called TCP/IP, that lets information travel in small packets from one machine to another. The packets are routed through many intermediate machines, each forwarding them along the best available path, until they reach their destination.",
+    "source": "Networking, public knowledge",
+    "difficulty": "medium",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 349,
+    "license": "original"
+  },
+  {
+    "id": 102,
+    "text": "Version control systems let many people work on the same set of files without overwriting each other. Each person has their own copy of the work, and when they are ready they commit their changes to a shared repository. The system remembers every change, so any earlier version can be recovered and compared to the current one.",
+    "source": "Software engineering, public knowledge",
+    "difficulty": "medium",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 327,
+    "license": "original"
+  },
+  {
+    "id": 103,
+    "text": "The transistor is the tiny switch that makes modern computing possible. Invented in 1947, it replaced the bulky vacuum tube, allowing computers to shrink from room-sized monsters to devices that fit in a pocket. Billions of transistors can now be packed onto a single chip smaller than a fingernail.",
+    "source": "Computing history, public knowledge",
+    "difficulty": "medium",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 299,
+    "license": "original"
+  },
+  {
+    "id": 104,
+    "text": "Encryption is the art of scrambling a message so that only the intended recipient can read it. Modern encryption relies on mathematical problems that are easy to perform in one direction but very hard to undo, like multiplying two large primes but factoring the result. The asymmetry between easy and hard is what makes the system secure.",
+    "source": "Cryptography, public knowledge",
+    "difficulty": "medium",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 338,
+    "license": "original"
+  },
+  {
+    "id": 105,
+    "text": "Open source software is software whose source code is publicly available for anyone to read, modify, and redistribute. This model of development has produced some of the most important software in the world, from web servers to programming languages to operating systems. The community that grows around an open source project is often the project's greatest strength.",
+    "source": "Open source, public knowledge",
+    "difficulty": "medium",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 368,
+    "license": "original"
+  },
+  {
+    "id": 106,
+    "text": "The Roman Empire at its height ruled a quarter of the world's population. Its roads, aqueducts, and legal system set patterns that European civilisation would follow for a thousand years after the western half fell. Latin, the language of Rome, became the ancestor of French, Spanish, Italian, Portuguese, and Romanian.",
+    "source": "Roman history, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 319,
+    "license": "original"
+  },
+  {
+    "id": 107,
+    "text": "The Renaissance was a rebirth of learning that began in Italy in the fourteenth century. After a thousand years in which most education was controlled by monasteries, scholars began to rediscover the writings of ancient Greece and Rome. New ideas about art, science, and the place of human beings in the universe began to spread across Europe.",
+    "source": "Renaissance history, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 343,
+    "license": "original"
+  },
+  {
+    "id": 108,
+    "text": "The Industrial Revolution changed how people lived and worked. Starting in Britain in the late 1700s, machines began to do work that had once been done by hand. People moved from farms to cities, where they worked long hours in factories. Life was hard, but the revolution also created new wealth and new ways of understanding the world.",
+    "source": "Industrial Revolution, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 337,
+    "license": "original"
+  },
+  {
+    "id": 109,
+    "text": "The Silk Road was not a single road but a network of trade routes that linked China to the Mediterranean for more than a thousand years. Along it travelled silk, spices, precious metals, and ideas. Buddhism travelled from India to China along the Silk Road, and Islam spread west along the same paths. Diseases travelled too, with consequences that no trader could have foreseen.",
+    "source": "Silk Road history, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 379,
+    "license": "original"
+  },
+  {
+    "id": 110,
+    "text": "Plato argued that what we see in the world is only a shadow of a higher reality. The chairs we sit on, he said, are imperfect copies of the perfect chair that exists in some other realm. Most people, he thought, live their whole lives looking at shadows and mistaking them for the real thing.",
+    "source": "Plato's theory of forms, public knowledge",
+    "difficulty": "medium",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 292,
+    "license": "original"
+  },
+  {
+    "id": 111,
+    "text": "The Stoics taught that we should concern ourselves only with what is in our power, and let the rest go. We cannot control the weather, the actions of others, or the course of history. We can control our own judgements, our efforts, and our responses. A good life, they argued, is built on that distinction.",
+    "source": "Stoic philosophy, public knowledge",
+    "difficulty": "medium",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 306,
+    "license": "original"
+  },
+  {
+    "id": 112,
+    "text": "Confucius taught that the foundation of a good society is respect: respect for parents, respect for elders, respect for the proper order of things. A ruler, he said, must first be a good person before he can expect to be a good king. Five centuries before the birth of Christ, these ideas shaped the civilisation of China for the next two thousand years.",
+    "source": "Confucianism, public knowledge",
+    "difficulty": "medium",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 354,
+    "license": "original"
+  },
+  {
+    "id": 113,
+    "text": "Existentialism is the philosophy that existence precedes essence: there is no predetermined human nature, and each of us is free to define who we are. The burden of that freedom, the existentialists argued, is the source of both our greatest anxiety and our greatest dignity. We are condemned to be free.",
+    "source": "Existentialism, public knowledge",
+    "difficulty": "medium",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 304,
+    "license": "original"
+  },
+  {
+    "id": 114,
+    "text": "Maps are a language. Every map is an argument about the world, deciding what to include and what to leave out, what to emphasise and what to shrink. A political map with bold country borders tells one story. A population-density map with soft shading tells a different one. The best mapmakers know that the choice of projection is itself a political act.",
+    "source": "Maps, public knowledge",
+    "difficulty": "medium",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 354,
+    "license": "original"
+  },
+  {
+    "id": 115,
+    "text": "Libraries are among the oldest institutions in the world. The library at Alexandria, founded more than two thousand years ago, was the largest collection of writings in the ancient world. When it burned, knowledge that had taken centuries to gather was lost. Every library built since then is, in some small way, an attempt to rebuild what was destroyed.",
+    "source": "Libraries, public knowledge",
+    "difficulty": "medium",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 354,
+    "license": "original"
+  },
+  {
+    "id": 116,
+    "text": "Games are older than agriculture. Archaeologists have found dice made of bone from sites forty thousand years old. The pleasure of a game is the pleasure of trying, of testing yourself against a problem someone else has set for you. The oldest games in the world are still played, and new ones are invented every year.",
+    "source": "Game history, public knowledge",
+    "difficulty": "medium",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 318,
+    "license": "original"
+  },
+  {
+    "id": 117,
+    "text": "Symbiosis is the closest kind of partnership in nature. Some reef corals cannot survive without the single-celled algae that live inside their tissues, photosynthesising sunlight into sugar and sharing the surplus with their host. The coral, in return, provides the algae with a stable home and a constant supply of nutrients. Lose one, and the other dies within days.",
+    "source": "Coral symbiosis, public knowledge",
+    "difficulty": "hard",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 368,
+    "license": "original"
+  },
+  {
+    "id": 118,
+    "text": "Bioluminescence is the production of light by a living organism. The chemistry is almost always the same: a small molecule called luciferin reacts with oxygen in the presence of an enzyme called luciferase, releasing energy as a pale blue or green glow. The deep sea, the forest at night, even a few species of fungi: all glow by this same ancient trick.",
+    "source": "Bioluminescence, public knowledge",
+    "difficulty": "hard",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 354,
+    "license": "original"
+  },
+  {
+    "id": 119,
+    "text": "Mycorrhizal networks have been called the wood wide web. Through threads of fungal tissue finer than a human hair, sugars produced by one plant in a forest can travel to a shaded neighbour that has not yet reached the canopy. Distress signals move faster: a tree attacked by insects can warn its neighbours within hours, allowing them to mount chemical defences before the attackers arrive.",
+    "source": "Mycorrhizal networks, public knowledge",
+    "difficulty": "hard",
+    "category": "nature",
+    "wordCount": "original",
+    "charCount": 390,
+    "license": "original"
+  },
+  {
+    "id": 120,
+    "text": "Quantum mechanics is the most successful theory in physics and the most unsettling. It tells us that particles do not have definite positions until they are observed, that two particles can become entangled so that measuring one instantly affects the other, and that the act of measurement itself changes the system being measured. None of this fits with the world we experience, but the math is unshakeable, and the predictions it makes are the most precise in all of science.",
+    "source": "Quantum mechanics, public knowledge",
+    "difficulty": "hard",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 477,
+    "license": "original"
+  },
+  {
+    "id": 121,
+    "text": "The Cambrian explosion, around five hundred and forty million years ago, is one of the great mysteries of evolution. In a relatively short window of geological time, almost every major animal body plan appeared in the fossil record: arthropods, molluscs, chordates, the ancestors of every creature now alive. What triggered this burst of evolutionary innovation is still debated.",
+    "source": "Cambrian explosion, public knowledge",
+    "difficulty": "hard",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 379,
+    "license": "original"
+  },
+  {
+    "id": 122,
+    "text": "Plate tectonics describes the slow, grinding movement of the great slabs of rock that make up the Earth's outer shell. Continents drift at the speed fingernails grow, riding atop the plates, colliding and separating over hundreds of millions of years. The Himalayas are still rising. The Atlantic is still widening. The ground beneath us is anything but stable.",
+    "source": "Plate tectonics, public knowledge",
+    "difficulty": "hard",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 361,
+    "license": "original"
+  },
+  {
+    "id": 123,
+    "text": "Entropy is the tendency of ordered things to become disordered. A cup shatters and cannot be unshattered. Ice melts and cannot unmelt. The total entropy of the universe, the sum of all its disorder, is always increasing. This is the second law of thermodynamics, and it tells us that the future is fundamentally different from the past.",
+    "source": "Thermodynamics, public knowledge",
+    "difficulty": "hard",
+    "category": "science",
+    "wordCount": "original",
+    "charCount": 336,
+    "license": "original"
+  },
+  {
+    "id": 124,
+    "text": "Public key cryptography solved a problem that had seemed unsolvable: how do you share a secret with someone you have never met? Each user generates two keys, one public and one private, mathematically linked but practically impossible to reverse. A message encrypted with the public key can only be decrypted with the private key, and vice versa. The whole modern internet depends on this trick.",
+    "source": "Public key cryptography, public knowledge",
+    "difficulty": "hard",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 395,
+    "license": "original"
+  },
+  {
+    "id": 125,
+    "text": "Functional programming treats computation as the evaluation of mathematical functions and avoids changing state. The same input always produces the same output. Side effects, the things a program does besides return a value, are kept to the edges. The discipline makes some classes of bug impossible: if a function does not depend on hidden state, it cannot be wrong in surprising ways.",
+    "source": "Functional programming, public knowledge",
+    "difficulty": "hard",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 386,
+    "license": "original"
+  },
+  {
+    "id": 126,
+    "text": "Ray tracing is a rendering technique that simulates the way light actually behaves. For every pixel on the screen, the algorithm traces the path of light backwards from the eye, bouncing off surfaces, picking up reflections and refractions, and accumulating the colour it would have carried in the real world. The result is images of startling realism, at the cost of enormous computation.",
+    "source": "Ray tracing, public knowledge",
+    "difficulty": "hard",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 389,
+    "license": "original"
+  },
+  {
+    "id": 127,
+    "text": "Distributed systems are the backbone of the modern internet. A service like a search engine or a social network might be served by tens of thousands of machines working in concert, each one handling a small slice of the total load. The hard part is making them agree: when two users try to update the same record at the same time, only one change should win, and all the rest of the system has to learn about it.",
+    "source": "Distributed systems, public knowledge",
+    "difficulty": "hard",
+    "category": "technology",
+    "wordCount": "original",
+    "charCount": 412,
+    "license": "original"
+  },
+  {
+    "id": 128,
+    "text": "Nietzsche declared that God is dead, and he meant something more specific than atheism. He meant that the inherited moral order of the Western world, the framework of values built on the assumption of a divine authority, was no longer credible to modern people. We had, he thought, killed that framework ourselves, through our own science and our own honesty. What would replace it was the great open question of the coming century.",
+    "source": "Nietzsche, public knowledge",
+    "difficulty": "hard",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 432,
+    "license": "original"
+  },
+  {
+    "id": 129,
+    "text": "Sartre believed that human beings are condemned to be free. There is no fixed human nature, no cosmic blueprint for what we are meant to be. Every choice we make defines who we are, and every choice we refuse to make is itself a choice. The freedom is exhilarating and terrifying, and there is no escape from it, not in bad faith and not in the comfort of any crowd.",
+    "source": "Sartre, public knowledge",
+    "difficulty": "hard",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 366,
+    "license": "original"
+  },
+  {
+    "id": 130,
+    "text": "The question of personal identity has haunted philosophy since antiquity. Is the self a fixed thing that persists through time, or a process, a verb rather than a noun? The Buddhist answer is that the self is an illusion, a story we tell about a stream of experiences. The Western tradition, with its emphasis on the immortal soul, has generally taken the opposite view. Each tradition has profound consequences for how we ought to live.",
+    "source": "Personal identity, public knowledge",
+    "difficulty": "hard",
+    "category": "philosophy",
+    "wordCount": "public-domain-ideas",
+    "charCount": 437,
+    "license": "original"
+  },
+  {
+    "id": 131,
+    "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters.",
+    "source": "Pride and Prejudice, Jane Austen (1813)",
+    "difficulty": "hard",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 375,
+    "license": "original"
+  },
+  {
+    "id": 132,
+    "text": "Call me Ishmael. Some years ago, having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation.",
+    "source": "Moby-Dick, Herman Melville (1851)",
+    "difficulty": "hard",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 272,
+    "license": "original"
+  },
+  {
+    "id": 133,
+    "text": "It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors of Victory Mansions, though not quickly enough to prevent a swirl of gritty dust from entering along with him.",
+    "source": "1984, George Orwell (1949)",
+    "difficulty": "hard",
+    "category": "literature",
+    "wordCount": "public-domain",
+    "charCount": 310,
+    "license": "original"
+  },
+  {
+    "id": 134,
+    "text": "The economics of network effects explain why a market with several competing products often ends up with one dominant winner. When a product becomes more useful as more people use it, the first to reach critical mass pulls users away from its rivals, who then cannot match the value of the larger network. Telephone networks, social platforms, and operating systems all show this pattern. The lesson is that being early and being good are not the same thing.",
+    "source": "Network effects, public knowledge",
+    "difficulty": "hard",
+    "category": "business",
+    "wordCount": "original",
+    "charCount": 458,
+    "license": "original"
+  },
+  {
+    "id": 135,
+    "text": "Compound interest is the eighth wonder of the world, according to a saying often misattributed to Einstein. The mathematics is straightforward: a small return, reinvested, grows not just by its own amount but by the returns on the returns. Over decades, the effect is enormous, which is why saving early matters more than saving a lot.",
+    "source": "Compound interest, public knowledge",
+    "difficulty": "hard",
+    "category": "business",
+    "wordCount": "original",
+    "charCount": 335,
+    "license": "original"
+  },
+  {
+    "id": 136,
+    "text": "The bicycle is a simple but brilliant machine. Two wheels, a frame, pedals, and a chain are all it needs. For more than a century, the bicycle has been a cheap and reliable form of transport for billions of people. In some countries, more bikes are sold each year than cars.",
+    "source": "Bicycles, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 274,
+    "license": "original"
+  },
+  {
+    "id": 137,
+    "text": "Lighthouses have guided ships safely to harbour for thousands of years. The earliest lighthouses were simply fires lit on hilltops. Modern lighthouses use electric lamps and radio beacons, and many are automated. The basic job, though, has not changed: warn the sailor of the rocks.",
+    "source": "Lighthouses, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 282,
+    "license": "original"
+  },
+  {
+    "id": 138,
+    "text": "The first clocks had no hands or dials. They simply rang a bell to mark the hours. The word 'clock' comes from medieval Latin for 'bell'. As clockwork improved, clocks grew faces and hands, and eventually minute markers and second hands. Today, the most accurate clocks in the world are atomic, losing or gaining less than a second in millions of years.",
+    "source": "Clocks, public knowledge",
+    "difficulty": "easy",
+    "category": "general",
+    "wordCount": "original",
+    "charCount": 353,
+    "license": "original"
+  },
+  {
+    "id": 139,
+    "text": "The Vikings were Norse seafarers who raided and traded across Europe from the late eighth to the late eleventh centuries. They were not just warriors: they were farmers, merchants, and settlers who founded colonies as far away as Iceland, Greenland, and briefly North America, centuries before Columbus. Their longships, light and flexible, could cross oceans and sail up shallow rivers.",
+    "source": "Vikings, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 387,
+    "license": "original"
+  },
+  {
+    "id": 140,
+    "text": "The Black Death killed perhaps half the population of Europe between 1347 and 1351. The plague, carried by fleas on rats, swept from Asia along the Silk Road and into the Mediterranean. In its wake, the labour shortage transformed European society: workers gained bargaining power, serfdom weakened, and old certainties about the social order began to crumble.",
+    "source": "Black Death, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 360,
+    "license": "original"
+  },
+  {
+    "id": 141,
+    "text": "The Renaissance was a time of rediscovery. Scholars in Italy dug into the ruins of ancient Rome and copied manuscripts that had been forgotten for a thousand years. They read Plato and Aristotle in the original Greek. They studied geometry and medicine. Out of that reading came a new way of seeing the world, one that put human beings and their achievements at the centre of thought.",
+    "source": "Renaissance, public knowledge",
+    "difficulty": "medium",
+    "category": "history",
+    "wordCount": "original",
+    "charCount": 384,
+    "license": "original"
   }
 ]

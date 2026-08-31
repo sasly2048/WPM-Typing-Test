@@ -9,17 +9,30 @@ const MAX_SESSIONS = 500;
  */
 export const saveSession = (result) => {
   const history = storage.get(HISTORY_KEY) || [];
+  // Preserve the caller's timestamp when present. Overwriting it here meant
+  // the stored record no longer matched the object the page kept in memory,
+  // so callers could not identify their own session in history.
   history.push({
     ...result,
-    timestamp: Date.now()
+    timestamp: result.timestamp ?? Date.now(),
   });
-  
+
   if (history.length > MAX_SESSIONS) {
     history.shift();
   }
   
   storage.set(HISTORY_KEY, history);
   updateStreak();
+
+  // Record the personal best here rather than at each call site. Previously
+  // recordPersonalBest() was exported but never invoked, so stored bests
+  // stayed at 0 and the "personal best" badge could never appear.
+  if (typeof result.wpm === 'number') {
+    recordPersonalBest(result.mode, {
+      targetDuration: result.targetDuration,
+      targetWordCount: result.targetWordCount,
+    }, result.wpm);
+  }
 };
 
 /**

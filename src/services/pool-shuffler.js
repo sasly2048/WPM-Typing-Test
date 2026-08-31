@@ -33,22 +33,28 @@ export function getNonRepeatingItem(poolKey, items, idExtractor) {
     return `item-${index}`;
   };
 
-  // Find items not yet used
-  const availableItems = items.filter((item, idx) => !usedSet.has(getId(item, idx)));
+  let availableItems = items.filter((item, idx) => !usedSet.has(getId(item, idx)));
 
-  // If pool exhausted, reset set
+  // Pool exhausted: start a fresh cycle.
+  //
+  // The previous version recursed here. That did terminate — clearing the set
+  // guarantees the next filter matches everything — but it relied on that
+  // invariant holding rather than stating it, and any future change to the
+  // clearing logic would have turned it into unbounded recursion. Resetting
+  // in place is the same behaviour with the exit made structural.
   if (availableItems.length === 0) {
     usedSet.clear();
-    return getNonRepeatingItem(poolKey, items, idExtractor);
+    availableItems = items.filter((item, idx) => !usedSet.has(getId(item, idx)));
+    if (availableItems.length === 0) {
+      // Every id collides. Return something usable rather than looping.
+      return items[Math.floor(Math.random() * items.length)];
+    }
   }
 
-  // Random pick from available
-  const randomIndex = Math.floor(Math.random() * availableItems.length);
-  const selectedItem = availableItems[randomIndex];
-  
-  // Find index in original array to extract ID
-  const origIndex = items.indexOf(selectedItem);
-  usedSet.add(getId(selectedItem, origIndex));
+  const selectedItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+
+  // indexOf on the original array keeps the id stable with what the filter saw.
+  usedSet.add(getId(selectedItem, items.indexOf(selectedItem)));
 
   return selectedItem;
 }

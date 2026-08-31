@@ -46,7 +46,9 @@ export const LANGUAGE_SNIPPETS = {
   }
 
   emit(event, ...args) {
-    const callbacks = this.#listeners.get(event) || [];
+    const callbacks = this.#listeners.get(event) || [
+};
+
     callbacks.forEach((cb) => cb(...args));
   }
 }`
@@ -112,7 +114,204 @@ export const LANGUAGE_SNIPPETS = {
     return result;
   }
 }`
+    },
+  
+    {
+
+      id: 'js-pipe',
+
+      name: 'Function Pipe',
+
+      code: `const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
+const trim = (s) => s.trim();
+const upper = (s) => s.toUpperCase();
+const shout = pipe(trim, upper, (s) => \`\${s}!\`);
+
+console.log(shout('  hello  '));`
+
+    },
+    {
+
+      id: 'js-clone-deep',
+
+      name: 'Deep Clone',
+
+      code: `function deepClone(value, seen = new WeakMap()) {
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return seen.get(value);
+
+  const copy = Array.isArray(value) ? [] : {};
+  seen.set(value, copy);
+
+  for (const key of Reflect.ownKeys(value)) {
+    copy[key] = deepClone(value[key], seen);
+  }
+  return copy;
+}`
+
+    },
+    {
+
+      id: 'js-throttle',
+
+      name: 'Throttle Function',
+
+      code: `function throttle(fn, wait) {
+  let last = 0;
+  let pending = null;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= wait) {
+      last = now;
+      fn.apply(this, args);
+    } else {
+      clearTimeout(pending);
+      pending = setTimeout(() => {
+        last = Date.now();
+        fn.apply(this, args);
+      }, wait - (now - last));
     }
+  };
+}`
+
+    },
+    {
+
+      id: 'js-fetcher',
+
+      name: 'Type-Safe Fetcher',
+
+      code: `async function fetchJson(url, options = {}) {
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  if (!response.ok) {
+    throw new Error(\`Request failed: \${response.status}\`);
+  }
+  return response.json();
+}`
+
+    },
+    {
+
+      id: 'js-priority-queue',
+
+      name: 'Priority Queue',
+
+      code: `class PriorityQueue {
+  constructor() {
+    this.values = [];
+  }
+
+  enqueue(value, priority) {
+    this.values.push({ value, priority });
+    this.values.sort((a, b) => a.priority - b.priority);
+  }
+
+  dequeue() {
+    return this.values.shift()?.value;
+  }
+}`
+
+    },
+    {
+
+      id: 'js-lru-cache',
+
+      name: 'LRU Cache',
+
+      code: `class LRUCache {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.cache = new Map();
+  }
+
+  get(key) {
+    if (!this.cache.has(key)) return -1;
+    const value = this.cache.get(key);
+    this.cache.delete(key);
+    this.cache.set(key, value);
+    return value;
+  }
+
+  put(key, value) {
+    if (this.cache.has(key)) this.cache.delete(key);
+    else if (this.cache.size >= this.capacity) {
+      const oldest = this.cache.keys().next().value;
+      this.cache.delete(oldest);
+    }
+    this.cache.set(key, value);
+  }
+}`
+
+    },
+    {
+
+      id: 'js-csv-parser',
+
+      name: 'CSV Parser',
+
+      code: `function parseCsv(text, delimiter = ',') {
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') {
+        inQuotes = false;
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === delimiter) {
+      row.push(field);
+      field = '';
+    } else if (c === '\\n') {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = '';
+    } else {
+      field += c;
+    }
+  }
+  if (field) row.push(field);
+  if (row.length) rows.push(row);
+  return rows;
+}`
+
+    },
+    {
+
+      id: 'js-event-bus',
+
+      name: 'Typed Event Bus',
+
+      code: `class EventBus {
+  #listeners = new Map();
+
+  on(event, handler) {
+    if (!this.#listeners.has(event)) this.#listeners.set(event, new Set());
+    this.#listeners.get(event).add(handler);
+    return () => this.#listeners.get(event)?.delete(handler);
+  }
+
+  emit(event, payload) {
+    for (const handler of this.#listeners.get(event) ?? []) {
+      handler(payload);
+    }
+  }
+}`
+
+    },
   ],
 
   typescript: [
@@ -214,7 +413,128 @@ function isApiError(value: unknown): value is ApiError {
   };
   return descriptor;
 }`
-    }
+    },
+  
+    {
+
+      id: 'ts-generic-repo',
+
+      name: 'Generic Repository',
+
+      code: `export interface Entity {
+  id: string;
+}
+
+export class Repository<T extends Entity> {
+  private items = new Map<string, T>();
+
+  save(entity: T): T {
+    this.items.set(entity.id, entity);
+    return entity;
+  }
+
+  findById(id: string): T | undefined {
+    return this.items.get(id);
+  }
+
+  all(): T[] {
+    return Array.from(this.items.values());
+  }
+}`
+
+    },
+    {
+
+      id: 'ts-discriminated',
+
+      name: 'Discriminated Union',
+
+      code: `type Result<T, E = Error> =
+  | { ok: true; value: T }
+  | { ok: false; error: E };
+
+function unwrap<T>(result: Result<T>): T {
+  if (result.ok) return result.value;
+  throw result.error;
+}`
+
+    },
+    {
+
+      id: 'ts-pick-omit',
+
+      name: 'Pick and Omit',
+
+      code: `interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+type PublicUser = Omit<User, 'password'>;
+type Credentials = Pick<User, 'email' | 'password'>;`
+
+    },
+    {
+
+      id: 'ts-async-promise',
+
+      name: 'Promise.allSettled',
+
+      code: `async function loadDashboardData(userId: string) {
+  const [profile, settings, sessions] = await Promise.allSettled([
+    api.getProfile(userId),
+    api.getSettings(userId),
+    api.getRecentSessions(userId),
+  ]);
+
+  return {
+    profile: profile.status === 'fulfilled' ? profile.value : null,
+    settings: settings.status === 'fulfilled' ? settings.value : null,
+    sessions: sessions.status === 'fulfilled' ? sessions.value : [],
+  };
+}`
+
+    },
+    {
+
+      id: 'ts-mapped-types',
+
+      name: 'Mapped Types',
+
+      code: `type Nullable<T> = { [K in keyof T]: T[K] | null };
+type Readonly2<T> = { readonly [K in keyof T]: T[K] };
+
+interface Config {
+  theme: string;
+  volume: number;
+}
+
+const safeConfig: Nullable<Config> = {
+  theme: 'light',
+  volume: null,
+};`
+
+    },
+    {
+
+      id: 'ts-react-hook',
+
+      name: 'Custom React Hook',
+
+      code: `function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debounced;
+}`
+
+    },
   ],
 
   python: [
@@ -328,7 +648,116 @@ async def fetch_all(urls):
         tasks = [session.get(url) for url in urls]
         responses = await asyncio.gather(*tasks)
         return [await r.json() for r in responses]`
-    }
+    },
+  
+    {
+
+      id: 'py-decorator-timing',
+
+      name: 'Timing Decorator',
+
+      code: `import time
+from functools import wraps
+
+def timing(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        print(f'{func.__name__} took {elapsed:.3f}s')
+        return result
+    return wrapper`
+
+    },
+    {
+
+      id: 'py-property',
+
+      name: 'Computed Property',
+
+      code: `class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    @property
+    def area(self):
+        return self.width * self.height
+
+    @property
+    def perimeter(self):
+        return 2 * (self.width + self.height)`
+
+    },
+    {
+
+      id: 'py-typing-protocol',
+
+      name: 'Structural Typing',
+
+      code: `from typing import Protocol
+
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+class Circle:
+    def draw(self) -> None:
+        print('Drawing circle')
+
+class Square:
+    def draw(self) -> None:
+        print('Drawing square')
+
+def render(shape: Drawable) -> None:
+    shape.draw()`
+
+    },
+    {
+
+      id: 'py-fstring-debug',
+
+      name: 'F-String Debugging',
+
+      code: `def calculate_total(items, tax_rate):
+    subtotal = sum(item.price for item in items)
+    tax = subtotal * tax_rate
+    total = subtotal + tax
+    print(f'{subtotal=}, {tax_rate=}, {total=}')
+    return total`
+
+    },
+    {
+
+      id: 'py-match-statement',
+
+      name: 'Match Statement',
+
+      code: `def handle_response(response):
+    match response:
+        case {'status': 200, 'data': data}:
+            return f'OK: {data}'
+        case {'status': 404}:
+            return 'Not found'
+        case {'status': code}:
+            return f'Error {code}'
+        case _:
+            return 'Unknown'`
+
+    },
+    {
+
+      id: 'py-walrus',
+
+      name: 'Walrus Operator',
+
+      code: `import re
+
+def extract_numbers(text):
+    pattern = re.compile(r'\\d+')
+    return [int(m.group()) for m in pattern.finditer(text) if (m := pattern.search(text, m.end() if m else 0))]`
+
+    },
   ],
 
   c: [
@@ -432,7 +861,95 @@ void printFileLines(const char* path) {
         }
     }
 }`
+    },
+  
+    {
+
+      id: 'c-quicksort',
+
+      name: 'Quicksort',
+
+      code: `void quicksort(int arr[], int low, int high) {
+    if (low < high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                int temp = arr[++i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        quicksort(arr, low, i);
+        quicksort(arr, i + 2, high);
     }
+}`
+
+    },
+    {
+
+      id: 'c-hashmap',
+
+      name: 'Open-Addressed Hashmap',
+
+      code: `#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define HASHMAP_SIZE 1024
+
+typedef struct Entry {
+    char* key;
+    void* value;
+    int occupied;
+} Entry;
+
+typedef struct HashMap {
+    Entry buckets[HASHMAP_SIZE];
+} HashMap;
+
+uint32_t hash(const char* str) {
+    uint32_t h = 2166136261u;
+    while (*str) {
+        h ^= (uint8_t)*str++;
+        h *= 16777619u;
+    }
+    return h;
+}`
+
+    },
+    {
+
+      id: 'c-deque',
+
+      name: 'Ring Buffer',
+
+      code: `#define DEQUE_SIZE 64
+
+typedef struct {
+    int data[DEQUE_SIZE];
+    int head;
+    int tail;
+    int count;
+} Deque;
+
+void dequePush(Deque* d, int value) {
+    d->data[d->tail] = value;
+    d->tail = (d->tail + 1) % DEQUE_SIZE;
+    d->count++;
+}
+
+int dequePop(Deque* d) {
+    int value = d->data[d->head];
+    d->head = (d->head + 1) % DEQUE_SIZE;
+    d->count--;
+    return value;
+}`
+
+    },
   ],
 
   cpp: [
@@ -528,7 +1045,110 @@ std::unordered_map<std::string, int> wordCount(const std::string& text) {
     }
     return counts;
 }`
+    },
+  
+    {
+
+      id: 'cpp-variant',
+
+      name: 'Variant Visitor',
+
+      code: `#include <variant>
+#include <string>
+#include <iostream>
+
+using Value = std::variant<int, double, std::string>;
+
+void describe(const Value& v) {
+    std::visit([](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, int>)
+            std::cout << "int: " << arg;
+        else if constexpr (std::is_same_v<T, double>)
+            std::cout << "double: " << arg;
+        else
+            std::cout << "string: " << arg;
+    }, v);
+}`
+
+    },
+    {
+
+      id: 'cpp-threadpool',
+
+      name: 'Thread Pool',
+
+      code: `#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <vector>
+
+class ThreadPool {
+public:
+    explicit ThreadPool(size_t n) : stop(false) {
+        for (size_t i = 0; i < n; ++i) {
+            workers.emplace_back([this] { workerLoop(); });
+        }
     }
+
+    ~ThreadPool() {
+        { std::lock_guard<std::mutex> lk(m); stop = true; }
+        cv.notify_all();
+        for (auto& t : workers) t.join();
+    }
+
+    void enqueue(std::function<void()> task) {
+        { std::lock_guard<std::mutex> lk(m); tasks.push(std::move(task)); }
+        cv.notify_one();
+    }
+
+private:
+    void workerLoop() {
+        while (true) {
+            std::function<void()> task;
+            {
+                std::unique_lock<std::mutex> lk(m);
+                cv.wait(lk, [this] { return stop || !tasks.empty(); });
+                if (stop && tasks.empty()) return;
+                task = std::move(tasks.front());
+                tasks.pop();
+            }
+            task();
+        }
+    }
+
+    std::vector<std::thread> workers;
+    std::queue<std::function<void()>> tasks;
+    std::mutex m;
+    std::condition_variable cv;
+    bool stop;
+};`
+
+    },
+    {
+
+      id: 'cpp-constexpr-fib',
+
+      name: 'Constexpr Fibonacci',
+
+      code: `#include <cstdint>
+
+constexpr uint64_t fibonacci(int n) {
+    if (n <= 1) return n;
+    uint64_t a = 0, b = 1;
+    for (int i = 2; i <= n; ++i) {
+        uint64_t next = a + b;
+        a = b;
+        b = next;
+    }
+    return b;
+}
+
+static_assert(fibonacci(10) == 55, "Math broke at compile time");`
+
+    },
   ],
 
   java: [
@@ -636,7 +1256,84 @@ public static int[] mergeSort(int[] arr) {
     int[] right = mergeSort(Arrays.copyOfRange(arr, mid, arr.length));
     return merge(left, right);
 }`
+    },
+  
+    {
+
+      id: 'java-record',
+
+      name: 'Java Record',
+
+      code: `public record Money(BigDecimal amount, Currency currency) {
+    public Money {
+        Objects.requireNonNull(amount, "amount must not be null");
+        Objects.requireNonNull(currency, "currency must not be null");
     }
+
+    public Money add(Money other) {
+        if (!currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Currency mismatch");
+        }
+        return new Money(amount.add(other.amount), currency);
+    }
+}`
+
+    },
+    {
+
+      id: 'java-builder',
+
+      name: 'Builder Pattern',
+
+      code: `public final class HttpRequest {
+    private final String url;
+    private final String method;
+    private final Map<String, String> headers;
+
+    private HttpRequest(Builder b) {
+        this.url = b.url;
+        this.method = b.method;
+        this.headers = Map.copyOf(b.headers);
+    }
+
+    public static Builder builder(String url) {
+        return new Builder(url);
+    }
+
+    public static class Builder {
+        private final String url;
+        private String method = "GET";
+        private final Map<String, String> headers = new HashMap<>();
+
+        private Builder(String url) { this.url = url; }
+
+        public Builder method(String m) { this.method = m; return this; }
+        public Builder header(String k, String v) { headers.put(k, v); return this; }
+        public HttpRequest build() { return new HttpRequest(this); }
+    }
+}`
+
+    },
+    {
+
+      id: 'java-completablefuture',
+
+      name: 'Completable Future Chain',
+
+      code: `import java.util.concurrent.CompletableFuture;
+
+public CompletableFuture<UserProfile> loadProfile(String userId) {
+    return api.fetchUser(userId)
+        .thenCompose(user ->
+            api.fetchPreferences(user.id())
+                .thenApply(prefs -> new UserProfile(user, prefs)))
+        .exceptionally(ex -> {
+            logger.error("Failed to load profile", ex);
+            return UserProfile.empty();
+        });
+}`
+
+    },
   ],
 
   go: [
@@ -742,7 +1439,109 @@ func (c *Cache) Set(key string, value int) {
     }
     return -1
 }`
+    },
+  
+    {
+
+      id: 'go-channel-fanout',
+
+      name: 'Channel Fan-Out',
+
+      code: `package main
+
+import (
+    "context"
+    "sync"
+)
+
+func fanOut(ctx context.Context, input <-chan int, workers int) []<-chan int {
+    channels := make([]<-chan int, workers)
+    for i := 0; i < workers; i++ {
+        out := make(chan int)
+        channels[i] = out
+        go func() {
+            defer close(out)
+            for {
+                select {
+                case <-ctx.Done():
+                    return
+                case v, ok := <-input:
+                    if !ok {
+                        return
+                    }
+                    select {
+                    case out <- v * v:
+                    case <-ctx.Done():
+                        return
+                    }
+                }
+            }
+        }()
     }
+    return channels
+}`
+
+    },
+    {
+
+      id: 'go-http-middleware',
+
+      name: 'HTTP Middleware',
+
+      code: `package http
+
+import (
+    "log"
+    "net/http"
+    "time"
+)
+
+func loggingMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        next.ServeHTTP(w, r)
+        log.Printf("%s %s %v", r.Method, r.URL.Path, time.Since(start))
+    })
+}
+
+func recoveryMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        defer func() {
+            if err := recover(); err != nil {
+                log.Printf("panic: %v", err)
+                http.Error(w, "internal server error", http.StatusInternalServerError)
+            }
+        }()
+        next.ServeHTTP(w, r)
+    })
+}`
+
+    },
+    {
+
+      id: 'go-defer-pattern',
+
+      name: 'Defer Cleanup',
+
+      code: `func processFile(path string) (string, error) {
+    file, err := os.Open(path)
+    if err != nil {
+        return "", fmt.Errorf("opening %s: %w", path, err)
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    var lines []string
+    for scanner.Scan() {
+        lines = append(lines, scanner.Text())
+    }
+    if err := scanner.Err(); err != nil {
+        return "", fmt.Errorf("scanning %s: %w", path, err)
+    }
+    return strings.Join(lines, "\\n"), nil
+}`
+
+    },
   ],
 
   rust: [
@@ -849,7 +1648,63 @@ fn increment_counter() -> i32 {
     }
     *counter.lock().unwrap()
 }`
+    },
+  
+    {
+
+      id: 'rust-async-join',
+
+      name: 'Async Join',
+
+      code: `use tokio::try_join;
+
+async fn load_dashboard(user_id: u64) -> Result<Dashboard, AppError> {
+    let (profile, settings, stats) = try_join!(
+        fetch_profile(user_id),
+        fetch_settings(user_id),
+        fetch_stats(user_id),
+    )?;
+    Ok(Dashboard { profile, settings, stats })
+}`
+
+    },
+    {
+
+      id: 'rust-iterator-sum',
+
+      name: 'Sum With Closure',
+
+      code: `fn total_revenue(orders: &[Order]) -> f64 {
+    orders
+        .iter()
+        .filter(|o| o.status == OrderStatus::Paid)
+        .map(|o| o.amount)
+        .sum()
+}`
+
+    },
+    {
+
+      id: 'rust-lifetime',
+
+      name: 'Lifetime Annotations',
+
+      code: `struct Parser<'a> {
+    input: &'a str,
+    position: usize,
+}
+
+impl<'a> Parser<'a> {
+    fn new(input: &'a str) -> Self {
+        Self { input, position: 0 }
     }
+
+    fn peek(&self) -> Option<char> {
+        self.input[self.position..].chars().next()
+    }
+}`
+
+    },
   ],
 
   kotlin: [
@@ -911,7 +1766,51 @@ val config = Config().apply {
     timeout = 60
     retries = 5
 }`
+    },
+  
+    {
+
+      id: 'kt-coroutine-retry',
+
+      name: 'Coroutine Retry',
+
+      code: `import kotlinx.coroutines.delay
+import kotlin.math.pow
+
+suspend fun <T> retryWithBackoff(
+    attempts: Int = 5,
+    initialDelayMs: Long = 100,
+    block: suspend () -> T,
+): T {
+    var currentDelay = initialDelayMs
+    repeat(attempts - 1) { attempt ->
+        try {
+            return block()
+        } catch (e: Exception) {
+            if (attempt == attempts - 1) throw e
+            delay(currentDelay)
+            currentDelay = (currentDelay * 2.0.pow(attempt.toDouble())).toLong()
+        }
     }
+    return block()
+}`
+
+    },
+    {
+
+      id: 'kt-null-safety',
+
+      name: 'Safe Call Chain',
+
+      code: `fun describeUser(user: User?): String {
+    return user
+        ?.takeIf { it.isActive }
+        ?.profile
+        ?.let { "\${it.name} (\${it.role})" }
+        ?: "Anonymous"
+}`
+
+    },
   ],
 
   swift: [
@@ -974,7 +1873,57 @@ func resolveCity(_ profile: Profile) -> String {
     let (data, _) = try await URLSession.shared.data(from: url)
     return try JSONDecoder().decode(User.self, from: data)
 }`
+    },
+  
+    {
+
+      id: 'swift-result-builder',
+
+      name: 'Result Builder',
+
+      code: `@resultBuilder
+struct StringBuilder {
+    static func buildBlock(_ components: String...) -> String {
+        components.joined(separator: " ")
     }
+}
+
+func greet(@StringBuilder _ build: () -> String) -> String {
+    "Hello, " + build()
+}
+
+let message = greet {
+    "world"
+    "from"
+    "Swift"
+}`
+
+    },
+    {
+
+      id: 'swift-actor',
+
+      name: 'Actor Concurrency',
+
+      code: `actor BankAccount {
+    private var balance: Decimal = 0
+
+    func deposit(_ amount: Decimal) {
+        balance += amount
+    }
+
+    func withdraw(_ amount: Decimal) -> Bool {
+        guard balance >= amount else { return false }
+        balance -= amount
+        return true
+    }
+
+    func currentBalance() -> Decimal {
+        balance
+    }
+}`
+
+    },
   ],
 
   html: [
@@ -1038,7 +1987,45 @@ func resolveCity(_ profile: Profile) -> String {
     <button value="confirm" autofocus>Confirm</button>
   </menu>
 </dialog>`
-    }
+    },
+  
+    {
+
+      id: 'html-article',
+
+      name: 'Article With Time',
+
+      code: `<article class="post">
+  <header>
+    <h2>Why Open Source Matters</h2>
+    <p class="meta">
+      By <a href="/authors/jane">Jane Doe</a>
+      on <time datetime="2024-01-15">January 15, 2024</time>
+    </p>
+  </header>
+  <p>Open source software powers most of the modern internet...</p>
+  <footer>
+    <a href="/posts/why-open-source">Read more</a>
+  </footer>
+</article>`
+
+    },
+    {
+
+      id: 'html-progress',
+
+      name: 'Accessible Progress Bar',
+
+      code: `<div role="progressbar"
+     aria-valuenow="65"
+     aria-valuemin="0"
+     aria-valuemax="100"
+     aria-label="Test progress">
+  <div class="progress-fill" style="width: 65%"></div>
+  <span class="sr-only">65% complete</span>
+</div>`
+
+    },
   ],
 
   css: [
@@ -1125,7 +2112,81 @@ func resolveCity(_ profile: Profile) -> String {
     grid-template-columns: 1fr 2fr;
   }
 }`
-    }
+    },
+  
+    {
+
+      id: 'css-has-selector',
+
+      name: ':has() Selector',
+
+      code: `.card:has(img) {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+}
+
+.form-field:has(input:invalid) {
+  border-color: var(--color-error);
+}
+
+.form-field:has(input:focus) {
+  outline: 2px solid var(--color-accent);
+}`
+
+    },
+    {
+
+      id: 'css-dark-mode',
+
+      name: 'Dark Mode With System Pref',
+
+      code: `:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --border: #e5e5e5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0c0d;
+    --text: #ededed;
+    --border: #2a2a30;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: light dark;
+}`
+
+    },
+    {
+
+      id: 'css-transitions',
+
+      name: 'Smooth Transitions',
+
+      code: `.button {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 120ms ease-out, background 180ms ease-out;
+}
+
+.button:hover {
+  background: var(--color-accent-hover);
+}
+
+.button:active {
+  transform: translateY(1px);
+}`
+
+    },
   ],
 
   sql: [
@@ -1176,7 +2237,66 @@ DO UPDATE SET
 );
 
 CREATE INDEX idx_sessions_user_id ON sessions(user_id);`
-    }
+    },
+  
+    {
+
+      id: 'sql-recursive-cte',
+
+      name: 'Recursive CTE',
+
+      code: `WITH RECURSIVE org_tree AS (
+    SELECT id, name, manager_id, 1 AS depth
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    SELECT e.id, e.name, e.manager_id, t.depth + 1
+    FROM employees e
+    INNER JOIN org_tree t ON e.manager_id = t.id
+)
+SELECT id, name, depth FROM org_tree ORDER BY depth, name;`
+
+    },
+    {
+
+      id: 'sql-window-funcs',
+
+      name: 'Running Total',
+
+      code: `SELECT
+    order_date,
+    daily_revenue,
+    SUM(daily_revenue) OVER (
+        ORDER BY order_date
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS running_total,
+    AVG(daily_revenue) OVER (
+        ORDER BY order_date
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS seven_day_avg
+FROM daily_sales
+ORDER BY order_date;`
+
+    },
+    {
+
+      id: 'sql-json-ops',
+
+      name: 'JSON Column Query',
+
+      code: `SELECT
+    id,
+    metadata->>'name' AS name,
+    metadata->>'plan' AS plan,
+    (metadata->>'usage_minutes')::int AS usage_minutes
+FROM accounts
+WHERE metadata->>'plan' = 'pro'
+  AND (metadata->>'usage_minutes')::int > 1000
+ORDER BY usage_minutes DESC;`
+
+    },
   ],
 
   json: [
@@ -1228,7 +2348,52 @@ CREATE INDEX idx_sessions_user_id ON sessions(user_id);`
     "vite": "^6.3.5"
   }
 }`
-    }
+    },
+  
+    {
+
+      id: 'json-tsconfig',
+
+      name: 'TSConfig',
+
+      code: `{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+    "jsx": "preserve"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}`
+
+    },
+    {
+
+      id: 'json-eslint',
+
+      name: 'ESLint Config',
+
+      code: `{
+  "root": true,
+  "env": { "browser": true, "es2022": true },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-console": "warn",
+    "prefer-const": "error",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+  }
+}`
+
+    },
   ],
 
   markdown: [
@@ -1268,7 +2433,45 @@ Retrieves practice text for the given mode.
 | \`mode\`       | string   | One of the supported modes |
 | \`difficulty\` | string   | easy, medium, hard, expert |
 | \`options\`    | object   | Mode-specific options      |`
-    }
+    },
+  
+    {
+
+      id: 'md-feature-grid',
+
+      name: 'Feature Grid Table',
+
+      code: `| Feature              | Status   | Notes                  |
+|----------------------|----------|------------------------|
+| Live WPM             | Stable   | Updated per keystroke  |
+| Code highlighting    | Stable   | 16 languages           |
+| Replay               | Beta     | Storage-bounded        |
+| Cloud sync           | Planned  | Roadmap Q2             |`
+
+    },
+    {
+
+      id: 'md-install',
+
+      name: 'Install Section',
+
+      code: `## Installation
+
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/keyflow/keyflow.git
+cd keyflow
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+\`\`\`
+
+Open <http://localhost:5173> to view it in your browser.`
+
+    },
   ],
 
   bash: [
@@ -1337,6 +2540,43 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done`
-    }
-  ]
+    },
+  
+    {
+
+      id: 'bash-git-rotate',
+
+      name: 'Git Branch Cleanup',
+
+      code: `#!/usr/bin/env bash
+set -euo pipefail
+
+git fetch --all --prune
+git for-each-ref --format='%(refname:short)' refs/heads/ \\
+  | grep -E '^(feature|fix)/' \\
+  | while read -r branch; do
+      merged=$(git branch --merged main | grep -c "^  \${branch}\\$" || true)
+      if [ "$merged" -gt 0 ]; then
+        echo "Deleting merged branch: $branch"
+        git branch -d "$branch"
+      fi
+    done`
+
+    },
+    {
+
+      id: 'bash-system-info',
+
+      name: 'System Info Reporter',
+
+      code: `#!/usr/bin/env bash
+echo "=== System Information ==="
+echo "Hostname: $(hostname)"
+echo "Kernel:   $(uname -r)"
+echo "Distro:   $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2)"
+echo "Uptime:   $(uptime -p 2>/dev/null || uptime)"
+echo "Memory:   $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
+echo "Disk:     $(df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 " used)"}')`
+
+    }]
 };
