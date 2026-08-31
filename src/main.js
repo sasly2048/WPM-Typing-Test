@@ -12,9 +12,14 @@ import { addRoute, setContainer, initRouter, navigate, onRouteChange, getCurrent
 import { createNav } from './components/nav.js';
 import { createFooter } from './components/footer.js';
 import { createCommandPalette } from './components/command-palette.js';
-import { initTheme, setSurfaceForRoute, setAppearance, toggleAppearance, setDevAccent } from './services/theme.js';
+import {
+  initTheme, setSurfaceForRoute, setAppearance, toggleAppearance,
+  setDevAccent, setTheme, THEMES, DEV_ACCENT_OPTIONS,
+} from './services/theme.js';
 import { onAuthChange, signOut } from './services/auth.js';
 import { initInstrumentation, logger } from './services/instrumentation.js';
+import { migrate } from './services/storage.js';
+import * as audio from './services/audio.js';
 
 /**
  * Lazy-load page modules for code splitting and high performance.
@@ -91,10 +96,17 @@ function createLazyPage(path) {
         `;
       });
     },
-    destroy() {
+    destroy(container) {
       const cached = pageCache.get(path);
       if (cached && cached.destroy) {
-        cached.destroy();
+        // Pass the container down so the page's destroy can read
+        // its own _destroy callback (set during render). The router
+        // calls destroy() with no arguments; we hand it the page
+        // container here so the page actually has the data it
+        // needs to clean up listeners.
+        try { cached.destroy(container); } catch (e) {
+          console.warn('Error destroying page:', e);
+        }
       }
     },
   };
@@ -113,10 +125,26 @@ function initAccessibility() {
  * Initialize Command Palette with global commands dictionary
  */
 function initCommandPalette() {
+  const themeCommands = THEMES.map((t) => ({
+    category: 'Theme',
+    label: `Theme: ${t.label}`,
+    description: t.hint,
+    icon: '<i data-lucide="palette"></i>',
+    action: () => { setTheme(t.id); navigate('/themes'); }
+  }));
+
+  const accentCommands = DEV_ACCENT_OPTIONS.map((a) => ({
+    category: 'Developer Mode',
+    label: `Developer Accent: ${a.label}`,
+    description: a.hint,
+    icon: '<i data-lucide="terminal"></i>',
+    action: () => setDevAccent(a.id)
+  }));
+
   const commands = [
     {
       category: 'Workspaces',
-      label: 'Practice Workspace (Words / Quotes)',
+      label: 'Practice Workspace (Prose, Time, Words)',
       description: 'Standard typing practice mode',
       icon: '<i data-lucide="keyboard"></i>',
       action: () => navigate('/practice')
@@ -145,7 +173,7 @@ function initCommandPalette() {
     {
       category: 'Navigation',
       label: 'Appearance & Themes',
-      description: 'Light, dark, and developer accent options',
+      description: 'Browse themes, accents, and light/dark',
       icon: '<i data-lucide="palette"></i>',
       action: () => navigate('/themes')
     },
@@ -184,34 +212,27 @@ function initCommandPalette() {
       icon: '<i data-lucide="monitor"></i>',
       action: () => setAppearance('system')
     },
+    ...themeCommands,
+    ...accentCommands,
     {
-      category: 'Developer Mode',
-      label: 'Developer Accent: Phosphor',
-      description: 'Classic terminal green',
-      icon: '<i data-lucide="terminal"></i>',
-      action: () => setDevAccent('phosphor')
+      category: 'Sound',
+      label: 'Mute keystroke sound',
+      description: 'Disable typing SFX without losing other settings',
+      icon: '<i data-lucide="volume-x"></i>',
+      action: () => audio.disable()
     },
     {
-      category: 'Developer Mode',
-      label: 'Developer Accent: Amber',
-      description: 'Vintage CRT amber',
-      icon: '<i data-lucide="terminal"></i>',
-      action: () => setDevAccent('amber')
+      category: 'Sound',
+      label: 'Unmute keystroke sound',
+      description: 'Resume typing SFX',
+      icon: '<i data-lucide="volume-2"></i>',
+      action: () => audio.enable()
     },
-    {
-      category: 'Developer Mode',
-      label: 'Developer Accent: Cyan',
-      description: 'Cool cyan on near-black',
-      icon: '<i data-lucide="terminal"></i>',
-      action: () => setDevAccent('cyan')
-    }
   ];
 
   const palette = createCommandPalette({
     commands,
-    onExecute: (cmd) => {
-      // Command executed
-    }
+    onExecute: () => {}
   });
 
   window.addEventListener('keyflow:command-palette', () => {
@@ -227,6 +248,7 @@ function init() {
   if (!app) return;
 
   initTheme();
+  migrate();
   initAccessibility();
   initInstrumentation();
 

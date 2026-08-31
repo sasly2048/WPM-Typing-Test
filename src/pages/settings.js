@@ -8,9 +8,14 @@
 
 import { html } from '../utils/dom.js';
 import { getSettings, saveSettings, exportData, importData, clear } from '../services/storage.js';
-import { getAppearance, setAppearance, getDevAccent, setDevAccent, DEV_ACCENTS } from '../services/theme.js';
+import {
+  getAppearance, setAppearance,
+  getTheme, setTheme, THEMES,
+  getDevAccent, setDevAccent, DEV_ACCENTS, DEV_ACCENT_OPTIONS,
+} from '../services/theme.js';
 import { showToast } from '../components/toast.js';
 import { logger } from '../services/instrumentation.js';
+import * as audio from '../services/audio.js';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -22,6 +27,7 @@ const APPEARANCES = [
 ];
 
 const SOUND_PROFILES = [
+  { id: 'none',       label: 'Silent' },
   { id: 'mechanical', label: 'Mechanical' },
   { id: 'soft',       label: 'Soft' },
   { id: 'typewriter', label: 'Typewriter' },
@@ -50,10 +56,24 @@ export function render(container) {
           <div class="setting-row">
             <div class="setting-row__text">
               <div class="setting-row__title">Theme</div>
-              <div class="setting-row__desc">Applies everywhere except the developer workspace, which is always dark.</div>
+              <div class="setting-row__desc">Visual identity for the reading surface. See all of them on the <a href="#/themes">Appearance</a> page.</div>
             </div>
             <div class="setting-row__control">
-              <div class="segmented" role="radiogroup" aria-label="Theme">
+              <select class="select" id="theme-select" aria-label="Theme" style="width:200px">
+                ${THEMES.map((t) => `
+                  <option value="${esc(t.id)}" ${getTheme() === t.id ? 'selected' : ''}>${esc(t.label)}</option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Light or dark</div>
+              <div class="setting-row__desc">Only Paper follows this. Other themes carry their own light/dark identity.</div>
+            </div>
+            <div class="setting-row__control">
+              <div class="segmented" role="radiogroup" aria-label="Appearance">
                 ${APPEARANCES.map((a) => `
                   <button class="segmented__item ${getAppearance() === a.id ? 'active' : ''}"
                           role="radio" data-appearance="${a.id}"
@@ -72,10 +92,10 @@ export function render(container) {
             </div>
             <div class="setting-row__control">
               <div class="swatch-row" role="radiogroup" aria-label="Developer accent">
-                ${Object.entries(DEV_ACCENTS).map(([id, a]) => `
-                  <button class="swatch ${getDevAccent() === id ? 'active' : ''}"
-                          role="radio" data-accent="${esc(id)}"
-                          aria-checked="${getDevAccent() === id}"
+                ${DEV_ACCENT_OPTIONS.map((a) => `
+                  <button class="swatch ${getDevAccent() === a.id ? 'active' : ''}"
+                          role="radio" data-accent="${esc(a.id)}"
+                          aria-checked="${getDevAccent() === a.id}"
                           title="${esc(a.label)}" aria-label="${esc(a.label)}"
                           style="--swatch:${esc(a.accent)}"></button>
                 `).join('')}
@@ -142,23 +162,48 @@ export function render(container) {
               <div class="setting-row__title">Sound profile</div>
               <div class="setting-row__desc">Character of the keystroke sound.</div>
             </div>
-            <div class="setting-row__control">
+            <div class="setting-row__control" style="display:flex; align-items:center; gap: var(--space-2)">
               <select class="select" id="sound-profile" aria-label="Sound profile" style="width:170px">
                 ${SOUND_PROFILES.map((p) => `
                   <option value="${p.id}" ${settings.soundProfile === p.id ? 'selected' : ''}>${p.label}</option>
                 `).join('')}
               </select>
+              <button class="btn btn-ghost btn-sm" id="sound-test" type="button" aria-label="Test sound">
+                <i data-lucide="play"></i> Test
+              </button>
             </div>
           </div>
 
           <div class="setting-row">
             <div class="setting-row__text">
-              <div class="setting-row__title">Volume</div>
-              <div class="setting-row__desc"><span id="volume-readout">${Math.round((settings.soundVolume ?? 0.5) * 100)}</span>%</div>
+              <div class="setting-row__title">Master volume</div>
+              <div class="setting-row__desc">Overall loudness. 0% mutes everything.</div>
             </div>
             <div class="setting-row__control" style="width:180px">
               <input type="range" class="range" id="volume" min="0" max="100"
-                     value="${Math.round((settings.soundVolume ?? 0.5) * 100)}" aria-label="Volume">
+                     value="${Math.round((settings.soundVolume ?? 0.5) * 100)}" aria-label="Master volume">
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Keystroke sound</div>
+              <div class="setting-row__desc">Per-key click. Set to 0% to silence keystrokes without losing feedback.</div>
+            </div>
+            <div class="setting-row__control" style="width:180px">
+              <input type="range" class="range" id="volume-typing" min="0" max="100"
+                     value="${Math.round((settings.typingVolume ?? 0.4) * 100)}" aria-label="Typing sound">
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Feedback sound</div>
+              <div class="setting-row__desc">Errors, completion, milestones, achievements.</div>
+            </div>
+            <div class="setting-row__control" style="width:180px">
+              <input type="range" class="range" id="volume-feedback" min="0" max="100"
+                     value="${Math.round((settings.feedbackVolume ?? 0.7) * 100)}" aria-label="Feedback sound">
             </div>
           </div>
         </div>
@@ -228,6 +273,8 @@ export function render(container) {
   wireRadioGroup('appearance', setAppearance);
   wireRadioGroup('accent', setDevAccent);
 
+  $('#theme-select').addEventListener('change', (e) => setTheme(e.target.value));
+
   container.querySelectorAll('[data-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const next = btn.getAttribute('aria-checked') !== 'true';
@@ -236,12 +283,45 @@ export function render(container) {
     });
   });
 
-  $('#sound-profile').addEventListener('change', (e) => update({ soundProfile: e.target.value }));
+  $('#sound-profile').addEventListener('change', (e) => {
+    update({ soundProfile: e.target.value });
+    audio.init();
+    audio.playKeyClick(e.target.value);
+  });
 
   const volumeReadout = $('#volume-readout');
-  $('#volume').addEventListener('input', (e) => {
-    volumeReadout.textContent = e.target.value;
+  // Per-group volumes: typing click and feedback (errors, completion,
+  // milestones). Each group has its own slider so the user can silence
+  // the per-key click without losing the helpful feedback.
+  const wireVolume = (suffix, fn) => {
+    const el = $('#volume-' + suffix);
+    if (!el) return;
+    el.addEventListener('input', (e) => {
+      const level = Number(e.target.value) / 100;
+      update({ [suffix + 'Volume']: level });
+      fn(level);
+    });
+  };
+
+  wireVolume('typing', (level) => audio.setGroupVolume('typing', level));
+  wireVolume('feedback', (level) => audio.setGroupVolume('feedback', level));
+
+  // Master volume (back-compat — controls the global level).
+  const volumeEl = $('#volume');
+  volumeEl.addEventListener('input', (e) => {
     update({ soundVolume: Number(e.target.value) / 100 });
+    audio.setVolume(Number(e.target.value) / 100);
+  });
+
+  $('#sound-test').addEventListener('click', () => {
+    audio.init();
+    const profile = settings.soundProfile || 'mechanical';
+    // Play one of each role so the user can hear all three groups
+    // in sequence. The sequence matches what they'll hear during a
+    // session: keystroke -> space -> milestone.
+    audio.playKeyClick(profile);
+    setTimeout(() => audio.playSpace(profile), 110);
+    setTimeout(() => audio.playMilestone(60), 220);
   });
 
   /* ── data management ─────────────────────────────────────────────────── */
@@ -269,12 +349,21 @@ export function render(container) {
     const file = fileInput.files?.[0];
     if (!file) return;
     try {
-      const ok = importData(await file.text());
-      if (ok) {
-        showToast({ message: 'Data imported. Reloading…', type: 'success' });
+      const result = importData(await file.text());
+      if (result.accepted > 0) {
+        const skippedNote = result.rejected > 0
+          ? ` (${result.rejected} entries skipped)`
+          : '';
+        showToast({
+          message: `Imported ${result.accepted} entries${skippedNote}. Reloading…`,
+          type: 'success',
+        });
         setTimeout(() => location.reload(), 700);
       } else {
-        showToast({ message: 'That file is not a valid KeyFlow backup.', type: 'error' });
+        showToast({
+          message: result.issues[0] || 'That file is not a valid KeyFlow backup.',
+          type: 'error',
+        });
       }
     } catch (err) {
       logger.error('settings', 'Import failed', { error: err.message });

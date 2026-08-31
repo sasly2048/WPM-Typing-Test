@@ -10,6 +10,7 @@ import { html } from '../utils/dom.js';
 import { fireConfetti } from '../components/confetti.js';
 import { createLineChart, createRingChart, createBarChart } from '../components/chart.js';
 import { createReplay } from '../components/replay.js';
+import { renderKeyHeatmap } from '../components/keymap.js';
 import { getSessions, getPersonalBest } from '../services/history.js';
 import { logger } from '../services/instrumentation.js';
 
@@ -18,8 +19,8 @@ const esc = (s) =>
 
 const MODE_LABEL = {
   paragraph: 'Prose',
+  time: 'Time',
   words: 'Words',
-  quote: 'Quote',
   code: 'Code',
   custom: 'Custom',
 };
@@ -148,6 +149,14 @@ export function render(container) {
         <h2 class="section__label">Character breakdown</h2>
         <div class="card" id="results-breakdown"></div>
       </section>
+
+      ${session.mistakesByKey && Object.keys(session.mistakesByKey).length > 0 ? `
+      <section class="section">
+        <h2 class="section__label">Where you slipped</h2>
+        <p class="section__note">The keys that caught you out, lit by how often. Drill these and your next run will be faster.</p>
+        <div class="card" id="results-keymap">${renderKeyHeatmap(session.mistakesByKey)}</div>
+      </section>
+      ` : ''}
 
       <section class="section">
         <h2 class="section__label">Recent history</h2>

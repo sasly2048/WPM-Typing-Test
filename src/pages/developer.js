@@ -19,7 +19,7 @@ import { python } from '../syntax/languages/python.js';
 import { createDevDock } from '../components/dev-dock.js';
 import { logger, recordInputLatency } from '../services/instrumentation.js';
 import { calculateConsistency } from '../services/stats-engine.js';
-import { saveSession } from '../services/history.js';
+import { publishSessionCompleted } from '../services/achievements.js';
 
 const LANGUAGES = [
   { id: 'javascript', label: 'javascript', ext: 'js',    icon: 'file-code' },
@@ -229,8 +229,9 @@ export function render(container) {
     started = false;
 
     const lang = getLang(langId);
-    $('#dev-filename').textContent = `${lang.label}.${lang.ext}`;
-    $('#dev-crumb').textContent = `${lang.label}.${lang.ext}`;
+    // Initial labels — the snippet-specific filename is set below
+    // once the actual snippet has loaded. Showing the language here
+    // is fine because the snippet loads in the same task tick.
     $('#dev-lang').textContent = lang.label;
 
     if (inputEngine) inputEngine.stop();
@@ -240,15 +241,27 @@ export function render(container) {
 
     logger.info('session', `Loading ${langId} snippet`);
 
-    let code;
+    let snippetResult;
     try {
-      code = await getText(MODES.CODE, 'medium', { language: langId });
+      snippetResult = await getText(MODES.CODE, 'medium', { language: langId });
     } catch (err) {
       logger.error('session', `Failed to load snippet for ${langId}`, { error: err.message });
       syntaxEl.innerHTML = '';
       typedEl.innerHTML = `<div class="dev-dock__empty">Could not load a ${escapeHtml(langId)} snippet.</div>`;
       return;
     }
+
+    // Snippets come back as { code, name }; the name is the per-snippet
+    // title (e.g. "Binary Search", "Quicksort") so the editor shows a
+    // real file name instead of just "javascript.js".
+    const code = snippetResult.code;
+    const snippetName = snippetResult.name || lang.label;
+    const fileName = snippetName ? `${snippetName.toLowerCase().replace(/\s+/g, '_')}.${lang.ext}` : `${lang.label}.${lang.ext}`;
+
+    // Update the tab and breadcrumb to reflect the actual snippet
+    $('#dev-filename').textContent = fileName;
+    $('#dev-crumb').textContent = fileName;
+    $('#dev-lang').textContent = lang.label;
 
     adapter = new CodeAdapter(code);
     paintSyntax(code);
@@ -274,7 +287,12 @@ export function render(container) {
         }
 
         const correct = isCorrect(inputEvent);
-        statsEngine.recordKeystroke(inputEvent.key, targetChar(), correct);
+        statsEngine.recordKeystroke({
+          char: inputEvent.key,
+          expected: targetChar(),
+          correct,
+          isBackspace: !!inputEvent.isBackspace,
+        });
 
         const { renderState, caretPosition } = adapter.processInput(inputEvent);
         renderEngine.render(renderState);
@@ -310,11 +328,7 @@ export function render(container) {
   }
 
   function isComplete() {
-    const last = adapter.lines.length - 1;
-    return (
-      adapter.currentLineIndex >= last &&
-      (adapter.typedLines[last] || '').length >= (adapter.lines[last] || '').length
-    );
+    return adapter?.passageFinished?.() ?? false;
   }
 
   function syncCaret({ lineIndex, charIndex }) {
@@ -348,6 +362,7 @@ export function render(container) {
       mode: MODES.CODE,
       language: langId,
       totalStrokes: s.totalStrokes,
+      mistakesByKey: s.mistakesByKey,
       timestamp: Date.now(),
     };
 
@@ -372,10 +387,12 @@ export function render(container) {
       logger.warn('replay', 'Timeline too large to store', { error: err.message });
     }
 
-    // Persist alongside prose sessions so the dashboard reflects code practice
-    // too — previously code runs were recorded nowhere.
+    // Persist via the achievements service, which writes to history
+    // and publishes on the event bus. The dashboard reads from the
+    // same history, so code runs and prose runs now share the same
+    // single source of truth.
     try {
-      saveSession(session);
+      publishSessionCompleted(session, { mode: MODES.CODE, language: langId });
     } catch (err) {
       logger.error('history', 'Failed to persist session', { error: err.message });
     }

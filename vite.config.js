@@ -20,6 +20,12 @@ export default defineConfig({
     outDir: 'dist',
     assetsInlineLimit: 4096,
     rollupOptions: {
+      // Treat the achievement module's node: builtins as external
+      // so the bundler does not warn. The code path that uses them
+      // is unreachable in the browser (gated on process.versions.node)
+      // — Node tests do the actual file reads. Build still produces
+      // a working browser bundle because the branch is never taken.
+      external: [/^node:/],
       output: {
         manualChunks: {
           // Content JSON is split into its own chunk so the app shell isn't

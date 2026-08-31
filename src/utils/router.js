@@ -76,10 +76,12 @@ function handleRouteChange() {
 
   if (path === currentPath) return;
 
-  // Destroy current page
+  // Destroy current page. Pass the same container the page was rendered
+  // into so the page's destroy can read its own _destroy callback. The
+  // page modules use container._destroy to scope their own cleanup.
   if (currentPage && currentPage.destroy) {
     try {
-      currentPage.destroy();
+      currentPage.destroy(appContainer);
     } catch (e) {
       console.warn('Error destroying page:', e);
     }

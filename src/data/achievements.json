@@ -118,5 +118,29 @@
     "icon": "code-2",
     "category": "developer",
     "condition": { "type": "code_tests_completed", "value": 10 }
+  },
+  {
+    "id": "languages_5",
+    "title": "Polyglot",
+    "description": "Practice in five different developer languages",
+    "icon": "languages",
+    "category": "developer",
+    "condition": { "type": "distinct_languages", "value": 5 }
+  },
+  {
+    "id": "marathon",
+    "title": "Marathon",
+    "description": "Complete a 2-minute test",
+    "icon": "hourglass",
+    "category": "milestone",
+    "condition": { "type": "long_session", "value": 120 }
+  },
+  {
+    "id": "perfectionist",
+    "title": "Perfectionist",
+    "description": "Complete a 60+ second test with 100% accuracy and 100+ WPM",
+    "icon": "gem",
+    "category": "speed",
+    "condition": { "type": "perfect_run", "value": 100 }
   }
 ]

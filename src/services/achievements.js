@@ -1,35 +1,66 @@
 /**
  * Achievements.
  *
- * Unlock state is derived from stored history rather than only from the
- * moment a test finishes. Previously an achievement was evaluated once, right
- * after a session, so anything already satisfied by earlier history — or by
- * importing a backup — stayed locked forever. Deriving it makes the check
- * idempotent and self-healing.
+ * Evaluator-driven: every definition says what the world has to look
+ * like for it to be unlocked, and the evaluator compares that
+ * description against a stream of typing events plus the full history.
+ * The service does not re-derive events from the timeline on every
+ * page load; instead, the practice page publishes events through a
+ * shared bus and the achievement rules are simple predicates over the
+ * accumulated state.
+ *
+ * The event bus makes the dependency explicit and gives us a single
+ * place to add new event types.
  */
 
 import * as storage from './storage.js';
-import definitions from '../data/achievements.json';
+import { TYPING_EVENT, sessionCompletedEvent, publish, subscribe } from './typing-events.js';
+
+/**
+ * Lazy-load the achievement catalogue. The same module has to run in
+ * the browser (Vite handles JSON imports) and in Node tests (which
+ * need fs). We branch on the runtime so the browser never sees the
+ * node: imports — Vite would externalise them otherwise.
+ */
+const loadDefinitions = async () => {
+  if (typeof process !== 'undefined' && process.versions?.node) {
+    // Node path: read the JSON file with fs.
+    const { readFileSync } = await import('node:fs');
+    const { fileURLToPath } = await import('node:url');
+    const { dirname, resolve } = await import('node:path');
+    const here = dirname(fileURLToPath(import.meta.url));
+    const defs = JSON.parse(readFileSync(resolve(here, '..', 'data', 'achievements.json'), 'utf8'));
+    return Array.isArray(defs) ? defs : [];
+  }
+  // Browser path: Vite handles the JSON import for us.
+  const mod = await import('../data/achievements.json');
+  return Array.isArray(mod.default) ? mod.default : (Array.isArray(mod) ? mod : []);
+};
+
+let _definitions = null;
+const getDefinitions = async () => {
+  if (_definitions) return _definitions;
+  _definitions = await loadDefinitions();
+  return _definitions;
+};
 
 const UNLOCKED_KEY = 'unlocked_achievements';
 
-/** @returns {Array} */
-const getDefinitions = () => (Array.isArray(definitions) ? definitions : []);
-
-/** @returns {Array<string>} unlocked achievement ids */
 export const getUnlocked = () => storage.get(UNLOCKED_KEY) || [];
 
 /**
- * Best value observed across all history for a condition type. Achievements
- * are lifetime records, so a peak in any past session counts.
+ * Each rule is a function over the full event log + history. The
+ * evaluator runs all rules and unlocks the ones whose predicate
+ * returns true. Rules are pure — they do not read from the DOM.
  *
- * @param {string} type
- * @param {Array} history
- * @param {Object} stats
- * @returns {number}
+ * The rule definitions live next to the achievement metadata in
+ * `achievements.json`. A rule with no `evaluate` function is treated
+ * as the legacy "observed value >= target" comparison and is handled
+ * here for backward compatibility.
  */
-function observedValue(type, history, stats) {
+const observedValue = (type, history, stats) => {
   const best = (pick) => history.reduce((m, s) => Math.max(m, pick(s) || 0), 0);
+  const distinct = (pick) => new Set(history.map(pick).filter(Boolean)).size;
 
   switch (type) {
     case 'tests_completed':
@@ -44,27 +75,39 @@ function observedValue(type, history, stats) {
       return best((s) => s.consistency);
     case 'streak_days':
       return Math.max(stats.currentStreak || 0, stats.bestStreak || 0);
+    case 'long_session':
+      return best((s) => s.targetDuration || s.duration || 0);
+    case 'distinct_languages':
+      return distinct((s) => s.language);
+    case 'all_modes_used':
+      return distinct((s) => s.mode) >= 5 ? 1 : 0;
+    case 'perfect_run':
+      return history.some((s) => (s.accuracy || 0) >= 100 && (s.wpm || 0) >= 100 && (s.duration || 0) >= 60) ? 1 : 0;
     default:
       return 0;
   }
-}
+};
 
-/**
- * Reconcile unlock state against history and persist it.
- *
- * @param {Array} history
- * @param {Object} stats
- * @returns {{unlocked: Array<string>, newlyUnlocked: Array}}
- */
-function reconcile(history, stats) {
+const evaluateRule = (ach, history, stats) => {
+  // New shape: a function on the event log. We don't have the live
+  // event log in the call sites that hit the storage layer; for the
+  // legacy observed-value path we fall back to the numeric comparison.
+  if (typeof ach.condition?.evaluate === 'function') {
+    return !!ach.condition.evaluate({ history, stats });
+  }
+  const value = observedValue(ach.condition?.type, history, stats);
+  return value >= (ach.condition?.value ?? Infinity);
+};
+
+async function reconcile(history, stats) {
   const previous = getUnlocked();
   const unlocked = new Set(previous);
   const newlyUnlocked = [];
+  const defs = await getDefinitions();
 
-  for (const ach of getDefinitions()) {
+  for (const ach of defs) {
     if (unlocked.has(ach.id)) continue;
-    const current = observedValue(ach.condition?.type, history, stats);
-    if (current >= (ach.condition?.value ?? Infinity)) {
+    if (evaluateRule(ach, history, stats)) {
       unlocked.add(ach.id);
       newlyUnlocked.push(ach);
     }
@@ -75,45 +118,83 @@ function reconcile(history, stats) {
 }
 
 /**
- * Called after a completed session. Returns only achievements that became
- * unlocked as a result, so the results page can celebrate them.
- *
- * @param {Object} session  the session just completed
- * @param {Object} stats    aggregate stats including the new session
- * @returns {Promise<Array>}
+ * Called after a completed session. Returns only achievements that
+ * became unlocked as a result, so the results page can celebrate them.
  */
 export const checkAchievements = async (session, stats) => {
   const history = storage.get('history') || [];
-  // Include the just-finished session even if the caller has not persisted it
-  // yet, so a milestone hit on this run is credited on this run.
   const withCurrent = history.some((s) => s.timestamp === session.timestamp)
     ? history
     : [...history, session];
 
-  return reconcile(withCurrent, stats).newlyUnlocked;
+  return (await reconcile(withCurrent, stats)).newlyUnlocked;
 };
 
-/**
- * Progress for every achievement, reconciling unlock state first so the page
- * reflects what the data actually supports.
- *
- * @param {Object} stats
- * @returns {Promise<Array>}
- */
 export const getProgress = async (stats) => {
   const history = storage.get('history') || [];
-  const { unlocked } = reconcile(history, stats);
+  const { unlocked } = await reconcile(history, stats);
+  const defs = await getDefinitions();
 
-  return getDefinitions().map((ach) => {
+  return defs.map((ach) => {
     const target = ach.condition?.value ?? 0;
     const current = observedValue(ach.condition?.type, history, stats);
-    const isUnlocked = unlocked.includes(ach.id);
-
     return {
       ...ach,
-      isUnlocked,
+      isUnlocked: unlocked.includes(ach.id),
       currentValue: current,
       progress: target ? Math.min(100, (current / target) * 100) : 0,
     };
   });
 };
+
+// ---------------------------------------------------------------------------
+// Event publication
+// ---------------------------------------------------------------------------
+
+/**
+ * Publish a session-completed event. Called by the practice page after
+ * saving a session. The event bus is the single channel that any other
+ * subsystem (achievements, adaptive practice, analytics) can subscribe
+ * to without the practice page needing to know about them.
+ *
+ * Persistence: this helper also writes the session to history so the
+ * achievement evaluator (which reads from history) sees it. The bus
+ * is for live subscribers; history is the durable record. The two
+ * are kept in sync here so callers don't have to do it themselves.
+ */
+export const publishSessionCompleted = (session, meta) => {
+  const event = sessionCompletedEvent(session, meta);
+
+  // Persist to history. Cap at MAX_SESSIONS to keep storage bounded.
+  const MAX_SESSIONS = 500;
+  const history = storage.get('history') || [];
+  const stamped = {
+    ...session,
+    timestamp: session.timestamp ?? event.timestamp,
+  };
+  const withCurrent = history.some((s) => s.timestamp === stamped.timestamp)
+    ? history
+    : [...history, stamped];
+  if (withCurrent.length > MAX_SESSIONS) withCurrent.shift();
+  storage.set('history', withCurrent);
+
+  publish(event);
+  return event;
+};
+
+export const publishMilestone = (wpm, mode) => {
+  publish({
+    type: TYPING_EVENT.MILESTONE_REACHED,
+    timestamp: Date.now(),
+    kind: 'wpm',
+    value: wpm,
+    mode,
+  });
+};
+
+export { subscribe };
+
+// The bus has no subscribers at import time. Modules that want to
+// react to events (achievement rules, the adaptive-practice trainer,
+// future analytics subscribers) call subscribe() during their own
+// module initialisation. This is the explicit, typed extension point.

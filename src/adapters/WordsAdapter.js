@@ -61,6 +61,20 @@ export class WordsAdapter {
     }
 
     /**
+     * True when the user has typed every word in the buffer at least
+     * to its full target length. This is the canonical "passage
+     * complete" signal that completion policies use to decide whether
+     * to end a non-timed session.
+     */
+    passageFinished() {
+      const last = this.words.length - 1;
+      return (
+        this.currentWordIndex >= last &&
+        (this.typedWords[last] || '').length >= (this.words[last] || '').length
+      );
+    }
+
+    /**
      * Generates a 2D array of tokens for the RenderEngine.
      * @returns {Array<Array<RenderToken>>}
      */

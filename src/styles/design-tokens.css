@@ -7,17 +7,17 @@
      2. SCALES      typography / spacing / motion. Mode-independent.
      3. SEMANTICS   --color-accent, --surface-1, ... Components use ONLY these.
 
-   Semantics are re-declared per mode:
-     :root                        -> Normal mode, light  (default)
-     :root.theme-dark             -> Normal mode, dark
-     :root[data-surface="dev"]    -> Developer mode (/developer route only)
+   Semantics are re-declared per mode and per theme:
 
-   The dev block is written as :root[...] rather than [...] so it matches the
-   specificity of :root.theme-dark. Developer mode also sets .theme-dark (it is
-   always dark), and at lower specificity the dark block would win and drag the
-   accent back to amber. Equal specificity + later source order = dev wins.
+     :root                              -> Paper theme, light (default)
+     :root.theme-dark                   -> Paper theme, dark
+     :root[data-theme="..."]            -> Other themes
+     :root[data-surface="dev"]          -> Developer surface, always dark
 
-   Because every component consumes semantics, adding a mode is a token
+   Theme blocks are written as :root[...] so they match the specificity of
+   :root.theme-dark. Equal specificity + later source order = later wins.
+
+   Because every component consumes semantics, adding a theme is a token
    re-declaration — not a second stylesheet.
    ========================================================================== */
 
@@ -26,13 +26,14 @@
      1. PRIMITIVES — raw palette. Do not use these in component CSS.
      ───────────────────────────────────────────────────────────────────── */
 
-  /* Paper — warm neutral ramp for Normal mode light */
+  /* Paper — warm neutral ramp */
   --p-paper-50:  #FDFCFA;
   --p-paper-100: #FBFAF8;
   --p-paper-200: #F5F3EF;
   --p-paper-300: #EDEAE4;
   --p-paper-400: #E6E2DC;
   --p-paper-500: #D6D1C8;
+  --p-paper-600: #B7B0A4;
 
   /* Ink — warm near-black ramp */
   --p-ink-900: #171614;
@@ -42,22 +43,64 @@
   --p-ink-500: #8C867D;
   --p-ink-400: #ADA69C;
 
-  /* Carbon — Normal mode dark surfaces */
+  /* Carbon — deep graphite ramp */
+  --p-carbon-950: #08080A;
   --p-carbon-900: #0C0C0D;
   --p-carbon-800: #101011;
   --p-carbon-700: #17171A;
   --p-carbon-600: #1F1F23;
   --p-carbon-500: #2A2A30;
   --p-carbon-400: #3A3A42;
+  --p-carbon-300: #4D4D55;
 
-  /* Amber — Normal mode accent */
+  /* Dusk — indigo night */
+  --p-dusk-950: #0A0B1A;
+  --p-dusk-900: #11132A;
+  --p-dusk-800: #1A1D3D;
+  --p-dusk-700: #232752;
+  --p-dusk-600: #2E3366;
+  --p-dusk-500: #3B4180;
+  --p-dusk-400: #5863B0;
+  --p-dusk-300: #8A92D0;
+  --p-dusk-text: #E4E5F4;
+  --p-dusk-dim: #9094BA;
+
+  /* Aurora — cool polar night */
+  --p-aurora-950: #06121A;
+  --p-aurora-900: #0A1A24;
+  --p-aurora-800: #0F2433;
+  --p-aurora-700: #16313F;
+  --p-aurora-600: #1E3F4F;
+  --p-aurora-500: #2C5566;
+  --p-aurora-400: #3F7A8C;
+  --p-aurora-300: #6FA3B4;
+  --p-aurora-text: #D8EBF0;
+  --p-aurora-dim: #7C9CAB;
+
+  /* Sunset — rose + amber on cream */
+  --p-sunset-cream: #FCF6EE;
+  --p-sunset-paper: #F8EFE3;
+  --p-sunset-300: #F5DAB5;
+  --p-sunset-500: #E2966F;
+  --p-sunset-700: #B14D3E;
+  --p-sunset-ink: #3D1F18;
+  --p-sunset-rose: #D26A7C;
+
+  /* Serif */
+  --p-serif-paper: #F5EFE3;
+  --p-serif-cream: #EFE5D2;
+  --p-serif-ink: #2A201A;
+  --p-serif-accent: #8E2E2E;
+  --p-serif-accent-hover: #6B1F1F;
+
+  /* Amber — Normal mode accent (paper theme) */
   --p-amber-700: #8F3F14;
   --p-amber-600: #B4541E;
   --p-amber-500: #CC6A2E;
   --p-amber-400: #E08B4F;
   --p-amber-300: #EDA972;
 
-  /* Phosphor — Developer mode accent */
+  /* Phosphor — Developer mode accent (default) */
   --p-phos-500: #00E57A;
   --p-phos-400: #35F58F;
   --p-phos-300: #7DFFBA;
@@ -91,8 +134,9 @@
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, Monaco, monospace;
+  --font-serif: 'Source Serif Pro', 'Charter', 'Iowan Old Style', 'Georgia', serif;
 
-  /* Body/UI font — swapped wholesale in Developer mode */
+  /* Body/UI font — swapped wholesale per surface / per theme */
   --font-ui: var(--font-sans);
 
   /* Type scale — 1.200 minor third, 16px base */
@@ -140,7 +184,7 @@
   --space-24: 6rem;
   --space-32: 8rem;
 
-  /* Radii — Normal mode is soft; Developer mode overrides to near-square */
+  /* Radii */
   --radius-xs:   0.25rem;
   --radius-sm:   0.375rem;
   --radius-md:   0.625rem;
@@ -177,7 +221,7 @@
   --transition-dialog: var(--duration-normal) var(--ease-out);
   --transition-page:   var(--duration-slow) var(--ease-out);
 
-  /* Focus ring — accessibility floor, identical logic in both modes */
+  /* Focus ring */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
   --focus-ring-color: var(--color-accent);
@@ -189,30 +233,22 @@
 }
 
 /* ==========================================================================
-   3a. SEMANTICS — NORMAL MODE / LIGHT (default)
+   3a. SEMANTICS — PAPER (default, light)
    Warm paper + ink. Light-first for long-session readability.
    ========================================================================== */
 
 :root {
-  --surface-0: var(--p-paper-100); /* page */
-  --surface-1: var(--p-paper-50);  /* card */
-  --surface-2: var(--p-paper-200); /* inset / rail */
-  --surface-3: var(--p-paper-300); /* raised */
-  --surface-4: var(--p-paper-400); /* highest */
+  --surface-0: var(--p-paper-100);
+  --surface-1: var(--p-paper-50);
+  --surface-2: var(--p-paper-200);
+  --surface-3: var(--p-paper-300);
+  --surface-4: var(--p-paper-400);
 
   --color-bg-primary:   var(--surface-0);
   --color-bg-secondary: var(--surface-1);
   --color-bg-tertiary:  var(--surface-2);
   --color-bg-elevated:  var(--surface-1);
 
-  /* Contrast against --p-paper-100 (#FBFAF8), measured:
-       primary   #171614  17.3:1
-       secondary #6B665F   5.5:1
-       tertiary  #5F5A53   4.9:1  (was #8C867D at 3.5:1 — failed AA for the
-                                   12px uppercase labels it is used on)
-       muted     #757068   3.6:1  (was #ADA69C at 2.3:1 — failed outright;
-                                   only used for non-essential hint text)
-     Ink-500/400 remain available as primitives for decorative fills. */
   --color-text-primary:   var(--p-ink-900);
   --color-text-secondary: var(--p-ink-600);
   --color-text-tertiary:  #5F5A53;
@@ -236,13 +272,11 @@
   --color-surface:       rgba(23, 22, 20, 0.04);
   --color-surface-hover: rgba(23, 22, 20, 0.07);
 
-  /* Shadows — soft, warm-tinted. Light mode leans on shadow for elevation. */
   --shadow-sm: 0 1px 2px rgba(23, 22, 20, 0.06);
   --shadow-md: 0 2px 4px rgba(23, 22, 20, 0.06), 0 4px 12px rgba(23, 22, 20, 0.05);
   --shadow-lg: 0 4px 8px rgba(23, 22, 20, 0.06), 0 12px 28px rgba(23, 22, 20, 0.08);
   --shadow-xl: 0 8px 16px rgba(23, 22, 20, 0.07), 0 24px 56px rgba(23, 22, 20, 0.10);
 
-  /* Typing surface */
   --typing-correct:   var(--p-ink-900);
   --typing-incorrect: var(--color-error);
   --typing-untyped:   var(--p-ink-400);
@@ -256,7 +290,6 @@
   --caret-color: var(--color-accent);
   --caret-width: 2px;
 
-  /* Data visualisation — categorical, distinguishable at light luminance */
   --color-chart-wpm:         var(--p-blue-600);
   --color-chart-accuracy:    var(--p-green-600);
   --color-chart-consistency: #7C5CBF;
@@ -270,7 +303,6 @@
   --chart-tooltip-bg: var(--p-ink-900);
   --chart-tooltip-text: var(--p-paper-50);
 
-  /* Syntax — used by the small code samples that appear in Normal mode */
   --color-code-keyword:   #A3306E;
   --color-code-function:  #2C6BB5;
   --color-code-variable:  var(--p-ink-800);
@@ -289,11 +321,11 @@
 }
 
 /* ==========================================================================
-   3b. SEMANTICS — NORMAL MODE / DARK
-   Same structure, carbon surfaces. Toggled by .theme-dark on <html>.
+   3b. PAPER / DARK
+   Same identity, dark surfaces. Activated by .theme-dark when theme is paper.
    ========================================================================== */
 
-:root.theme-dark {
+:root.theme-dark:not([data-theme="carbon"]):not([data-theme="dusk"]):not([data-theme="aurora"]):not([data-theme="mono"]) {
   --surface-0: var(--p-carbon-900);
   --surface-1: var(--p-carbon-800);
   --surface-2: var(--p-carbon-700);
@@ -328,7 +360,6 @@
   --color-surface:       rgba(255, 255, 255, 0.04);
   --color-surface-hover: rgba(255, 255, 255, 0.07);
 
-  /* Dark mode elevates with light borders, not shadow — shadow is invisible. */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -366,10 +397,479 @@
 }
 
 /* ==========================================================================
-   3c. SEMANTICS — DEVELOPER MODE
+   3c. CARBON — always dark. Cool graphite, amber accent.
+   ========================================================================== */
+
+:root[data-theme="carbon"] {
+  --surface-0: var(--p-carbon-950);
+  --surface-1: var(--p-carbon-900);
+  --surface-2: var(--p-carbon-800);
+  --surface-3: var(--p-carbon-700);
+  --surface-4: var(--p-carbon-500);
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-2);
+
+  --color-text-primary:   #EDEBE8;
+  --color-text-secondary: #A5A099;
+  --color-text-tertiary:  #7C766E;
+  --color-text-muted:     #5C574F;
+  --color-text-inverse:   #0C0C0D;
+
+  --color-accent:        var(--p-amber-400);
+  --color-accent-hover:  var(--p-amber-300);
+  --color-accent-subtle: rgba(224, 139, 79, 0.14);
+  --color-accent-contrast: #1A1105;
+
+  --color-success: #5EE2A1;
+  --color-error:   #FF7B72;
+  --color-warning: #F0BB60;
+  --color-info:    #58A6FF;
+
+  --color-border:        var(--p-carbon-500);
+  --color-border-strong: var(--p-carbon-400);
+  --color-border-subtle: var(--p-carbon-700);
+
+  --color-surface:       rgba(255, 255, 255, 0.04);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 56px rgba(0, 0, 0, 0.7);
+
+  --typing-correct:   #EDEBE8;
+  --typing-incorrect: #FF7B72;
+  --typing-untyped:   #45423D;
+  --typing-current:   #EDEBE8;
+  --typing-extra:     #FF7B72;
+
+  --color-chart-wpm:         #58A6FF;
+  --color-chart-accuracy:    #5EE2A1;
+  --color-chart-consistency: #A78BFA;
+  --color-chart-mistakes:    #FF7B72;
+  --color-chart-time:        #F0BB60;
+  --color-chart-streak:      #4FD6E0;
+  --color-chart-xp:          #D4BC55;
+  --chart-grid: rgba(255, 255, 255, 0.06);
+  --chart-tooltip-bg: #1F1F23;
+  --chart-tooltip-text: #EDEBE8;
+
+  --color-code-keyword:   #FF7EDB;
+  --color-code-function:  #58A6FF;
+  --color-code-variable:  #DEDAD4;
+  --color-code-string:    #A5E844;
+  --color-code-number:    #F0BB60;
+  --color-code-comment:   #6E685F;
+  --color-code-operator:  #B8B2AA;
+  --color-code-class:     #FFD866;
+  --color-code-boolean:   #FF7EDB;
+  --color-code-decorator: #4FD6E0;
+
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --overlay-blur: 8px;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   3d. DUSK — indigo twilight with violet glow. Always dark.
+   ========================================================================== */
+
+:root[data-theme="dusk"] {
+  --surface-0: var(--p-dusk-950);
+  --surface-1: var(--p-dusk-900);
+  --surface-2: var(--p-dusk-800);
+  --surface-3: var(--p-dusk-700);
+  --surface-4: var(--p-dusk-600);
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-2);
+
+  --color-text-primary:   var(--p-dusk-text);
+  --color-text-secondary: #B5B8E0;
+  --color-text-tertiary:  var(--p-dusk-dim);
+  --color-text-muted:     #5C5F8C;
+  --color-text-inverse:   var(--p-dusk-950);
+
+  --color-accent:        #A78BFA;
+  --color-accent-hover:  #C4B5FD;
+  --color-accent-subtle: rgba(167, 139, 250, 0.16);
+  --color-accent-contrast: #0A0B1A;
+
+  --color-success: #5EE2A1;
+  --color-error:   #FF7B95;
+  --color-warning: #F0BB60;
+  --color-info:    #79C0FF;
+
+  --color-border:        var(--p-dusk-600);
+  --color-border-strong: var(--p-dusk-500);
+  --color-border-subtle: var(--p-dusk-700);
+
+  --color-surface:       rgba(167, 139, 250, 0.06);
+  --color-surface-hover: rgba(167, 139, 250, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(10, 11, 26, 0.5);
+  --shadow-md: 0 4px 12px rgba(10, 11, 26, 0.55);
+  --shadow-lg: 0 12px 32px rgba(10, 11, 26, 0.6);
+  --shadow-xl: 0 20px 56px rgba(10, 11, 26, 0.7);
+
+  --typing-correct:   var(--p-dusk-text);
+  --typing-incorrect: #FF7B95;
+  --typing-untyped:   #3B4180;
+  --typing-current:   #A78BFA;
+  --typing-extra:     #FF7B95;
+
+  --color-chart-wpm:         #79C0FF;
+  --color-chart-accuracy:    #5EE2A1;
+  --color-chart-consistency: #FF7EDB;
+  --color-chart-mistakes:    #FF7B95;
+  --color-chart-time:        #F0BB60;
+  --color-chart-streak:      #4FD6E0;
+  --color-chart-xp:          #C4B5FD;
+  --chart-grid: rgba(228, 229, 244, 0.07);
+  --chart-tooltip-bg: var(--p-dusk-700);
+  --chart-tooltip-text: var(--p-dusk-text);
+
+  --color-code-keyword:   #FF7EDB;
+  --color-code-function:  #79C0FF;
+  --color-code-variable:  var(--p-dusk-text);
+  --color-code-string:    #A5E844;
+  --color-code-number:    #F0BB60;
+  --color-code-comment:   #5863B0;
+  --color-code-operator:  #C4B5FD;
+  --color-code-class:     #FFD866;
+  --color-code-boolean:   #FF7EDB;
+  --color-code-decorator: #4FD6E0;
+
+  --overlay-bg: rgba(10, 11, 26, 0.75);
+  --overlay-blur: 8px;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   3e. AURORA — cool polar night with mint accent. Always dark.
+   ========================================================================== */
+
+:root[data-theme="aurora"] {
+  --surface-0: var(--p-aurora-950);
+  --surface-1: var(--p-aurora-900);
+  --surface-2: var(--p-aurora-800);
+  --surface-3: var(--p-aurora-700);
+  --surface-4: var(--p-aurora-600);
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-2);
+
+  --color-text-primary:   var(--p-aurora-text);
+  --color-text-secondary: #9CB9C5;
+  --color-text-tertiary:  var(--p-aurora-dim);
+  --color-text-muted:     #4F6E7C;
+  --color-text-inverse:   var(--p-aurora-950);
+
+  --color-accent:        #7DFFBA;
+  --color-accent-hover:  #B6FFCF;
+  --color-accent-subtle: rgba(125, 255, 186, 0.14);
+  --color-accent-contrast: #04241A;
+
+  --color-success: #7DFFBA;
+  --color-error:   #FF8B8B;
+  --color-warning: #F5C147;
+  --color-info:    #79C0FF;
+
+  --color-border:        var(--p-aurora-600);
+  --color-border-strong: var(--p-aurora-500);
+  --color-border-subtle: var(--p-aurora-700);
+
+  --color-surface:       rgba(125, 255, 186, 0.05);
+  --color-surface-hover: rgba(125, 255, 186, 0.10);
+
+  --shadow-sm: 0 1px 2px rgba(6, 18, 26, 0.5);
+  --shadow-md: 0 4px 12px rgba(6, 18, 26, 0.55);
+  --shadow-lg: 0 12px 32px rgba(6, 18, 26, 0.6);
+  --shadow-xl: 0 20px 56px rgba(6, 18, 26, 0.7);
+
+  --typing-correct:   var(--p-aurora-text);
+  --typing-incorrect: #FF8B8B;
+  --typing-untyped:   #2C5566;
+  --typing-current:   #7DFFBA;
+  --typing-extra:     #FF8B8B;
+
+  --color-chart-wpm:         #79C0FF;
+  --color-chart-accuracy:    #7DFFBA;
+  --color-chart-consistency: #A78BFA;
+  --color-chart-mistakes:    #FF8B8B;
+  --color-chart-time:        #F5C147;
+  --color-chart-streak:      #4FD6E0;
+  --color-chart-xp:          #B6FFCF;
+  --chart-grid: rgba(216, 235, 240, 0.07);
+  --chart-tooltip-bg: var(--p-aurora-700);
+  --chart-tooltip-text: var(--p-aurora-text);
+
+  --color-code-keyword:   #B6FFCF;
+  --color-code-function:  #79C0FF;
+  --color-code-variable:  var(--p-aurora-text);
+  --color-code-string:    #FFD966;
+  --color-code-number:    #F5C147;
+  --color-code-comment:   #4F6E7C;
+  --color-code-operator:  #4FD6E0;
+  --color-code-class:     #FFD866;
+  --color-code-boolean:   #FF7EDB;
+  --color-code-decorator: #A78BFA;
+
+  --overlay-bg: rgba(6, 18, 26, 0.75);
+  --overlay-blur: 8px;
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   3f. SUNSET — rose + amber on cream. Light, warm.
+   ========================================================================== */
+
+:root[data-theme="sunset"] {
+  --surface-0: var(--p-sunset-cream);
+  --surface-1: var(--p-sunset-paper);
+  --surface-2: #F0E2C7;
+  --surface-3: #E9D6B0;
+  --surface-4: #DCC68F;
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-1);
+
+  --color-text-primary:   var(--p-sunset-ink);
+  --color-text-secondary: #6B3A2D;
+  --color-text-tertiary:  #915243;
+  --color-text-muted:     #B07668;
+  --color-text-inverse:   var(--p-sunset-cream);
+
+  --color-accent:        var(--p-sunset-700);
+  --color-accent-hover:  #8B3929;
+  --color-accent-subtle: rgba(177, 77, 62, 0.12);
+  --color-accent-contrast: #FCF6EE;
+
+  --color-success: #2F7A4C;
+  --color-error:   #B3352E;
+  --color-warning: #C28F2C;
+  --color-info:    #2C6BB5;
+
+  --color-border:        #E5C9A3;
+  --color-border-strong: #D1AC7E;
+  --color-border-subtle: #EED8B0;
+
+  --color-surface:       rgba(177, 77, 62, 0.05);
+  --color-surface-hover: rgba(177, 77, 62, 0.10);
+
+  --shadow-sm: 0 1px 2px rgba(177, 77, 62, 0.10);
+  --shadow-md: 0 2px 6px rgba(177, 77, 62, 0.10), 0 8px 20px rgba(177, 77, 62, 0.08);
+  --shadow-lg: 0 6px 14px rgba(177, 77, 62, 0.10), 0 16px 40px rgba(177, 77, 62, 0.10);
+  --shadow-xl: 0 12px 24px rgba(177, 77, 62, 0.12), 0 32px 64px rgba(177, 77, 62, 0.14);
+
+  --typing-correct:   var(--p-sunset-ink);
+  --typing-incorrect: #B3352E;
+  --typing-untyped:   #C0A28A;
+  --typing-current:   var(--p-sunset-ink);
+  --typing-extra:     #B3352E;
+
+  --color-chart-wpm:         #2C6BB5;
+  --color-chart-accuracy:    #2F7A4C;
+  --color-chart-consistency: #8B5BBF;
+  --color-chart-mistakes:    #B3352E;
+  --color-chart-time:        #C28F2C;
+  --color-chart-streak:      #2F8C99;
+  --color-chart-xp:          #A66E22;
+  --chart-grid: rgba(177, 77, 62, 0.10);
+  --chart-tooltip-bg: #3D1F18;
+  --chart-tooltip-text: var(--p-sunset-cream);
+
+  --color-code-keyword:   #B14D3E;
+  --color-code-function:  #2C6BB5;
+  --color-code-variable:  var(--p-sunset-ink);
+  --color-code-string:    #2F7A4C;
+  --color-code-number:    #A66E22;
+  --color-code-comment:   #B07668;
+  --color-code-operator:  #6B3A2D;
+  --color-code-class:     #8A6A16;
+  --color-code-boolean:   #B14D3E;
+  --color-code-decorator: #2F8C99;
+
+  --overlay-bg: rgba(61, 31, 24, 0.30);
+  --overlay-blur: 6px;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   3g. SERIF — editorial serif on warm paper. Light, calm.
+   ========================================================================== */
+
+:root[data-theme="serif"] {
+  --surface-0: var(--p-serif-paper);
+  --surface-1: var(--p-serif-cream);
+  --surface-2: #E7DBC2;
+  --surface-3: #DBC9A6;
+  --surface-4: #CDB88E;
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-1);
+
+  --color-text-primary:   var(--p-serif-ink);
+  --color-text-secondary: #5A4035;
+  --color-text-tertiary:  #7D5B4A;
+  --color-text-muted:     #9F7D6B;
+  --color-text-inverse:   var(--p-serif-paper);
+
+  --color-accent:        var(--p-serif-accent);
+  --color-accent-hover:  var(--p-serif-accent-hover);
+  --color-accent-subtle: rgba(142, 46, 46, 0.10);
+  --color-accent-contrast: #F5EFE3;
+
+  --color-success: #2F7A4C;
+  --color-error:   #B3352E;
+  --color-warning: #A66E22;
+  --color-info:    #2C6BB5;
+
+  --color-border:        #D2BC97;
+  --color-border-strong: #B79A6E;
+  --color-border-subtle: #DDC9A2;
+
+  --color-surface:       rgba(42, 32, 26, 0.04);
+  --color-surface-hover: rgba(42, 32, 26, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(42, 32, 26, 0.08);
+  --shadow-md: 0 2px 6px rgba(42, 32, 26, 0.08), 0 8px 20px rgba(42, 32, 26, 0.08);
+  --shadow-lg: 0 6px 14px rgba(42, 32, 26, 0.10), 0 16px 40px rgba(42, 32, 26, 0.10);
+  --shadow-xl: 0 12px 24px rgba(42, 32, 26, 0.12), 0 32px 64px rgba(42, 32, 26, 0.14);
+
+  --typing-correct:   var(--p-serif-ink);
+  --typing-incorrect: #B3352E;
+  --typing-untyped:   #A89070;
+  --typing-current:   var(--p-serif-ink);
+  --typing-extra:     #B3352E;
+
+  --font-ui: var(--font-serif);
+
+  --color-chart-wpm:         #2C6BB5;
+  --color-chart-accuracy:    #2F7A4C;
+  --color-chart-consistency: #8B5BBF;
+  --color-chart-mistakes:    #B3352E;
+  --color-chart-time:        #A66E22;
+  --color-chart-streak:      #2F8C99;
+  --color-chart-xp:          #8A6A16;
+  --chart-grid: rgba(42, 32, 26, 0.10);
+  --chart-tooltip-bg: #2A201A;
+  --chart-tooltip-text: var(--p-serif-paper);
+
+  --color-code-keyword:   var(--p-serif-accent);
+  --color-code-function:  #2C6BB5;
+  --color-code-variable:  var(--p-serif-ink);
+  --color-code-string:    #2F7A45;
+  --color-code-number:    #8A6A16;
+  --color-code-comment:   #9F7D6B;
+  --color-code-operator:  #5A4035;
+  --color-code-class:     #8A6A16;
+  --color-code-boolean:   var(--p-serif-accent);
+  --color-code-decorator: #2F8C99;
+
+  --overlay-bg: rgba(42, 32, 26, 0.30);
+  --overlay-blur: 6px;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   3h. MONO — typeset-only identity, monospaced. Light, structured.
+   ========================================================================== */
+
+:root[data-theme="mono"] {
+  --surface-0: #F2F1EE;
+  --surface-1: #ECEBE7;
+  --surface-2: #E1DFDA;
+  --surface-3: #D2CFC8;
+  --surface-4: #BFBBB1;
+
+  --color-bg-primary:   var(--surface-0);
+  --color-bg-secondary: var(--surface-1);
+  --color-bg-tertiary:  var(--surface-2);
+  --color-bg-elevated:  var(--surface-1);
+
+  --color-text-primary:   #1A1A1A;
+  --color-text-secondary: #4D4D4D;
+  --color-text-tertiary:  #707070;
+  --color-text-muted:     #999999;
+  --color-text-inverse:   #F2F1EE;
+
+  --color-accent:        #1A1A1A;
+  --color-accent-hover:  #000000;
+  --color-accent-subtle: rgba(26, 26, 26, 0.08);
+  --color-accent-contrast: #F2F1EE;
+
+  --color-success: #1F7A4C;
+  --color-error:   #B3352E;
+  --color-warning: #8A6A16;
+  --color-info:    #2C6BB5;
+
+  --color-border:        #BFBBB1;
+  --color-border-strong: #999999;
+  --color-border-subtle: #D2CFC8;
+
+  --color-surface:       rgba(26, 26, 26, 0.04);
+  --color-surface-hover: rgba(26, 26, 26, 0.08);
+
+  --shadow-sm: 0 1px 0 rgba(26, 26, 26, 0.08);
+  --shadow-md: 0 2px 0 rgba(26, 26, 26, 0.08);
+  --shadow-lg: 0 4px 0 rgba(26, 26, 26, 0.08);
+  --shadow-xl: 0 8px 0 rgba(26, 26, 26, 0.10);
+
+  --font-ui: var(--font-mono);
+  --typing-correct:   #1A1A1A;
+  --typing-incorrect: #B3352E;
+  --typing-untyped:   #999999;
+  --typing-current:   #1A1A1A;
+  --typing-extra:     #B3352E;
+
+  --color-chart-wpm:         #1A1A1A;
+  --color-chart-accuracy:    #1F7A4C;
+  --color-chart-consistency: #5A5A5A;
+  --color-chart-mistakes:    #B3352E;
+  --color-chart-time:        #5A5A5A;
+  --color-chart-streak:      #2F8C99;
+  --color-chart-xp:          #4D4D4D;
+  --chart-grid: rgba(26, 26, 26, 0.10);
+  --chart-tooltip-bg: #1A1A1A;
+  --chart-tooltip-text: #F2F1EE;
+
+  --color-code-keyword:   #1A1A1A;
+  --color-code-function:  #2C6BB5;
+  --color-code-variable:  #1A1A1A;
+  --color-code-string:    #1F7A4C;
+  --color-code-number:    #8A6A16;
+  --color-code-comment:   #999999;
+  --color-code-operator:  #4D4D4D;
+  --color-code-class:     #1A1A1A;
+  --color-code-boolean:   #B3352E;
+  --color-code-decorator: #2F8C99;
+
+  --overlay-bg: rgba(26, 26, 26, 0.30);
+  --overlay-blur: 4px;
+
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   3i. DEVELOPER SURFACE — terminal chrome.
    Scoped to [data-surface="dev"], set on <html> only while on /developer.
-   Terminal chrome: deep blue-black, phosphor accent, monospace everything,
-   square corners, hairline borders, zero soft shadow.
    ========================================================================== */
 
 :root[data-surface="dev"] {
@@ -407,7 +907,6 @@
   --color-surface:       rgba(0, 229, 122, 0.05);
   --color-surface-hover: rgba(0, 229, 122, 0.10);
 
-  /* Terminal chrome: geometry over softness */
   --radius-xs:  0px;
   --radius-sm:  2px;
   --radius-md:  3px;
@@ -420,7 +919,6 @@
   --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.7);
   --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
 
-  /* Monospace as the UI face — the single strongest mode signal */
   --font-ui: var(--font-mono);
 
   --typing-correct:   var(--p-term-text);
@@ -434,7 +932,6 @@
 
   --caret-color: var(--color-accent);
 
-  /* Developer-mode data viz — high-chroma on near-black */
   --color-chart-wpm:         var(--p-cyan-400);
   --color-chart-accuracy:    var(--p-phos-500);
   --color-chart-consistency: var(--p-violet-400);
@@ -446,7 +943,6 @@
   --chart-tooltip-bg: var(--p-term-700);
   --chart-tooltip-text: var(--p-term-text);
 
-  /* Syntax highlighting — the centrepiece of Developer mode */
   --color-code-keyword:   #FF7EDB;
   --color-code-function:  #58A6FF;
   --color-code-variable:  var(--p-term-text);
@@ -459,7 +955,6 @@
   --color-code-decorator: var(--p-cyan-400);
   --color-code-punctuation: var(--p-term-dim);
 
-  /* Log severity — Developer mode only */
   --log-debug: var(--p-term-dim);
   --log-info:  var(--p-cyan-400);
   --log-warn:  #FFC145;
@@ -477,7 +972,6 @@
    ========================================================================== */
 
 :root {
-  /* Button */
   --button-height-xs: 26px;
   --button-height-sm: 32px;
   --button-height-md: 38px;
@@ -486,7 +980,6 @@
   --button-font-size: var(--text-sm);
   --button-font-weight: var(--font-weight-medium);
 
-  /* Input */
   --input-height-sm: 32px;
   --input-height-md: 38px;
   --input-height-lg: 46px;
@@ -495,24 +988,20 @@
   --input-border: var(--color-border);
   --input-border-focus: var(--color-accent);
 
-  /* Card */
   --card-radius: var(--radius-lg);
   --card-padding: var(--space-6);
   --card-bg: var(--surface-1);
   --card-border: var(--color-border-subtle);
 
-  /* Dialog */
   --dialog-radius: var(--radius-xl);
   --dialog-padding: var(--space-8);
   --dialog-width-sm: 420px;
   --dialog-width-md: 640px;
   --dialog-width-lg: 960px;
 
-  /* Nav */
   --nav-item-height: 34px;
   --nav-item-radius: var(--radius-sm);
 
-  /* Feedback */
   --badge-radius: var(--radius-full);
   --progress-height: 5px;
   --progress-bg: var(--color-surface);
@@ -520,23 +1009,35 @@
   --skeleton-bg: var(--color-surface);
   --skeleton-highlight: var(--color-surface-hover);
 
-  /* Table */
   --table-row-height: 42px;
   --table-radius: var(--radius-md);
   --table-header-bg: var(--surface-2);
 
-  /* Heatmap */
   --heatmap-cell: 13px;
   --heatmap-gap: 3px;
 }
 
-/* Developer mode squares off the pill-shaped bits too. */
 :root[data-surface="dev"] {
   --badge-radius: 2px;
   --card-radius: var(--radius-md);
   --dialog-radius: var(--radius-md);
   --progress-height: 3px;
   --nav-item-radius: 2px;
+}
+
+/* Sunset/Serif keep the pill-shape on their badges for the warm vibe. */
+:root[data-theme="sunset"] { --badge-radius: 9999px; }
+:root[data-theme="serif"]  { --badge-radius: 4px; }
+
+/* Mono theme flattens everything further. */
+:root[data-theme="mono"] {
+  --button-radius: 2px;
+  --input-radius: 2px;
+  --card-radius: 4px;
+  --dialog-radius: 4px;
+  --nav-item-radius: 2px;
+  --badge-radius: 2px;
+  --progress-height: 3px;
 }
 
 /* ==========================================================================

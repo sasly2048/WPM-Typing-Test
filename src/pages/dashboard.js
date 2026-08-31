@@ -9,6 +9,7 @@
 import { html } from '../utils/dom.js';
 import { getSessions, getStreakInfo, getHeatmapData } from '../services/history.js';
 import { createLineChart, createHeatmap } from '../components/chart.js';
+import { renderKeyHeatmap } from '../components/keymap.js';
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -148,6 +149,12 @@ export function render(container) {
         </div>
       </section>
 
+      <section class="section" id="dash-keymap-section" hidden>
+        <h2 class="section__label">Key trouble spots</h2>
+        <p class="section__note">Aggregated across all sessions in this filter. Hot keys are slowing you down the most.</p>
+        <div class="card" id="dash-keymap"></div>
+      </section>
+
       <section class="section">
         <h2 class="section__label">Recent sessions</h2>
         <div class="table-wrap">
@@ -273,6 +280,33 @@ export function render(container) {
     createHeatmap({ days: getHeatmapData() })
   );
 
+  /* Render the key heatmap from aggregated mistakes-by-key. Aggregating
+     across sessions is more useful than the per-run map on the results
+     page, because persistent trouble keys (e.g. a finger that always
+     fumbles) light up across hundreds of runs rather than just the last. */
+  const aggregateKeyMistakes = (sessions) => {
+    const acc = Object.create(null);
+    for (const s of sessions) {
+      for (const [k, n] of Object.entries(s.mistakesByKey || {})) {
+        acc[k] = (acc[k] || 0) + n;
+      }
+    }
+    return acc;
+  };
+  const renderKeymap = () => {
+    const sessions = filtered();
+    const aggregated = aggregateKeyMistakes(sessions);
+    const section = container.querySelector('#dash-keymap-section');
+    const host = container.querySelector('#dash-keymap');
+    const total = Object.values(aggregated).reduce((s, n) => s + n, 0);
+    if (total === 0) {
+      section.hidden = true;
+      return;
+    }
+    section.hidden = false;
+    host.innerHTML = renderKeyHeatmap(aggregated);
+  };
+
   const wireFilter = (attr, set) => {
     container.querySelectorAll(`[${attr}]`).forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -283,6 +317,7 @@ export function render(container) {
           b.setAttribute('aria-selected', String(on));
         });
         paint();
+        renderKeymap();
       });
     });
   };
@@ -291,6 +326,7 @@ export function render(container) {
   wireFilter('data-mode', (v) => { mode = v; });
 
   paint();
+  renderKeymap();
   if (window.lucide) window.lucide.createIcons();
 }
 

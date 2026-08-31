@@ -97,6 +97,13 @@
   margin-bottom: var(--space-4);
 }
 
+.section__note {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: calc(var(--space-2) * -1) 0 var(--space-4);
+  max-width: 60ch;
+}
+
 .stack   { display: flex; flex-direction: column; gap: var(--space-4); }
 .stack-2 { display: flex; flex-direction: column; gap: var(--space-2); }
 .stack-6 { display: flex; flex-direction: column; gap: var(--space-6); }
@@ -1149,6 +1156,11 @@ kbd, .kbd {
      1 char = 1 cell assumption the caret positioning relies on. */
   font-variant-ligatures: none;
   font-feature-settings: "liga" 0, "calt" 0;
+  transition: filter var(--transition-hover);
+}
+
+.typing-surface:focus-within {
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--color-accent) 8%, transparent));
 }
 
 .typing-char { position: relative; transition: color var(--duration-instant) var(--ease-out); }
@@ -1160,13 +1172,16 @@ kbd, .kbd {
 .typing-char.pending   { color: var(--typing-untyped); }
 
 /* Caret is transform-animated: keeps position updates off the layout path,
-   which matters at speed — this moves on every keystroke. */
+   which matters at speed — this moves on every keystroke. The height
+   matches the line-height of the surrounding text so the caret sits
+   precisely between the ascender and the baseline — 1.85 in normal
+   mode and 1.65 in dev mode (overridden in the dev block below). */
 .caret {
   position: absolute;
   top: 0;
   left: 0;
   width: var(--caret-width);
-  height: 1.15em;
+  height: calc(var(--typing-font-size) * var(--typing-line-height));
   background: var(--caret-color);
   border-radius: 1px;
   pointer-events: none;
@@ -2005,15 +2020,17 @@ kbd, .kbd {
   margin: 0 auto;
   padding: var(--space-10) var(--space-6);
   min-height: calc(100vh - var(--navbar-height));
-}
-
-.practice__config {
+}.practice__config {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-3);
   max-width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
   transition: opacity var(--duration-normal) var(--ease-out),
               transform var(--duration-normal) var(--ease-out);
 }
@@ -2055,10 +2072,72 @@ kbd, .kbd {
 
 .practice__custom .textarea { width: 100%; }
 
+.practice__custom-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 .practice.is-typing .practice__custom {
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+/* "More options" disclosure. Collapsed by default — the average user
+   has no need for difficulty, punctuation, numbers, or custom text,
+   so we keep them out of the primary control strip. Power users get
+   them with a single click, and they never compete for attention
+   with the typing surface when typing is in progress. */
+.practice__advanced {
+  width: 100%;
+  max-width: 620px;
+}
+
+.practice__advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  list-style: none;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-hover);
+}
+
+.practice__advanced-toggle::-webkit-details-marker { display: none; }
+
+.practice__advanced-toggle::before {
+  content: '▸';
+  display: inline-block;
+  font-size: 10px;
+  transition: transform var(--transition-hover);
+}
+
+.practice__advanced[open] > .practice__advanced-toggle::before {
+  transform: rotate(90deg);
+}
+
+.practice__advanced-toggle:hover { color: var(--color-text-secondary); }
+.practice__advanced-toggle i { width: 14px; height: 14px; }
+
+.practice__advanced-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+.practice.is-typing .practice__advanced { opacity: 0; pointer-events: none; transition: opacity var(--duration-normal) var(--ease-out); }
+
+.practice__custom-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 /* Countdown. Sits above the passage in the accent colour so it is legible at
@@ -2095,7 +2174,22 @@ kbd, .kbd {
 
 .reduce-motion .practice__clock.is-urgent .practice__clock-value { animation: none; }
 
-.practice__surface { width: 100%; }
+.practice__surface {
+  width: 100%;
+  /* Cap the surface so a long passage scrolls inside it instead of
+     stretching the page past the viewport. The cap is the viewport
+     height minus the chrome (nav, config strip, footer, padding) so
+     the user always sees the typing area framed by the rest of the UI
+     rather than floating in a page taller than the window. */
+  max-height: calc(100vh - var(--navbar-height) - 280px);
+  min-height: calc(var(--typing-font-size) * var(--typing-line-height) * 3);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  /* Custom scrollbar styling so the scroll track is visible but understated. */
+  scroll-padding-top: var(--space-4);
+  border-radius: var(--radius-md);
+}
 
 .practice .typing-surface {
   padding: var(--space-2) 0;
@@ -3228,4 +3322,62 @@ kbd, .kbd {
   .dev-net__time, .dev-net__size { display: none; }
   .dev-records__row { grid-template-columns: 1fr 60px; }
   .dev-records__value { display: none; }
+  .keymap__key { min-width: 18px; font-size: 9px; }
+}
+
+/* ==========================================================================
+   29  Key heatmap
+   Used in the dashboard and results to surface per-key mistake rates.
+   ========================================================================== */
+
+.keymap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: var(--font-mono);
+  user-select: none;
+}
+
+.keymap__row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.keymap__key {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 32px;
+  padding: 0 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-tertiary);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  transition: background var(--transition-hover), color var(--transition-hover);
+}
+
+/* Heat levels — same hue (accent), rising opacity. Empty keys stay neutral. */
+.keymap__key--lvl1 { background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)); color: var(--color-text-secondary); }
+.keymap__key--lvl2 { background: color-mix(in srgb, var(--color-accent) 28%, transparent); color: var(--color-text-primary); }
+.keymap__key--lvl3 { background: color-mix(in srgb, var(--color-accent) 50%, transparent); color: var(--color-accent-contrast); }
+.keymap__key--lvl4 { background: var(--color-accent); color: var(--color-accent-contrast); }
+
+.keymap__label { font-weight: var(--font-weight-semibold); }
+.keymap__count {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 9px;
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
 }
