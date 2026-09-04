@@ -7,8 +7,8 @@
  */
 
 import { html } from '../utils/dom.js';
-import { getSessions, getStreakInfo, getHeatmapData } from '../services/history.js';
-import { createLineChart, createHeatmap } from '../components/chart.js';
+import { getSessions, getStreakInfo, getHeatmapData, getModeBreakdown, getDailyStats } from '../services/history.js';
+import { createLineChart, createBarChart, createHeatmap } from '../components/chart.js';
 import { renderKeyHeatmap } from '../components/keymap.js';
 
 const esc = (s) =>
@@ -155,6 +155,18 @@ export function render(container) {
         <div class="card" id="dash-keymap"></div>
       </section>
 
+      <section class="section" id="dash-modes-section">
+        <h2 class="section__label">By mode</h2>
+        <p class="section__note">Where your time has gone. Each row shows your average and best WPM in that mode.</p>
+        <div class="chart-card" id="dash-modes"></div>
+      </section>
+
+      <section class="section" id="dash-daily-section">
+        <h2 class="section__label">Daily activity</h2>
+        <p class="section__note">Average WPM by day for the last 30 days. Empty bars are rest days — that's fine.</p>
+        <div class="chart-card" id="dash-daily"></div>
+      </section>
+
       <section class="section">
         <h2 class="section__label">Recent sessions</h2>
         <div class="table-wrap">
@@ -276,6 +288,45 @@ export function render(container) {
       `).join('');
   }
 
+  /**
+   * Per-mode breakdown. Independent of the active range/mode filter
+   * because the goal is "where has my practice gone", not "what
+   * happened in the current slice".
+   */
+  const paintModes = (all) => {
+    const host = container.querySelector('#dash-modes');
+    if (!host) return;
+    const breakdown = getModeBreakdown(all);
+    if (!breakdown.length) {
+      host.innerHTML = '<div class="chart-empty">No mode data yet.</div>';
+      return;
+    }
+    const labels = breakdown.map((b) => b.mode);
+    const data = breakdown.map((b) => Math.round(b.avgWpm));
+    host.innerHTML = '';
+    host.appendChild(createBarChart({
+      data,
+      labels,
+      label: 'Average WPM',
+      color: 'var(--color-chart-wpm)',
+    }));
+  };
+
+  const paintDaily = () => {
+    const host = container.querySelector('#dash-daily');
+    if (!host) return;
+    const daily = getDailyStats(30);
+    const labels = daily.map((d) => d.date.slice(5));
+    const data = daily.map((d) => Math.round(d.wpm));
+    host.innerHTML = '';
+    host.appendChild(createBarChart({
+      data,
+      labels,
+      label: 'WPM by day',
+      color: 'var(--color-chart-wpm)',
+    }));
+  };
+
   container.querySelector('#dash-heatmap').appendChild(
     createHeatmap({ days: getHeatmapData() })
   );
@@ -327,7 +378,9 @@ export function render(container) {
 
   paint();
   renderKeymap();
+  paintModes(allSessions);
+  paintDaily();
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy() {}
+export function destroy(container) { if (container && container._destroy) container._destroy(); }

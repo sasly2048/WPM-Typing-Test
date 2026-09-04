@@ -218,4 +218,4 @@ export function render(container) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy() {}
+export function destroy(container) { if (container && container._destroy) container._destroy(); }

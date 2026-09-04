@@ -33,12 +33,63 @@ const SOUND_PROFILES = [
   { id: 'typewriter', label: 'Typewriter' },
 ];
 
+const FONT_FAMILIES = [
+  { id: 'monospace',  label: 'Monospace',  stack: 'var(--font-mono)' },
+  { id: 'sans',       label: 'Sans-serif', stack: 'var(--font-sans)' },
+  { id: 'serif',      label: 'Serif',      stack: 'var(--font-serif)' },
+  { id: 'dyslexic',   label: 'OpenDyslexic (system)', stack: '"OpenDyslexic", monospace' },
+  { id: 'fira',       label: 'Fira Code (system)',    stack: '"Fira Code", monospace' },
+  { id: 'jetbrains',  label: 'JetBrains Mono (system)', stack: '"JetBrains Mono", monospace' },
+];
+
+const CARET_STYLES = [
+  { id: 'line',      label: 'Line',     hint: 'Slim vertical line' },
+  { id: 'block',     label: 'Block',    hint: 'Filled rectangle' },
+  { id: 'underline', label: 'Underline',hint: 'Underline below the char' },
+  { id: 'off',       label: 'Off',      hint: 'No visible caret' },
+];
+
 export function render(container) {
   const settings = getSettings();
 
   const update = (patch) => {
     Object.assign(settings, patch);
     saveSettings(settings);
+  };
+
+  /**
+   * Apply typography settings to the live DOM. Settings live in storage;
+   * the practice page reads them on render. We also push to the document
+   * so the change is visible on the settings page itself.
+   */
+  const applyTypography = (s) => {
+    const root = document.documentElement;
+    const family = FONT_FAMILIES.find((f) => f.id === s.fontFamily);
+    if (family) {
+      root.style.setProperty('--typing-font-family', family.stack);
+    } else {
+      root.style.removeProperty('--typing-font-family');
+    }
+    if (typeof s.fontSize === 'number') {
+      root.style.setProperty('--typing-font-size', `${s.fontSize}px`);
+    }
+    const caret = s.caretStyle || 'line';
+    root.setAttribute('data-caret', caret);
+    if (s.smoothCaret === false) {
+      root.setAttribute('data-smooth-caret', 'off');
+    } else {
+      root.setAttribute('data-smooth-caret', 'on');
+    }
+  };
+
+  const applyAccessibility = (s) => {
+    const root = document.documentElement;
+    if (s.reducedMotion) root.classList.add('reduce-motion');
+    else root.classList.remove('reduce-motion');
+    if (s.highContrast) root.classList.add('high-contrast');
+    else root.classList.remove('high-contrast');
+    if (s.colorBlindSafe) root.setAttribute('data-cb-safe', 'on');
+    else root.setAttribute('data-cb-safe', 'off');
   };
 
   container.innerHTML = html`
@@ -100,6 +151,103 @@ export function render(container) {
                           style="--swatch:${esc(a.accent)}"></button>
                 `).join('')}
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section__label">Typography</h2>
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Typing font</div>
+              <div class="setting-row__desc">Family used on the practice surface. Falls back to a system font when the named one is missing.</div>
+            </div>
+            <div class="setting-row__control">
+              <select class="select" id="font-select" aria-label="Typing font" style="width:220px">
+                ${FONT_FAMILIES.map((f) => `
+                  <option value="${esc(f.id)}" ${settings.fontFamily === f.id ? 'selected' : ''}>${esc(f.label)}</option>
+                `).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Typing font size</div>
+              <div class="setting-row__desc">Size of the passage on the practice surface, in pixels.</div>
+            </div>
+            <div class="setting-row__control" style="width:240px; display:flex; align-items:center; gap: var(--space-2)">
+              <input type="range" class="range" id="font-size" min="16" max="48" step="1"
+                     value="${settings.fontSize || 24}" aria-label="Typing font size">
+              <span class="setting-row__value" id="font-size-readout" style="min-width:48px; text-align:right">${settings.fontSize || 24}px</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Caret style</div>
+              <div class="setting-row__desc">How the active character is highlighted.</div>
+            </div>
+            <div class="setting-row__control">
+              <div class="segmented" role="radiogroup" aria-label="Caret style">
+                ${CARET_STYLES.map((c) => `
+                  <button class="segmented__item ${(settings.caretStyle || 'line') === c.id ? 'active' : ''}"
+                          role="radio" data-caret="${esc(c.id)}"
+                          aria-checked="${(settings.caretStyle || 'line') === c.id}"
+                          title="${esc(c.hint)}">${esc(c.label)}</button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Smooth caret</div>
+              <div class="setting-row__desc">Animate the caret sliding between characters.</div>
+            </div>
+            <div class="setting-row__control">
+              <button class="switch" role="switch" data-toggle="smoothCaret"
+                      aria-checked="${settings.smoothCaret !== false}" aria-label="Smooth caret"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section__label">Accessibility</h2>
+        <div class="card">
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Reduced motion</div>
+              <div class="setting-row__desc">Minimize animations, transitions and confetti.</div>
+            </div>
+            <div class="setting-row__control">
+              <button class="switch" role="switch" data-toggle="reducedMotion"
+                      aria-checked="${!!settings.reducedMotion}" aria-label="Reduced motion"></button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">High contrast</div>
+              <div class="setting-row__desc">Boost text and accent contrast for low-vision users.</div>
+            </div>
+            <div class="setting-row__control">
+              <button class="switch" role="switch" data-toggle="highContrast"
+                      aria-checked="${!!settings.highContrast}" aria-label="High contrast"></button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-row__text">
+              <div class="setting-row__title">Color-blind safe</div>
+              <div class="setting-row__desc">Use a palette that's distinguishable for all common types of color-vision deficiency. Adds a wavy underline to errors.</div>
+            </div>
+            <div class="setting-row__control">
+              <button class="switch" role="switch" data-toggle="colorBlindSafe"
+                      aria-checked="${!!settings.colorBlindSafe}" aria-label="Color-blind safe"></button>
             </div>
           </div>
         </div>
@@ -275,13 +423,40 @@ export function render(container) {
 
   $('#theme-select').addEventListener('change', (e) => setTheme(e.target.value));
 
+  // Font family
+  $('#font-select')?.addEventListener('change', (e) => {
+    update({ fontFamily: e.target.value });
+    applyTypography(settings);
+  });
+
+  // Font size
+  const sizeEl = $('#font-size');
+  const sizeReadout = $('#font-size-readout');
+  sizeEl?.addEventListener('input', (e) => {
+    const v = Number(e.target.value);
+    update({ fontSize: v });
+    if (sizeReadout) sizeReadout.textContent = `${v}px`;
+    applyTypography(settings);
+  });
+
+  // Caret style
+  wireRadioGroup('caret', (v) => {
+    update({ caretStyle: v });
+    applyTypography(settings);
+  });
+
   container.querySelectorAll('[data-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const next = btn.getAttribute('aria-checked') !== 'true';
       btn.setAttribute('aria-checked', String(next));
       update({ [btn.dataset.toggle]: next });
+      applyAccessibility(settings);
     });
   });
+
+  // Apply on initial render so settings persist after navigation.
+  applyTypography(settings);
+  applyAccessibility(settings);
 
   $('#sound-profile').addEventListener('change', (e) => {
     update({ soundProfile: e.target.value });
@@ -391,4 +566,4 @@ export function render(container) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy() {}
+export function destroy(container) { if (container && container._destroy) container._destroy(); }

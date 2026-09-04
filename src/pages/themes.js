@@ -35,7 +35,7 @@ const THEME_PREVIEWS = {
   mono:   { surface: '#F2F1EE', raised: '#ECEBE7', text: '#1A1A1A', muted: '#707070', accent: '#1A1A1A', border: '#BFBBB1', accent2: '#2C6BB5' },
 };
 
-function previewCard(t) {
+function previewCard(t, previewText = 'the quick brown fox jumps over the lazy dog') {
   const v = THEME_PREVIEWS[t.id] || THEME_PREVIEWS.paper;
   const vars = `--pv-bg:${v.surface}; --pv-surface:${v.raised}; --pv-text:${v.text}; --pv-muted:${v.muted}; --pv-accent:${v.accent}; --pv-accent-2:${v.accent2}; --pv-border:${v.border};`;
   return `
@@ -47,7 +47,7 @@ function previewCard(t) {
           <span class="theme-card__line"></span>
         </span>
         <span class="theme-card__text">
-          <span class="theme-card__typed">the quick brown </span><span class="theme-card__caret"></span><span class="theme-card__pending">fox jumps</span>
+          <span class="theme-card__typed theme-card__preview-typed">${esc(previewText)}</span><span class="theme-card__caret"></span>
         </span>
         <span class="theme-card__hud">
           <span class="theme-card__stat"></span>
@@ -81,6 +81,14 @@ function devAccentCard(a) {
 }
 
 export function render(container) {
+  let previewText = 'the quick brown fox jumps over the lazy dog';
+
+  const paintPreview = () => {
+    container.querySelectorAll('.theme-card__preview-typed').forEach((el) => {
+      el.textContent = previewText;
+    });
+  };
+
   container.innerHTML = html`
     <div class="page page--narrow themes">
       <header class="page-header">
@@ -95,7 +103,11 @@ export function render(container) {
 
       <section class="section">
         <h2 class="section__label">Theme</h2>
-        <div class="theme-grid">${THEMES.map(previewCard).join('')}</div>
+        <label class="field field--inline" for="theme-preview-text">
+          <span class="field__label">Preview text</span>
+          <input class="input" id="theme-preview-text" type="text" value="${previewText}" maxlength="60" style="width:380px">
+        </label>
+        <div class="theme-grid" id="theme-grid">${THEMES.map((t) => previewCard(t, previewText)).join('')}</div>
       </section>
 
       <section class="section">
@@ -172,6 +184,14 @@ export function render(container) {
     });
   });
 
+  const previewInput = container.querySelector('#theme-preview-text');
+  if (previewInput) {
+    previewInput.addEventListener('input', (e) => {
+      previewText = e.target.value || ' ';
+      paintPreview();
+    });
+  }
+
   sync('theme', getTheme);
   sync('appearance', getAppearance);
   sync('accent', getDevAccent);
@@ -179,4 +199,4 @@ export function render(container) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy() {}
+export function destroy(container) { if (container && container._destroy) container._destroy(); }

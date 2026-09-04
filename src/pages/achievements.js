@@ -21,6 +21,12 @@ const UNIT = {
   accuracy_reached: '%',
   streak_days: 'days',
   consistency_reached: '%',
+  long_session: 's',
+  quote_completed: 'quotes',
+  zen_minutes: 'min',
+  adaptive_completed: 'drills',
+  multilingual_completed: 'languages',
+  burst_reached: 'wpm',
 };
 
 function card(a) {
@@ -130,4 +136,4 @@ export async function render(container) {
   if (window.lucide) window.lucide.createIcons();
 }
 
-export function destroy() {}
+export function destroy(container) { if (container && container._destroy) container._destroy(); }
