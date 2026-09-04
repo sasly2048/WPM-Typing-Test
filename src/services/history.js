@@ -20,7 +20,7 @@ export const saveSession = (result) => {
   if (history.length > MAX_SESSIONS) {
     history.shift();
   }
-  
+
   storage.set(HISTORY_KEY, history);
   updateStreak();
 
@@ -41,7 +41,8 @@ export const saveSession = (result) => {
  * @returns {Array}
  */
 export const getSessions = (limit) => {
-  const history = storage.get(HISTORY_KEY) || [];
+  const raw = storage.get(HISTORY_KEY);
+  const history = Array.isArray(raw) ? raw : [];
   return limit ? history.slice(-limit) : history;
 };
 
@@ -154,42 +155,60 @@ export const getStreakInfo = () => {
 };
 
 /**
- * Builds the storage key for a personal-best record, scoped to mode +
- * relevant config (target duration for Time, target word count for Words)
- * so a 15s sprint and a 60s test each track their own best.
+ * Build a key for a personal-best record, scoped to mode + relevant
+ * config (target duration for Time, target word count for Words) so
+ * a 15s sprint and a 60s test each track their own best.
+ *
+ * The key is used as a field inside the `personal_bests` map (the
+ * only whitelisted suffix in the storage schema). The map shape is
+ *   { 'time-30s': 87, 'words-50w': 92, ... }
+ * which lets us round-trip a full backup without writing arbitrary
+ * keys that the storage layer would reject.
  * @param {string} mode
  * @param {{targetDuration?: number, targetWordCount?: number}} [config]
  * @returns {string}
  */
 export const getPersonalBestKey = (mode, config = {}) => {
-  const configPart = mode === 'time' ? `-${config.targetDuration || 30}s`
-    : mode === 'words' ? `-${config.targetWordCount || 50}w`
-    : '';
-  return `pb-${mode || 'default'}${configPart}`;
+  let suffix = mode || 'default';
+  if (mode === 'time' && config.targetDuration) suffix += `-${config.targetDuration}s`;
+  else if (mode === 'words' && config.targetWordCount) suffix += `-${config.targetWordCount}w`;
+  return suffix;
 };
 
 /**
- * Reads the stored personal-best WPM for a mode + config.
+ * Reads the stored personal-best WPM for a mode + config. Backs onto
+ * the `personal_bests` map in the storage schema.
  * @param {string} mode
  * @param {Object} [config]
  * @returns {number}
  */
 export const getPersonalBest = (mode, config = {}) => {
-  return storage.get(getPersonalBestKey(mode, config)) || 0;
+  const all = storage.get('personal_bests');
+  if (!all || typeof all !== 'object') return 0;
+  const v = all[getPersonalBestKey(mode, config)];
+  return typeof v === 'number' ? v : 0;
 };
 
 /**
- * Records a new personal-best WPM if it beats the stored one.
+ * Records a new personal-best WPM if it beats the stored one. Reads
+ * the existing map, mutates one field, writes it back. Returns true
+ * when the stored value actually changed.
  * @param {string} mode
  * @param {Object} config
  * @param {number} wpm
  * @returns {boolean} true if this was a new personal best
  */
 export const recordPersonalBest = (mode, config, wpm) => {
+  if (typeof wpm !== 'number' || !isFinite(wpm) || wpm <= 0) return false;
+  const existing = storage.get('personal_bests');
+  const map = (existing && typeof existing === 'object' && !Array.isArray(existing)) ? { ...existing } : {};
   const key = getPersonalBestKey(mode, config);
-  const previousBest = storage.get(key) || 0;
+  const previousBest = typeof map[key] === 'number' ? map[key] : 0;
   const isNewBest = wpm > previousBest;
-  if (isNewBest) storage.set(key, wpm);
+  if (isNewBest) {
+    map[key] = wpm;
+    storage.set('personal_bests', map);
+  }
   return isNewBest;
 };
 
@@ -200,14 +219,88 @@ export const recordPersonalBest = (mode, config, wpm) => {
 export const getHeatmapData = () => {
   const history = getSessions();
   const dataMap = {};
-  
+
   history.forEach(s => {
     const d = new Date(s.timestamp).toISOString().split('T')[0];
     dataMap[d] = (dataMap[d] || 0) + 1;
   });
-  
+
   return Object.keys(dataMap).map(date => ({
     date,
     count: dataMap[date]
   }));
+};
+
+/**
+ * Aggregate per-mode stats. Returns one entry per mode the user has
+ * actually used, with average and best WPM, accuracy, and total tests.
+ * Used by the dashboard's per-mode breakdown card.
+ * @param {Array} [history]
+ * @returns {Array<{mode, tests, bestWpm, avgWpm, avgAccuracy}>}
+ */
+export const getModeBreakdown = (history) => {
+  const sessions = history || getSessions();
+  const groups = new Map();
+  for (const s of sessions) {
+    const m = s.mode || 'unknown';
+    if (!groups.has(m)) groups.set(m, []);
+    groups.get(m).push(s);
+  }
+  return [...groups.entries()].map(([mode, list]) => {
+    const wpmList = list.map((s) => s.wpm || 0);
+    const accList = list.map((s) => s.accuracy || 0);
+    return {
+      mode,
+      tests: list.length,
+      bestWpm: wpmList.length ? Math.max(...wpmList) : 0,
+      avgWpm: wpmList.length ? wpmList.reduce((a, b) => a + b, 0) / wpmList.length : 0,
+      avgAccuracy: accList.length ? accList.reduce((a, b) => a + b, 0) / accList.length : 0,
+    };
+  }).sort((a, b) => b.tests - a.tests);
+};
+
+/**
+ * Per-day aggregated stats for the last N days. Used for the daily
+ * activity bar chart on the dashboard.
+ * @param {number} [days=30]
+ * @returns {Array<{date: string, wpm: number, tests: number, accuracy: number}>}
+ */
+export const getDailyStats = (days = 30) => {
+  const cutoff = Date.now() - days * 86400000;
+  const sessions = getSessions().filter((s) => s.timestamp >= cutoff);
+  const map = new Map();
+  for (const s of sessions) {
+    const date = new Date(s.timestamp).toISOString().split('T')[0];
+    if (!map.has(date)) map.set(date, []);
+    map.get(date).push(s);
+  }
+  const out = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0];
+    const list = map.get(d) || [];
+    const wpmList = list.map((s) => s.wpm || 0);
+    out.push({
+      date: d,
+      tests: list.length,
+      wpm: wpmList.length ? wpmList.reduce((a, b) => a + b, 0) / wpmList.length : 0,
+      accuracy: list.length ? list.reduce((a, b) => a + (b.accuracy || 0), 0) / list.length : 0,
+    });
+  }
+  return out;
+};
+
+/**
+ * Personal best per mode. Reads the canonical `personal_bests` map.
+ * @returns {Array<{mode, wpm, key, configLabel}>}
+ */
+export const getAllPersonalBests = () => {
+  const all = storage.get('personal_bests');
+  const map = (all && typeof all === 'object' && !Array.isArray(all)) ? all : {};
+  const out = [];
+  for (const [key, wpm] of Object.entries(map)) {
+    if (typeof wpm !== 'number') continue;
+    const [mode] = key.split('-');
+    out.push({ mode, wpm, key });
+  }
+  return out.sort((a, b) => b.wpm - a.wpm);
 };
