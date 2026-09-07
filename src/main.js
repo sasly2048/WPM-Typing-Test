@@ -12,6 +12,7 @@ import { addRoute, setContainer, initRouter, navigate, onRouteChange, getCurrent
 import { createNav } from './components/nav.js';
 import { createFooter } from './components/footer.js';
 import { createCommandPalette } from './components/command-palette.js';
+import { buildShareUrl } from './utils/test-config.js';
 import {
   initTheme, setSurfaceForRoute, setAppearance, toggleAppearance,
   setDevAccent, setTheme, THEMES, DEV_ACCENT_OPTIONS,
@@ -31,8 +32,10 @@ const pageLoaders = {
   '/typing': () => import('./pages/practice.js'), // Alias for practice
   '/developer': () => import('./pages/developer.js'),
   '/dashboard': () => import('./pages/dashboard.js'),
+  '/history': () => import('./pages/history.js'),
   '/results': () => import('./pages/results.js'),
   '/achievements': () => import('./pages/achievements.js'),
+  '/leaderboards': () => import('./pages/leaderboards.js'),
   '/themes': () => import('./pages/themes.js'),
   '/settings': () => import('./pages/settings.js'),
   '/profile': () => import('./pages/profile.js'),
@@ -45,8 +48,10 @@ const PROTECTED_PATHS = new Set([
   '/typing',
   '/developer',
   '/dashboard',
+  '/history',
   '/results',
   '/achievements',
+  '/leaderboards',
   '/settings',
   '/profile',
 ]);
@@ -54,7 +59,10 @@ const PROTECTED_PATHS = new Set([
 let currentUser = undefined; // undefined = not yet resolved, null = signed out
 
 const GUEST_MODE_KEY = 'keyflow_guest_mode';
-const isGuestMode = () => localStorage.getItem(GUEST_MODE_KEY) === 'true';
+const isGuestMode = () => {
+  try { return localStorage.getItem(GUEST_MODE_KEY) === 'true'; }
+  catch { return false; }
+};
 
 const pageCache = new Map();
 
@@ -234,6 +242,68 @@ function initCommandPalette() {
     commands,
     onExecute: () => {}
   });
+
+  // Expose a global open hook so the practice page can show a hint
+  // and trigger the palette from the in-page keyboard handler.
+  window.kfOpenCommandBar = () => palette.toggle();
+
+  // Live test summary: poll the most-recent session from history and
+  // surface a "Repeat last test" command. The poll runs every 2s so
+  // completing a test immediately makes the command available.
+  const refreshCommandPalette = () => {
+    let live = [];
+    try {
+      const sessions = JSON.parse(localStorage.getItem('keyflow_history') || '[]');
+      const last = sessions[sessions.length - 1];
+      if (last) {
+        const wpm = Math.round(last.wpm || 0);
+        const acc = Math.round(last.accuracy || 0);
+        const mode = last.mode || 'time';
+        const dur = last.duration ? `${last.duration}s` : '';
+        const word = last.wordCount ? `${last.wordCount}w` : '';
+        live.push({
+          category: 'Last test',
+          label: `Last: ${wpm} wpm · ${acc}% acc (${mode}${dur ? ' ' + dur : ''}${word ? ' ' + word : ''})`,
+          description: 'Click to repeat the same configuration',
+          icon: '<i data-lucide="rotate-ccw"></i>',
+          action: () => {
+            const cfg = { mode: last.mode };
+            if (last.duration) cfg.duration = last.duration;
+            if (last.wordCount) cfg.wordCount = last.wordCount;
+            if (last.difficulty) cfg.difficulty = last.difficulty;
+            if (last.language) cfg.language = last.language;
+            if (last.punctuation) cfg.punctuation = true;
+            if (last.numbers) cfg.numbers = true;
+            const url = buildShareUrl(window.location.origin + window.location.pathname + '#/practice', cfg);
+            window.location.href = url;
+          },
+        });
+        const pb = Math.max(wpm, 1);
+        if (pb) {
+          live.push({
+            category: 'Last test',
+            label: `Best: ${pb} wpm`,
+            description: 'View the leaderboards',
+            icon: '<i data-lucide="crown"></i>',
+            action: () => navigate('/leaderboards'),
+          });
+        }
+      }
+      // Always-available: link to the all-time history
+      if (sessions.length) {
+        live.push({
+          category: 'Navigate',
+          label: 'Browse all-time history',
+          description: `${sessions.length} test${sessions.length === 1 ? '' : 's'} saved locally`,
+          icon: '<i data-lucide="history"></i>',
+          action: () => navigate('/history'),
+        });
+      }
+    } catch {}
+    palette.updateCommands([...commands, ...live]);
+  };
+  refreshCommandPalette();
+  setInterval(refreshCommandPalette, 2000);
 
   window.addEventListener('keyflow:command-palette', () => {
     palette.toggle();
