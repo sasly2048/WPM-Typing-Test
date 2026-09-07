@@ -46,6 +46,8 @@ export const createNormalSession = ({
   onStatsChange,    // callback for live HUD
   onSessionEnd,     // callback when session ends (final stats)
   isMuted,          // returns true when typing should be ignored
+  layout = 'qwerty', // physical keyboard layout: qwerty/dvorak/colemak
+  requireTrusted = true, // drop synthetic events when fair-play is on
 }) => {
   let session = createSession('');
   let generation = 0;
@@ -56,6 +58,24 @@ export const createNormalSession = ({
     caret,
     onScroll: onCaretScroll,
   });
+  // Mode flags. The practice page sets these via `setMode` and they
+  // gate input behavior:
+  //   stopOnError — ignore the next input event until the wrong
+  //                  character is erased with backspace.
+  //   freedom      — let the cursor move forward even if the typed
+  //                  character is wrong (so the user can keep going
+  //                  without backspacing). This is the historical
+  //                  default of most typing tests.
+  //   confidence   — visually hide upcoming words; reveal them one
+  //                  at a time as the current word is completed. The
+  //                  session state is unchanged; only the renderer is
+  //                  told to mask upcoming text.
+  //   easy         — auto-correct: if the user types the wrong key,
+  //                  replace it with the expected key as soon as they
+  //                  type the next one. The wrong keystroke is
+  //                  recorded as a "soft" mistake.
+  let modeFlags = { stopOnError: false, freedom: true, confidence: false, easy: false };
+  const setMode = (flags) => { modeFlags = { ...modeFlags, ...flags }; };
 
   // Apply an input event to the current session and notify the
   // listeners. Returns the new session.
@@ -67,6 +87,37 @@ export const createNormalSession = ({
     }
     if (input.kind === 'escape') {
       return session; // page decides
+    }
+
+    // Easy mode: if the next character is wrong, replace it with
+    // the expected character on the next keystroke. We detect this
+    // by checking whether the LAST typed character is wrong; if so,
+    // we backspace and then let the current event through. The
+    // session is therefore always self-consistent from the user's
+    // perspective.
+    if (modeFlags.easy && input.kind === 'character' && session.cursor > 0) {
+      const lastIdx = session.cursor - 1;
+      const lastTyped = session.typed[lastIdx];
+      const expected = session.originalText[lastIdx];
+      if (lastTyped && lastTyped !== expected && lastTyped !== '') {
+        // The previous keystroke was wrong; substitute now.
+        const corrected = applyInput(session, { kind: 'backspace' });
+        session = corrected;
+      }
+    }
+
+    // Stop on error: if the previous character is wrong, ignore the
+    // next input event until the user backspaces. The page is
+    // expected to surface a "fix the mistake" hint.
+    if (modeFlags.stopOnError && input.kind === 'character' && session.cursor > 0) {
+      const lastIdx = session.cursor - 1;
+      const lastTyped = session.typed[lastIdx];
+      const expected = session.originalText[lastIdx];
+      if (lastTyped && lastTyped !== expected && lastTyped !== '') {
+        // Drop the event; the user has to backspace first.
+        if (onSessionChange) onSessionChange(session);
+        return session;
+      }
     }
 
     const next = applyInput(session, input);
@@ -138,7 +189,10 @@ export const createNormalSession = ({
     target: typingSurface,
     emit: (event) => apply(event),
     onShortcut: () => true, // let the page own Tab; we don't insert tabs
+    layout,
+    requireTrusted,
   });
+  const setLayout = (id) => { if (input && input.setLayout) input.setLayout(id); };
 
   const observeCompletion = () => {
     if (session.state === SESSION_STATE.COMPLETED) {
@@ -203,6 +257,27 @@ export const createNormalSession = ({
   };
 
   /**
+   * Append text to the current session (zen mode chunked refill).
+   * The existing session's cursor and typed[] are preserved; the
+   * new text is added at the end of the source and rendered as
+   * pending spans. If the session was already at the end, it
+   * transitions back to RUNNING.
+   */
+  const appendText = (text, tokens) => {
+    if (destroyed) return;
+    const combined = session.originalText + text;
+    const newTyped = session.typed.slice();
+    for (let i = 0; i < text.length; i++) newTyped.push(null);
+    session = {
+      ...session,
+      originalText: combined,
+      typed: newTyped,
+      state: SESSION_STATE.RUNNING,
+    };
+    renderer.append(text, tokens);
+  };
+
+  /**
    * Abort the current session. Called on page destroy or when a
    * new start() supersedes this one.
    */
@@ -221,10 +296,16 @@ export const createNormalSession = ({
     apply,
     finish,
     destroy,
+    appendText,
+    setMode,
+    setLayout,
+    getMode: () => ({ ...modeFlags }),
+    getLayout: () => layout,
     /** Read-only access for the page. */
     getSession: () => session,
     getStats: () => stats,
     getTimer: () => timer,
+    getUntrustedEventCount: () => (input && input.getUntrustedCount) ? input.getUntrustedCount() : 0,
     observeCompletion,
   };
 };

@@ -28,6 +28,46 @@
 const PRINTABLE_RE = /^\S$/; // single visible character (no whitespace)
 
 /**
+ * Layout remap. When the user has a non-QWERTY layout active, the
+ * browser reports the *physical* key (the QWERTY position) as
+ * `event.key`. The session model expects the *logical* character
+ * (the one that would appear if the user were typing on a QWERTY
+ * keyboard while the text was written for Dvorak). We translate
+ * physical → logical here so the session sees the right character.
+ *
+ * The map is built from the keyboard component's QWERTY ↔ layout
+ * cross-walk: row-by-row, the same index in QWERTY and the user's
+ * layout is the swap pair. For a Dvorak user pressing the key at
+ * the QWERTY 'e' position, the browser reports 'e' but the session
+ * sees 'd' (since Dvorak's 'd' lives at the QWERTY 'e' position).
+ *
+ * If no layout is configured, this is a no-op.
+ */
+const LAYOUT_MAP = {
+  dvorak: [
+    // [qwerty, dvorak]
+    ['q', "'"], ['w', ','], ['e', '.'], ['r', 'p'], ['t', 'y'], ['y', 'f'],
+    ['u', 'g'], ['i', 'c'], ['o', 'r'], ['p', 'l'], ['[', '/'], [']', '='],
+    ['a', 'a'], ['s', 'o'], ['d', 'e'], ['f', 'u'], ['g', 'i'], ['h', 'd'],
+    ['j', 'h'], ['k', 't'], ['l', 'n'], [';', 's'], ["'", '-'],
+    ['z', ';'], ['x', 'q'], ['c', 'j'], ['v', 'k'], ['b', 'x'], ['n', 'b'],
+    ['m', 'm'], [',', 'w'], ['.', 'v'], ['/', 'z'],
+  ],
+  colemak: [
+    ['e', 'f'], ['r', 'p'], ['t', 'g'], ['y', 'j'], ['u', 'l'], ['i', 'u'],
+    ['o', 'y'], ['p', ';'],
+    ['s', 'r'], ['d', 's'], ['f', 't'], ['g', 'd'], ['h', 'h'], ['j', 'n'],
+    ['k', 'e'], ['l', 'i'], [';', 'o'],
+    ['n', 'k'],
+  ],
+};
+const buildRemap = (layout) => {
+  if (!layout || layout === 'qwerty' || !LAYOUT_MAP[layout]) return (k) => k;
+  const table = Object.fromEntries(LAYOUT_MAP[layout].map(([q, d]) => [q, d]));
+  return (key) => table[key] != null ? table[key] : key;
+};
+
+/**
  * Decide whether a KeyboardEvent represents a printable character.
  * Modifiers are ignored — typing 'A' (with shift) and 'a' are both
  * characters; the case comes from event.key, not from a flag.
@@ -74,13 +114,16 @@ const isSelectAll = (event) =>
  * per normalised input. The owner is responsible for passing that
  * event to the session or the adapter.
  */
-export const createInputEngine = ({ target, emit, onShortcut }) => {
+export const createInputEngine = ({ target, emit, onShortcut, layout = 'qwerty', requireTrusted = true } = {}) => {
   if (!target || typeof emit !== 'function') {
     throw new TypeError('createInputEngine requires a target element and emit callback');
   }
   let composing = false;
+  let remap = buildRemap(layout);
+  const setLayout = (id) => { remap = buildRemap(id); };
   const cleanups = [];
   let suppressed = false; // when true, ignore keydown (used during async work)
+  let untrustedEvents = 0; // count of events dropped because !isTrusted
 
   const fire = (kind, payload = {}) => {
     if (suppressed) return;
@@ -98,6 +141,16 @@ export const createInputEngine = ({ target, emit, onShortcut }) => {
     if (event.key === 'Control' || event.key === 'Meta' || event.key === 'Alt' || event.key === 'Shift') return;
     // Dead keys: special-cased via the composition API on most browsers.
     if (event.key === 'Dead') return;
+
+    // Fair-play: if the event is not browser-generated, drop it. Synthetic
+    // events (dispatched by other scripts) carry isTrusted === false.
+    // We only enforce this when the engine was configured to require
+    // trusted events; older browsers and the audit fixture are fine
+    // with it off.
+    if (requireTrusted && event.isTrusted === false) {
+      untrustedEvents++;
+      return;
+    }
 
     // First, mode-agnostic shortcuts. The page decides what Tab
     // means (Normal mode: restart, Developer mode: indent) so we
@@ -148,7 +201,7 @@ export const createInputEngine = ({ target, emit, onShortcut }) => {
       // send the printable string (event.key) to the adapter so the
       // session sees the same character the user intended.
       event.preventDefault();
-      fire('character', { key: event.key, event });
+      fire('character', { key: remap(event.key), event });
       return;
     }
 
@@ -205,10 +258,15 @@ export const createInputEngine = ({ target, emit, onShortcut }) => {
   );
 
   return {
+    setLayout,
     /** Suspend event emission. Useful while a save/load is in flight
      *  so the user cannot type into a half-rendered session. */
     suppress() { suppressed = true; },
     unsuppress() { suppressed = false; },
+    /** How many events were dropped because they were untrusted.
+     *  Useful for the result page to flag the run as "may have been
+     *  automated" if any synthetic events were sent. */
+    getUntrustedCount: () => untrustedEvents,
     /** Tear down. Called from the page's destroy() so listeners
      *  never outlive the page. */
     destroy() {
