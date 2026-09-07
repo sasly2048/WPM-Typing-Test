@@ -141,7 +141,13 @@ export const createStats = () => {
     const now = performance.now();
     const elapsedSec = (now - s.intervalStartedAt) / 1000;
     if (elapsedSec < 0.5) return;
-    const wpm = (s.intervalCorrect / 5) / Math.max(elapsedSec, MIN_ELAPSED_SECONDS);
+    // WPM is "characters / 5 / minutes". A pause with no keystrokes
+    // produces a 0-WPM sample so the speed curve reflects that the
+    // typist was idle, not "no data". Without this, the curve silently
+    // skips gaps and the consistency score underweights inactivity.
+    const wpm = s.intervalCorrect > 0
+      ? (s.intervalCorrect / 5) / Math.max(elapsedSec, MIN_ELAPSED_SECONDS)
+      : 0;
     s.speedCurve.push({ timeMs: now - s.startedAt, wpm });
     if (wpm > s.burstWpm) s.burstWpm = wpm;
     s.intervalStartedAt = now;
@@ -159,8 +165,10 @@ export const createStats = () => {
   const stop = () => {
     if (s.intervalId) clearInterval(s.intervalId);
     s.intervalId = 0;
-    s.endedAt = s.endedAt || performance.now();
-    onIntervalTick(); // one last sample
+    // One timestamp for both endedAt and the final interval push so the
+    // last sample uses the same denominator as the rest of the curve.
+    if (!s.endedAt) s.endedAt = performance.now();
+    onIntervalTick();
   };
 
   /**
@@ -318,13 +326,19 @@ export const createStats = () => {
     const elapsedMs = now - (s.startedAt || now);
     const elapsedMin = Math.max(elapsedMs, 0) / 60000;
     const correctSoFar = countCorrectSoFar(session);
+    const incorrectSoFar = countIncorrectSoFar(session);
     const wpm = elapsedMin > 0 ? Math.round((correctSoFar / 5) / elapsedMin) : 0;
-    const denom = correctSoFar + countIncorrectSoFar(session);
+    // rawWpm: total keystrokes / 5 / minutes. Keystrokes = typed +
+    // backspaces (so it's the actual number of presses).
+    const rawWpm = elapsedMin > 0
+      ? Math.round((s.typedCharacters / 5) / elapsedMin)
+      : 0;
+    const denom = correctSoFar + incorrectSoFar;
     const acc = denom > 0 ? Math.round((correctSoFar / denom) * 100) : 100;
     const progress = session.originalText.length > 0
-      ? Math.round((session.cursor / session.originalText.length) * 100)
+      ? Math.min(100, Math.round((session.cursor / session.originalText.length) * 100))
       : 0;
-    return { wpm, acc, progress, cursor: session.cursor };
+    return { wpm, rawWpm, acc, progress, cursor: session.cursor };
   };
 
   return { start, stop, record, noteMistake, finish, snapshot };
