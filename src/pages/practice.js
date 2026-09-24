@@ -324,6 +324,10 @@ export function render(container) {
             <span class="live-hud__value" id="practice-focus">—</span>
             <span class="live-hud__label">focus</span>
           </div>
+          <!-- Screen-reader mirror of the live stats. The visual tiles update
+               every frame (too chatty for AT); this polite region is updated
+               about once a second with a spoken summary. -->
+          <p class="sr-only" id="practice-live-announce" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="live-hud__item live-hud__item--graph">
             <div class="live-graph" id="practice-graph" aria-label="WPM over time"></div>
           </div>
@@ -348,6 +352,8 @@ export function render(container) {
   const targetEl = $('#practice-target');
   const renderEl = $('#practice-render');
   const caretEl  = $('#practice-caret');
+  const announceEl = $('#practice-live-announce');
+  let lastAnnounceAt = 0;
   const wpmEl    = $('#practice-wpm');
   const rawEl    = $('#practice-raw');
   const accEl    = $('#practice-acc');
@@ -447,6 +453,10 @@ export function render(container) {
         backspaceCount: result.stats.backspaceCount,
         correctedErrors: result.stats.correctedErrors,
         totalStrokes: result.stats.totalStrokes,
+        // Fair-play: how many synthetic (untrusted) input events were dropped.
+        // >0 means the run may have been (partly) automated; surfaced on results.
+        untrustedEvents: (normalSession.getUntrustedEventCount
+          ? normalSession.getUntrustedEventCount() : 0),
       };
       sessionStorage.setItem('lastSession', JSON.stringify(finalSession));
       if (replayTimeline.length > 0) {
@@ -540,12 +550,19 @@ export function render(container) {
       accEl.textContent = snap.acc;
       burstEl.textContent = snap.burstWpm ?? 0;
       // Live focus: 0-100, lower when there are many pauses.
-      const f = liveFocus != null ? liveFocus : computeLiveFocus(normalSession.getStats(), snap);
+      const f = liveFocus != null ? liveFocus : computeLiveFocus(snap);
       if (f != null) {
         focusEl.textContent = f;
         liveFocus = f;
       } else {
         focusEl.textContent = '—';
+      }
+      // Announce a compact spoken summary at most once per second so AT
+      // users get live feedback without a torrent of interruptions.
+      const nowMs = performance.now();
+      if (announceEl && nowMs - lastAnnounceAt >= 1000) {
+        lastAnnounceAt = nowMs;
+        announceEl.textContent = `${snap.wpm} words per minute, ${snap.acc}% accuracy`;
       }
       liveGraph.push(snap.wpm);
       accGraph.push(snap.acc);
@@ -610,11 +627,15 @@ export function render(container) {
    * (pauses per 100 strokes; lower = worse) but runs on the in-flight
    * session. Returns null when there isn't enough signal yet.
    */
-  const computeLiveFocus = (stats, snap) => {
-    if (!stats) return null;
-    const strokes = stats.totalStrokes || snap.totalStrokes || 0;
+  const computeLiveFocus = (snap) => {
+    // Read strokes + pauses straight from the live snapshot. The previous
+    // version read them off normalSession.getStats(), which returns the stats
+    // controller (no totalStrokes/pauseCount fields), so `pauses` was always 0
+    // and focus was pinned at 100 once 20 strokes were reached.
+    if (!snap) return null;
+    const strokes = snap.totalStrokes || 0;
     if (strokes < 20) return null;
-    const pauses = (stats.pauseCount || 0);
+    const pauses = snap.pauseCount || 0;
     const pausesPer100 = (pauses / strokes) * 100;
     return Math.max(0, Math.min(100, Math.round(100 - pausesPer100 * 4)));
   };
@@ -642,7 +663,13 @@ export function render(container) {
 
     let text;
     try {
-      const opts = { duration, wordCount, punctuation, numbers, customText, language };
+      // Only forward the human-language selection to modes that actually use
+      // it (Prose/Time). Words/Zen/Adaptive have no multilingual pools, and
+      // Code reads its own programming-language from keyflow_dev_lang -- passing
+      // e.g. 'fr' here made Code silently fall back to JavaScript.
+      const spec = MODE_OPTIONS.find((m) => m.id === mode);
+      const opts = { duration, wordCount, punctuation, numbers, customText };
+      if (spec && spec.allowLanguage) opts.language = language;
       text = await getText(mode, difficulty, opts);
     } catch (err) {
       logger.error('session', 'Failed to load text', { error: err.message });

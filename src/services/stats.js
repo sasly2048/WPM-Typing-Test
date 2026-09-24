@@ -320,13 +320,37 @@ export const createStats = () => {
     };
   };
 
+  // Memo for the two per-character counts (see snapshot()). Reset implicitly
+  // by the cacheKey; declared here so it lives for the session's lifetime.
+  const _countCache = { key: -1, correct: 0, incorrect: 0 };
+
   /** Live snapshot for the HUD. Cheap to compute every frame. */
   const snapshot = (session) => {
     const now = s.endedAt || performance.now();
     const elapsedMs = now - (s.startedAt || now);
     const elapsedMin = Math.max(elapsedMs, 0) / 60000;
-    const correctSoFar = countCorrectSoFar(session);
-    const incorrectSoFar = countIncorrectSoFar(session);
+    // Single O(cursor) pass for both counts, memoized across repeat calls at
+    // the same (cursor, keystroke-count). Timer ticks fire many snapshots
+    // between keystrokes; without the cache each re-scanned [0,cursor),
+    // making a long run O(n^2). The key uses s.typedCharacters (bumped on
+    // every press, including corrections) so any edit invalidates the cache.
+    const cacheKey = session.cursor * 2147483648 + s.typedCharacters;
+    if (_countCache.key !== cacheKey) {
+      _countCache.key = cacheKey;
+      let c = 0, inc = 0;
+      const upto = session.cursor;
+      const typed = session.typed, orig = session.originalText;
+      for (let i = 0; i < upto; i++) {
+        const t = typed[i];
+        if (t === orig[i]) { c++; continue; }
+        if (t === null || t === '') continue;
+        inc++;
+      }
+      _countCache.correct = c;
+      _countCache.incorrect = inc;
+    }
+    const correctSoFar = _countCache.correct;
+    const incorrectSoFar = _countCache.incorrect;
     const wpm = elapsedMin > 0 ? Math.round((correctSoFar / 5) / elapsedMin) : 0;
     // rawWpm: total keystrokes / 5 / minutes. Keystrokes = typed +
     // backspaces (so it's the actual number of presses).
@@ -338,31 +362,25 @@ export const createStats = () => {
     const progress = session.originalText.length > 0
       ? Math.min(100, Math.round((session.cursor / session.originalText.length) * 100))
       : 0;
-    return { wpm, rawWpm, acc, progress, cursor: session.cursor };
+    // Expose the live fields the HUD burst/focus tiles read. They were
+    // tracked on `s` and returned by finish(), but omitted here, so the
+    // burst tile showed 0 and the focus tile stayed "—" for the whole run.
+    return {
+      wpm,
+      rawWpm,
+      acc,
+      progress,
+      cursor: session.cursor,
+      burstWpm: Math.round(s.burstWpm),
+      totalStrokes: s.typedCharacters,
+      pauseCount: s.pauseCount,
+    };
   };
 
   return { start, stop, record, noteMistake, finish, snapshot };
 };
 
-function countCorrectSoFar(session) {
-  let n = 0;
-  const upto = session.cursor;
-  for (let i = 0; i < upto; i++) {
-    if (session.typed[i] === session.originalText[i]) n++;
-  }
-  return n;
-}
 
-function countIncorrectSoFar(session) {
-  let n = 0;
-  const upto = session.cursor;
-  for (let i = 0; i < upto; i++) {
-    const t = session.typed[i];
-    if (t === null || t === '') continue;
-    if (t !== session.originalText[i]) n++;
-  }
-  return n;
-}
 
 function computeStability(samples) {
   if (samples.length < 2) return null;

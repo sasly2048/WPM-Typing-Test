@@ -120,6 +120,11 @@ export function render(container) {
         <div class="results__hero-ring" id="results-ring"></div>
       </header>
 
+      ${session.untrustedEvents > 0 ? `
+      <p class="results__verdict results__verdict--warning" role="alert">
+        ⚠ Fair-play: ${esc(session.untrustedEvents)} synthetic input event${session.untrustedEvents === 1 ? '' : 's'} were dropped during this run. The result may not reflect genuine typing.
+      </p>` : ''}
+
       <p class="results__verdict results__verdict--${v.tone}">${esc(v.text)}</p>
 
       <div class="stat-grid">

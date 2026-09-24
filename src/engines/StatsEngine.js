@@ -1,4 +1,4 @@
-import { calculateWPM, calculateRawWPM, calculateAccuracy } from '../services/stats-engine.js';
+import { calculateWPM, calculateRawWPM } from '../services/stats-engine.js';
 
 /**
  * Stats engine.
@@ -240,7 +240,18 @@ export class StatsEngine {
 
     const wpm = calculateWPM(this.correctStrokes, totalTimeSec);
     const rawWpm = calculateRawWPM(this.totalStrokes, totalTimeSec);
-    const accuracy = calculateAccuracy(this.correctStrokes, this.totalStrokes);
+    // Character (final-state) accuracy, to match stats.js so the two engines'
+    // numbers can be averaged together in history without a denominator
+    // mismatch. stats.js computes correct / (correct + incorrect + extra) from
+    // the final typed positions, where a corrected error does not count
+    // against accuracy. The keystroke-model equivalent is the correct chars
+    // that stuck over those plus the errors left uncorrected at finish.
+    // (Was correctStrokes / totalStrokes -- a keystroke denominator that made
+    // code-mode accuracy systematically lower than prose in the shared avg.)
+    const finalDenom = this.correctStrokes + this.uncorrectedErrors;
+    const accuracy = finalDenom > 0
+      ? (this.correctStrokes / finalDenom) * 100
+      : 100;
 
     const totalMistakes = this.correctedErrors + this.uncorrectedErrors;
     const errorRate = this.totalStrokes > 0 ? totalMistakes / this.totalStrokes : 0;
