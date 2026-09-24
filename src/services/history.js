@@ -28,9 +28,15 @@ export const saveSession = (result) => {
   // recordPersonalBest() was exported but never invoked, so stored bests
   // stayed at 0 and the "personal best" badge could never appear.
   if (typeof result.wpm === 'number') {
+    // The session record carries `duration`/`wordCount`; the PB key builder
+    // expects `targetDuration`/`targetWordCount` (the same names the practice
+    // page reads with). Map here so writes and reads land on one key -- they
+    // previously used `result.targetDuration` (always undefined), so every
+    // scoped best was written under the bare "time"/"words" key and the read
+    // side never found it.
     recordPersonalBest(result.mode, {
-      targetDuration: result.targetDuration,
-      targetWordCount: result.targetWordCount,
+      targetDuration: result.targetDuration ?? result.duration,
+      targetWordCount: result.targetWordCount ?? result.wordCount,
     }, result.wpm);
   }
 };

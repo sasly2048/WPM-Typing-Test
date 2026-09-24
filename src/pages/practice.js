@@ -416,11 +416,15 @@ export function render(container) {
   targetEl.addEventListener('touchstart', initAudio, { once: true, passive: true });
 
   const handleEnd = (result) => {
-    publishSessionCompleted(result.session, { mode, difficulty, duration, wordCount });
     if (result.stats.wpm >= 60) publishMilestone(result.stats.wpm, mode);
+    let finalSession;
     try {
-      const finalSession = {
+      finalSession = {
         ...result.session,
+        // One stable timestamp shared by every persist path so the two
+        // writers (saveSession + publishSessionCompleted) collapse to a
+        // single history row instead of one bare + one complete row.
+        timestamp: Date.now(),
         wpm: result.stats.wpm,
         rawWpm: result.stats.rawWpm,
         accuracy: result.stats.accuracy,
@@ -456,9 +460,17 @@ export function render(container) {
         }));
       }
       saveSession(finalSession);
+      // Publish the completion event with the SAME record + timestamp. The
+      // publisher persists too but dedups on timestamp, so this only emits the
+      // event and refreshes achievements -- it no longer writes a second
+      // (wpm-less) row the way `result.session` did.
+      publishSessionCompleted(finalSession, { mode, difficulty, duration, wordCount });
     } catch (err) {
       logger.warn('history', 'Could not persist session', { error: err.message });
       showToast({ message: 'Could not save this session locally; results still visible.', type: 'warning' });
+      // Still emit the event so achievements/results update even if the
+      // history write failed.
+      publishSessionCompleted(result.session, { mode, difficulty, duration, wordCount });
     }
     checkAchievements(finalSession || result.session, getStats())
       .then((unlocked) => {
@@ -586,7 +598,7 @@ export function render(container) {
       lastInput: null,
     };
     // Re-render the additional characters only
-    const tokens = new Array(appened.length);
+    const tokens = new Array(appended.length);
     for (let i = 0; i < appended.length; i++) {
       tokens[i] = { char: appended[i], status: 'pending' };
     }
@@ -651,6 +663,9 @@ export function render(container) {
       sourceEl.textContent = mode === MODES.QUOTE ? `— ${currentName}` : currentName;
       sourceEl.hidden = false;
     } else if (currentName && mode === MODES.ADAPTIVE) {
+      sourceEl.textContent = currentName;
+      sourceEl.hidden = false;
+    } else if (currentName && mode === MODES.PARAGRAPH) {
       sourceEl.textContent = currentName;
       sourceEl.hidden = false;
     } else {

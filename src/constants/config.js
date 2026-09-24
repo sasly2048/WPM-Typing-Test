@@ -3,13 +3,14 @@ export const VERSION = '1.0.0';
 export const DEFAULT_THEME = 'paper';
 export const STORAGE_PREFIX = 'keyflow_';
 
-export const TIMER_DURATIONS = [15, 30, 60, 120];
+export const TIMER_DURATIONS = [15, 30, 60, 120, 180, 300];
 /**
  * Word-mode counts. Capped at 100 because longer text has diminishing
  * returns in this UI: at 100 words the typing surface already wraps to
  * 8-10 visible lines, and the user has to scroll to track progress.
+ * 150/200 are still useful for power users who want a long session.
  */
-export const WORD_COUNTS = [10, 25, 50, 75, 100];
+export const WORD_COUNTS = [10, 25, 50, 75, 100, 150, 200];
 
 /**
  * The four modes a user actually picks between. We deliberately keep
@@ -22,8 +23,11 @@ export const MODES = {
   PARAGRAPH: 'paragraph',
   TIME: 'time',
   WORDS: 'words',
+  QUOTE: 'quote',
+  ZEN: 'zen',
   CODE: 'code',
   CUSTOM: 'custom',
+  ADAPTIVE: 'adaptive',
 };
 
 export const DIFFICULTIES = {

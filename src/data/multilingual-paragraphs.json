@@ -1,0 +1,974 @@
+[
+  {
+    "id": 2001,
+    "text": "Il était une fois, dans une ville au bord d'un fleuve, un jeune garçon nommé Jean. Chaque matin, il traversait le pont de pierre pour aller à l'école, et chaque soir il s'arrêtait un instant sur la berge pour regarder l'eau couler. Le courant était rapide et clair, et Jean y jetait des feuilles qu'il voyait disparaître en tournoyant.",
+    "source": "Récit original",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "fr",
+    "name": "Jean et le fleuve"
+  },
+  {
+    "id": 2002,
+    "text": "Longtemps, je me suis couché de bonne heure. Parfois, à peine ma bougie éteinte, mes yeux se fermaient si vite que je n'avais pas le temps de me dire: 'Je m'endors.' Et, une demi-heure plus tard, la pensée qu'il était temps de chercher le sommeil m'éveillait; je voulais poser le volume que je croyais avoir encore dans les mains et souffler ma lumière.",
+    "source": "Du côté de chez Swann, Marcel Proust (1913)",
+    "difficulty": "hard",
+    "category": "literature",
+    "language": "fr",
+    "name": "Proust — Ouverture"
+  },
+  {
+    "id": 2003,
+    "text": "Le café est l'une des boissons les plus consommées au monde. Il est préparé à partir des graines torréfiées du caféier, un arbuste qui pousse dans les régions tropicales. La tradition de le boire s'est répandue sur tous les continents et fait partie des rituels sociaux, professionnels et personnels de presque toutes les cultures.",
+    "source": "Histoire du café, connaissance publique",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "fr",
+    "name": "Le café dans le monde"
+  },
+  {
+    "id": 2004,
+    "text": "L'intelligence artificielle est l'ensemble des techniques qui permettent à une machine de simuler des fonctions cognitives: raisonner, apprendre, percevoir, résoudre des problèmes. Le domaine a connu des progrès considérables depuis 2010, notamment grâce à l'apprentissage profond sur de grandes quantités de données.",
+    "source": "Intelligence artificielle, connaissance publique",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "fr",
+    "name": "L'intelligence artificielle"
+  },
+  {
+    "id": 2005,
+    "text": "La Renaissance fut une période de renouveau intellectuel qui débuta en Italie au quatorzième siècle. Après un millénaire durant lequel l'éducation était largement entre les mains des monastères, les érudits redécouvrirent les écrits de la Grèce et de Rome antiques. De nouvelles idées sur l'art, la science et la place de l'être humain dans l'univers commencèrent à se diffuser à travers l'Europe.",
+    "source": "Renaissance, connaissance publique",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "fr",
+    "name": "La Renaissance"
+  },
+  {
+    "id": 2006,
+    "text": "Les abeilles communiquent par la danse, indiquant à leurs sœurs la direction des fleurs. Une seule abeille peut visiter des centaines de fleurs en une matinée, transportant le pollen de l'une à l'autre et aidant les plantes à porter leurs fruits. Leur travail est si essentiel que sans elles, un tiers de la nourriture que nous mangeons disparaîtrait.",
+    "source": "Comportement des abeilles, connaissance publique",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "fr",
+    "name": "Les abeilles et la pollinisation"
+  },
+  {
+    "id": 2007,
+    "text": "La philosophie de l'existence précède l'essence, écrivait Sartre: il n'y a pas de nature humaine fixée, et chacun de nous est libre de définir qui il est. Le poids de cette liberté, affirmait-il, est à la fois notre plus grande anxiété et notre plus grande dignité. Nous sommes condamnés à être libres.",
+    "source": "Sartre, connaissance publique",
+    "difficulty": "hard",
+    "category": "philosophy",
+    "language": "fr",
+    "name": "Sartre — L'existence"
+  },
+  {
+    "id": 2008,
+    "text": "Le mouvement des logiciels libres repose sur une idée simple: le code source d'un programme doit être lisible et modifiable par tous. Ce modèle de développement a produit certains des outils les plus importants du monde, des serveurs web aux langages de programmation en passant par les systèmes d'exploitation.",
+    "source": "Logiciel libre, connaissance publique",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "fr",
+    "name": "Le logiciel libre"
+  },
+  {
+    "id": 2009,
+    "text": "Un algorithme est une suite finie d'instructions précises, exécutées séquentiellement par un ordinateur pour résoudre un problème. La notion d'algorithme est antérieure à l'ordinateur lui-même: les mathématiciens de l'Antiquité, comme Euclide, en formulaient déjà. Aujourd'hui, ils sont au cœur de toute la programmation moderne.",
+    "source": "Algorithmes, connaissance publique",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "fr",
+    "name": "Les algorithmes"
+  },
+  {
+    "id": 2010,
+    "text": "Les corbeaux sont des oiseaux étonnamment intelligents. Des expériences ont montré qu'ils savent compter, utiliser des outils et même se souvenir de visages humains pendant des années. Certaines études suggèrent que leurs capacités cognitives sont comparables à celles d'un jeune enfant de cinq ans, ce qui les place parmi les espèces animales les plus astucieuses de la planète.",
+    "source": "Intelligence animale, connaissance publique",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "fr",
+    "name": "L'esprit des corbeaux"
+  },
+  {
+    "id": 2011,
+    "text": "Le vélo est une machine simple mais géniale. Deux roues, un cadre, des pédales et une chaîne suffisent. Depuis plus d'un siècle, le vélo est un moyen de transport bon marché et fiable pour des milliards de personnes. Dans certains pays, on vend chaque année plus de vélos que de voitures.",
+    "source": "Le vélo, connaissance publique",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "fr",
+    "name": "Le vélo"
+  },
+  {
+    "id": 2012,
+    "text": "La cryptographie quantique utilise les propriétés de la mécanique quantique, comme l'intrication et la superposition, pour transmettre des informations de manière théoriquement inviolable. Contrairement à la cryptographie classique, qui repose sur la difficulté de certains problèmes mathématiques, la cryptographie quantique repose sur les lois de la physique elle-même.",
+    "source": "Cryptographie quantique, connaissance publique",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "fr",
+    "name": "La cryptographie quantique"
+  },
+  {
+    "id": 3001,
+    "text": "Es war einmal, in einer kleinen Stadt am Rande des Schwarzwaldes, ein Uhrmacher, der so geschickt mit den Händen war, dass er die kleinsten Zahnräder einer Taschenuhr mit bloßem Auge richten konnte. Sein Name war Friedrich, und die Menschen kamen aus den umliegenden Dörfern, wenn ihre Uhren den Dienst versagten.",
+    "source": "Erzählung",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "de",
+    "name": "Der Uhrmacher"
+  },
+  {
+    "id": 3002,
+    "text": "Kaffee ist eines der meistgetrunkenen Getränke der Welt. Er wird aus den gerösteten Samen des Kaffeestrauchs hergestellt, einem Strauch, der in tropischen Regionen wächst. Die Tradition, Kaffee zu trinken, hat sich über alle Kontinente ausgebreitet und ist Teil sozialer, beruflicher und persönlicher Rituale in fast allen Kulturen.",
+    "source": "Geschichte des Kaffees, allgemeines Wissen",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "de",
+    "name": "Kaffee in der Welt"
+  },
+  {
+    "id": 3003,
+    "text": "Die Bienen kommunizieren durch den Tanz und teilen ihren Schwestern die Richtung der Blüten mit. Eine einzige Biene kann an einem einzigen Morgen Hunderte von Blüten besuchen, den Pollen von einer zur anderen tragen und den Pflanzen so helfen, Früchte zu tragen. Ohne sie würde ein Drittel unserer Nahrung verschwinden.",
+    "source": "Verhalten der Bienen, allgemeines Wissen",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "de",
+    "name": "Bienen und Bestäubung"
+  },
+  {
+    "id": 3004,
+    "text": "Die industrielle Revolution veränderte die Lebens- und Arbeitsweise der Menschen grundlegend. Beginnend in England in den späten 1780er Jahren, begannen Maschinen, Arbeiten zu übernehmen, die zuvor von Hand erledigt wurden. Die Menschen zogen von den Höfen in die Städte, wo sie lange Stunden in Fabriken arbeiteten.",
+    "source": "Industrielle Revolution, allgemeines Wissen",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "de",
+    "name": "Die industrielle Revolution"
+  },
+  {
+    "id": 3005,
+    "text": "Quelloffene Software ist Software, deren Quelltext öffentlich zugänglich ist. Dieses Entwicklungsmodell hat einige der wichtigsten Werkzeuge der Welt hervorgebracht, von Webservern über Programmiersprachen bis hin zu Betriebssystemen. Jeder kann den Code lesen, verändern und weitergeben, was die Zusammenarbeit und Innovation fördert.",
+    "source": "Quelloffene Software, allgemeines Wissen",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "de",
+    "name": "Quelloffene Software"
+  },
+  {
+    "id": 3006,
+    "text": "Künstliche Intelligenz ist der Sammelbegriff für Techniken, die es einer Maschine ermöglichen, kognitive Funktionen wie logisches Denken, Lernen und Wahrnehmung zu simulieren. Das Feld hat seit 2010 dank Deep Learning und großen Datenmengen enorme Fortschritte gemacht.",
+    "source": "Künstliche Intelligenz, allgemeines Wissen",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "de",
+    "name": "Künstliche Intelligenz"
+  },
+  {
+    "id": 3007,
+    "text": "Die Schwarzkörperstrahlung war eines der großen Rätsel der Physik am Ende des neunzehnten Jahrhunderts. Klassische Theorien sagten voraus, dass die Intensität mit kürzeren Wellenlängen ins Unendliche wachsen sollte, was offensichtlich nicht stimmen konnte. Max Planck löste das Problem, indem er vorschlug, dass Energie nur in diskreten Paketen abgegeben werden kann — die Geburtsstunde der Quantenphysik.",
+    "source": "Schwarzkörperstrahlung, allgemeines Wissen",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "de",
+    "name": "Schwarzkörperstrahlung"
+  },
+  {
+    "id": 3008,
+    "text": "Raben sind erstaunlich intelligent. In Experimenten haben sie gezeigt, dass sie zählen, Werkzeuge benutzen und sich sogar jahrelang an menschliche Gesichter erinnern können. Manche Studien legen nahe, dass ihre kognitiven Fähigkeiten mit denen eines fünfjährigen Kindes vergleichbar sind.",
+    "source": "Tierische Intelligenz, allgemeines Wissen",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "de",
+    "name": "Der Geist der Raben"
+  },
+  {
+    "id": 3009,
+    "text": "Freiheit bedeutet Verantwortung. Das ist der Kerngedanke, den die Stoa der Antike betonte. Wir können das Wetter nicht kontrollieren, nicht die Handlungen anderer, nicht den Gang der Geschichte. Was wir kontrollieren können, sind unsere eigenen Urteile, unsere Bemühungen und unsere Reaktionen.",
+    "source": "Stoische Philosophie, allgemeines Wissen",
+    "difficulty": "medium",
+    "category": "philosophy",
+    "language": "de",
+    "name": "Freiheit und Verantwortung"
+  },
+  {
+    "id": 3010,
+    "text": "Die Druckerpresse veränderte die Welt. Vor ihrer Erfindung musste jedes Buch von Hand kopiert werden, sodass ein einzelnes Buch Monate brauchte, um hergestellt zu werden. Mit der Presse konnten Hunderte von Kopien an einem Tag angefertigt werden, und gewöhnliche Menschen begannen zu lesen.",
+    "source": "Geschichte der Druckerpresse, allgemeines Wissen",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "de",
+    "name": "Die Druckerpresse"
+  },
+  {
+    "id": 3011,
+    "text": "Quantenkryptographie nutzt die Eigenschaften der Quantenmechanik, wie Verschränkung und Überlagerung, um Informationen theoretisch unknackbar zu übertragen. Im Gegensatz zur klassischen Kryptographie, die auf der Schwierigkeit mathematischer Probleme beruht, stützt sich die Quantenkryptographie auf die Gesetze der Physik selbst.",
+    "source": "Quantenkryptographie, allgemeines Wissen",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "de",
+    "name": "Quantenkryptographie"
+  },
+  {
+    "id": 3012,
+    "text": "Ein Algorithmus ist eine endliche Folge präziser Anweisungen, die ein Computer sequenziell ausführt, um ein Problem zu lösen. Algorithmen sind älter als der Computer selbst: Schon die Mathematiker der Antike, wie Euklid, formulierten sie. Heute stehen sie im Mittelpunkt der gesamten modernen Programmierung.",
+    "source": "Algorithmen, allgemeines Wissen",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "de",
+    "name": "Algorithmen"
+  },
+  {
+    "id": 4001,
+    "text": "In un piccolo villaggio della costa toscana, dove il mare incontrava le colline, viveva un pescatore di nome Marco. Ogni mattina, prima dell'alba, usciva con la sua barca di legno e tornava al tramonto con il pescato. La gente del villaggio lo conosceva per la sua pazienza e il suo rispetto per il mare, che considerava un dono e non una risorsa da sfruttare.",
+    "source": "Racconto originale",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "it",
+    "name": "Il pescatore e il mare"
+  },
+  {
+    "id": 4002,
+    "text": "Il caffè è una delle bevande più consumate al mondo. Viene preparato a partire dai semi tostati della pianta del caffè, un arbusto che cresce nelle regioni tropicali. La tradizione di berlo si è diffusa in tutti i continenti ed è parte dei rituali sociali, lavorativi e personali di quasi tutte le culture.",
+    "source": "Storia del caffè, conoscenza pubblica",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "it",
+    "name": "Il caffè nel mondo"
+  },
+  {
+    "id": 4003,
+    "text": "Le api comunicano attraverso la danza, indicando alle loro sorelle la direzione dei fiori. Una singola ape può visitare centinaia di fiori in una sola mattina, trasportando polline da uno all'altro e aiutando le piante a fruttificare. Senza di loro, un terzo del cibo che mangiamo scomparirebbe.",
+    "source": "Comportamento delle api, conoscenza pubblica",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "it",
+    "name": "Le api e l'impollinazione"
+  },
+  {
+    "id": 4004,
+    "text": "La crittografia quantistica utilizza le proprietà della meccanica quantistica, come l'entanglement e la sovrapposizione, per trasmettere informazioni in modo teoricamente inviolabile. A differenza della crittografia classica, che si basa sulla difficoltà di alcuni problemi matematici, la crittografia quantistica si basa sulle leggi stesse della fisica.",
+    "source": "Crittografia quantistica, conoscenza pubblica",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "it",
+    "name": "La crittografia quantistica"
+  },
+  {
+    "id": 4005,
+    "text": "L'intelligenza artificiale è l'insieme delle tecniche che permettono a una macchina di simulare funzioni cognitive come ragionare, apprendere e percepire. Il campo ha fatto enormi progressi dal 2010 grazie al deep learning su grandi quantità di dati.",
+    "source": "Intelligenza artificiale, conoscenza pubblica",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "it",
+    "name": "L'intelligenza artificiale"
+  },
+  {
+    "id": 4006,
+    "text": "Il Rinascimento fu un periodo di rinascita intellettuale che ebbe inizio in Italia nel quattordicesimo secolo. Dopo un millennio durante il quale l'educazione era in gran parte nelle mani dei monasteri, gli studiosi riscoprirono gli scritti dell'antica Grecia e di Roma. Nuove idee sull'arte, sulla scienza e sul posto dell'essere umano nell'universo cominciarono a diffondersi in tutta Europa.",
+    "source": "Rinascimento, conoscenza pubblica",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "it",
+    "name": "Il Rinascimento"
+  },
+  {
+    "id": 4007,
+    "text": "Il software libero è software il cui codice sorgente è pubblicamente disponibile. Questo modello di sviluppo ha prodotto alcuni degli strumenti più importanti del mondo, dai server web ai linguaggi di programmazione, fino ai sistemi operativi. Chiunque può leggere, modificare e ridistribuire il codice, favorendo la collaborazione e l'innovazione.",
+    "source": "Software libero, conoscenza pubblica",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "it",
+    "name": "Il software libero"
+  },
+  {
+    "id": 4008,
+    "text": "I corvi sono uccelli sorprendentemente intelligenti. In esperimenti, hanno dimostrato di saper contare, usare strumenti e persino ricordare volti umani per anni. Alcuni studi suggeriscono che le loro capacità cognitive siano paragonabili a quelle di un bambino di cinque anni.",
+    "source": "Intelligenza animale, conoscenza pubblica",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "it",
+    "name": "La mente dei corvi"
+  },
+  {
+    "id": 4009,
+    "text": "La stampa cambiò il mondo. Prima della sua invenzione, ogni libro doveva essere copiato a mano, e un singolo libro poteva richiedere mesi di lavoro. Con la stampa, centinaia di copie potevano essere realizzate in un giorno. La conoscenza si diffuse più velocemente che mai, e la gente comune cominciò a leggere.",
+    "source": "Storia della stampa, conoscenza pubblica",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "it",
+    "name": "La stampa"
+  },
+  {
+    "id": 4010,
+    "text": "Un algoritmo è una sequenza finita di istruzioni precise, eseguite in modo sequenziale da un computer per risolvere un problema. La nozione di algoritmo è anteriore al computer stesso: i matematici dell'antichità, come Euclide, li formulavano già. Oggi sono al centro di tutta la programmazione moderna.",
+    "source": "Algoritmi, conoscenza pubblica",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "it",
+    "name": "Gli algoritmi"
+  },
+  {
+    "id": 4011,
+    "text": "La bicicletta è una macchina semplice ma geniale. Due ruote, un telaio, pedali e una catena sono tutto ciò che serve. Da oltre un secolo, la bicicletta è un mezzo di trasporto economico e affidabile per miliardi di persone. In alcuni paesi, ogni anno si vendono più biciclette che automobili.",
+    "source": "La bicicletta, conoscenza pubblica",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "it",
+    "name": "La bicicletta"
+  },
+  {
+    "id": 4012,
+    "text": "La crittografia quantistica si basa sui principi della meccanica quantistica, come l'entanglement e la sovrapposizione, per trasmettere informazioni in modo teoricamente inviolabile. A differenza della crittografia classica, che si basa sulla complessità computazionale, quella quantistica si basa sulle leggi stesse della fisica.",
+    "source": "Crittografia quantistica, conoscenza pubblica",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "it",
+    "name": "La crittografia quantistica II"
+  },
+  {
+    "id": 5001,
+    "text": "Numa pequena aldeia do interior de Portugal, junto a um rio de águas claras, vivia um oleiro chamado António. Todos os dias, antes do sol nascer, ele acendia o forno de lenha e preparava a argila que os vizinhos lhe traziam. Os seus potes, jarras e tigelas viajavam depois pelas aldeias vizinhas, sempre reconhecidos pela sua forma simples e pela cor da terra de onde vinham.",
+    "source": "Narrativa original",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "pt",
+    "name": "O oleiro de Portugal"
+  },
+  {
+    "id": 5002,
+    "text": "O café é uma das bebidas mais consumidas no mundo. É preparado a partir das sementes torradas do cafeeiro, um arbusto que cresce em regiões tropicais. A tradição de o beber espalhou-se por todos os continentes e faz parte de rituais sociais, profissionais e pessoais em quase todas as culturas.",
+    "source": "História do café, conhecimento público",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "pt",
+    "name": "O café no mundo"
+  },
+  {
+    "id": 5003,
+    "text": "As abelhas comunicam-se pela dança, indicando às suas irmãs a direção das flores. Uma só abelha pode visitar centenas de flores numa só manhã, transportando pólen de uma para outra e ajudando as plantas a dar fruto. Sem elas, um terço da comida que comemos desapareceria.",
+    "source": "Comportamento das abelhas, conhecimento público",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "pt",
+    "name": "As abelhas e a polinização"
+  },
+  {
+    "id": 5004,
+    "text": "A inteligência artificial é o conjunto de técnicas que permitem a uma máquina simular funções cognitivas: raciocinar, aprender, perceber. O campo teve enormes progressos desde 2010, graças à aprendizagem profunda e a grandes quantidades de dados.",
+    "source": "Inteligência artificial, conhecimento público",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "pt",
+    "name": "A inteligência artificial"
+  },
+  {
+    "id": 5005,
+    "text": "O software livre é software cujo código-fonte é publicamente disponível. Este modelo de desenvolvimento produziu algumas das ferramentas mais importantes do mundo, desde servidores web até linguagens de programação e sistemas operativos. Qualquer pessoa pode ler, modificar e redistribuir o código.",
+    "source": "Software livre, conhecimento público",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "pt",
+    "name": "O software livre"
+  },
+  {
+    "id": 5006,
+    "text": "Os corvos são aves surpreendentemente inteligentes. Em experiências, demonstraram saber contar, usar ferramentas e até lembrar-se de rostos humanos durante anos. Alguns estudos sugerem que as suas capacidades cognitivas são comparáveis às de uma criança de cinco anos.",
+    "source": "Inteligência animal, conhecimento público",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "pt",
+    "name": "A mente dos corvos"
+  },
+  {
+    "id": 5007,
+    "text": "A criptografia quântica utiliza as propriedades da mecânica quântica, como o entrelaçamento e a sobreposição, para transmitir informações de forma teoricamente inviolável. Ao contrário da criptografia clássica, que se baseia na dificuldade de certos problemas matemáticos, a criptografia quântica baseia-se nas próprias leis da física.",
+    "source": "Criptografia quântica, conhecimento público",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "pt",
+    "name": "A criptografia quântica"
+  },
+  {
+    "id": 5008,
+    "text": "A impressão mudou o mundo. Antes da sua invenção, cada livro tinha de ser copiado à mão, pelo que um único livro podia demorar meses a ser produzido. Com a imprensa, centenas de cópias podiam ser feitas num dia. O conhecimento espalhou-se mais depressa do que nunca, e as pessoas comuns começaram a ler.",
+    "source": "História da imprensa, conhecimento público",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "pt",
+    "name": "A imprensa"
+  },
+  {
+    "id": 5009,
+    "text": "Um algoritmo é uma sequência finita de instruções precisas, executadas em série por um computador para resolver um problema. A noção de algoritmo é anterior ao próprio computador: os matemáticos da Antiguidade, como Euclides, já os formulavam. Hoje, estão no centro de toda a programação moderna.",
+    "source": "Algoritmos, conhecimento público",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "pt",
+    "name": "Os algoritmos"
+  },
+  {
+    "id": 5010,
+    "text": "O Renascimento foi um período de renascimento intelectual que começou em Itália no século XIV. Após um milénio durante o qual a educação estava em grande parte nas mãos dos mosteiros, os eruditos redescobriram os escritos da Grécia e de Roma antigas. Novas ideias sobre a arte, a ciência e o lugar do ser humano no universo começaram a difundir-se por toda a Europa.",
+    "source": "Renascimento, conhecimento público",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "pt",
+    "name": "O Renascimento"
+  },
+  {
+    "id": 5011,
+    "text": "A bicicleta é uma máquina simples mas brilhante. Duas rodas, um quadro, pedais e uma corrente são tudo o que é preciso. Há mais de um século que a bicicleta é um meio de transporte barato e fiável para milhares de milhões de pessoas. Em alguns países, vendem-se todos os anos mais bicicletas do que carros.",
+    "source": "A bicicleta, conhecimento público",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "pt",
+    "name": "A bicicleta"
+  },
+  {
+    "id": 5012,
+    "text": "As abelhas e as flores mantêm uma relação de cooperação antiga e profunda. As abelhas procuram néctar e pólen para alimentar as suas colónias, e as flores oferecem esses recursos em troca do transporte de pólen entre plantas. Esta polinização é responsável por um terço dos alimentos que consumimos.",
+    "source": "Polinização, conhecimento público",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "pt",
+    "name": "Abelhas e flores"
+  },
+  {
+    "id": 6001,
+    "text": "En en liten by vid kusten i södra Sverige levde en fiskare som hette Lars. Varje morgon, långt före soluppgång, rodde han ut i sin lilla träbåt. Han kände havet som sin barndomskamrat, och havet kände honom. På kvällarna kom han tillbaka med dagens fångst, och hans fru gjorde i ordning enkel men god mat.",
+    "source": "Berättelse",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "sv",
+    "name": "Fiskaren vid kusten"
+  },
+  {
+    "id": 6002,
+    "text": "Kaffe är en av de mest konsumerade dryckerna i världen. Det framställs av rostade frön från kaffebusken, en buske som växer i tropiska regioner. Traditionen att dricka kaffe har spridit sig till alla kontinenter och blivit en del av sociala, yrkesmässiga och personliga ritualer i nästan alla kulturer.",
+    "source": "Kaffets historia, allmän kunskap",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "sv",
+    "name": "Kaffe i världen"
+  },
+  {
+    "id": 6003,
+    "text": "Bin kommunicerar genom dans och visar var blommorna finns. Ett enda bi kan besöka hundratals blommor under en enda morgon och föra pollen från den ena till den andra, vilket hjälper växterna att bära frukt. Utan dem skulle en tredjedel av den mat vi äter försvinna.",
+    "source": "Bins beteende, allmän kunskap",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "sv",
+    "name": "Bin och pollinering"
+  },
+  {
+    "id": 6004,
+    "text": "Artificiell intelligens är samlingsnamnet för de tekniker som gör det möjligt för en maskin att simulera kognitiva funktioner som att tänka, lära sig och uppfatta. Fältet har gjort stora framsteg sedan 2010 tack vare djupinlärning och stora datamängder.",
+    "source": "Artificiell intelligens, allmän kunskap",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "sv",
+    "name": "Artificiell intelligens"
+  },
+  {
+    "id": 6005,
+    "text": "Öppen programvara är programvara vars källkod är offentligt tillgänglig. Den kan läsas, ändras och distribueras av vem som helst. Denna utvecklingsmodell har skapat några av de viktigaste verktygen i världen, från webbservrar till programmeringsspråk och operativsystem.",
+    "source": "Öppen programvara, allmän kunskap",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "sv",
+    "name": "Öppen programvara"
+  },
+  {
+    "id": 6006,
+    "text": "Korpar är förvånansvärt intelligenta fåglar. I experiment har de visat att de kan räkna, använda verktyg och till och med komma ihåg mänskliga ansikten i åratal. Vissa studier tyder på att deras kognitiva förmåga kan jämföras med ett femårigt barns.",
+    "source": "Djurintelligens, allmän kunskap",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "sv",
+    "name": "Korpens intellekt"
+  },
+  {
+    "id": 6007,
+    "text": "Cykeln är en enkel men genialisk maskin. Två hjul, en ram, pedaler och en kedja, det är allt som behövs. I över hundra år har cykeln varit ett billigt och pålitligt transportmedel för miljarder människor. I vissa länder säljs varje år fler cyklar än bilar.",
+    "source": "Cykeln, allmän kunskap",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "sv",
+    "name": "Cykeln"
+  },
+  {
+    "id": 6008,
+    "text": "Renen är den första boktryckaren i Europa på 1400-talet. Innan hans tryckpress var varje bok handskriven, och en enda bok kunde ta månader att producera. Med tryckpressen kunde hundratals kopior göras på en dag, och vanligt folk började läsa.",
+    "source": "Tryckpressens historia, allmän kunskap",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "sv",
+    "name": "Tryckpressen"
+  },
+  {
+    "id": 6009,
+    "text": "Algoritmer är en av de äldsta idéerna inom matematiken. Redan de gamla grekerna, som Euklides, formulerade dem. Idag ligger algoritmer till grund för praktiskt taget all modern mjukvara, från webbläsare till bankapplikationer.",
+    "source": "Algoritmer, allmän kunskap",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "sv",
+    "name": "Algoritmer"
+  },
+  {
+    "id": 6010,
+    "text": "Den industriella revolutionen förändrade människors liv och arbete i grunden. Med start i England i slutet av 1780-talet började maskiner göra arbete som tidigare utförts för hand. Människor flyttade från gårdarna till städerna, där de arbetade långa timmar i fabriker.",
+    "source": "Industriella revolutionen, allmän kunskap",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "sv",
+    "name": "Den industriella revolutionen"
+  },
+  {
+    "id": 6011,
+    "text": "I en liten kustby i Nederländerna levde på 1600-talet Anton van Leeuwenhoek, en handelsman utan formell utbildning som blev en av historiens mest betydelsefulla naturforskare. Med enkla linser han själv slipat, upptäckte han mikroorganismer i en droppe vatten och spermier i sädesvätska. Han kallade dem 'animalcula' och rapporterade sina fynd i brev till Royal Society i London.",
+    "source": "Vetenskapshistoria, allmän kunskap",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "sv",
+    "name": "Anton van Leeuwenhoek"
+  },
+  {
+    "id": 6012,
+    "text": "Stadsbiblioteket i Alexandria, grundat på 200-talet före Kristus, var antikens största samling av skrifter. När det brann förstördes, försvann kunskap som samlats under århundraden. Varje bibliotek som byggts sedan dess är på något sätt ett försök att återskapa det som förlorades.",
+    "source": "Bibliotek, allmän kunskap",
+    "difficulty": "medium",
+    "category": "general",
+    "language": "sv",
+    "name": "Biblioteket i Alexandria"
+  },
+  {
+    "id": 7001,
+    "text": "W małym miasteczku na południu Polski, w cieniu starego kościoła, mieszkał zegarmistrz o imieniu Stanisław. Codziennie rano otwierał swój mały warsztat i siadał przy oknie, by przy świetle dziennym naprawiać zegary. Potrafił złożyć z powrotem mechanizm z kawałków, które inni uznali za zepsute. Ludzie przychodzili do niego z całej okolicy.",
+    "source": "Opowiadanie",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "pl",
+    "name": "Zegarmistrz z prowincji"
+  },
+  {
+    "id": 7002,
+    "text": "Kawa jest jednym z najczęściej pitych napojów na świecie. Przygotowuje się ją z palonych nasion krzewu kawowego, który rośnie w strefie tropikalnej. Tradycja picia kawy rozprzestrzeniła się na wszystkie kontynenty i weszła do rytuałów społecznych, zawodowych i osobistych niemal wszystkich kultur.",
+    "source": "Historia kawy, wiedza powszechna",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "pl",
+    "name": "Kawa na świecie"
+  },
+  {
+    "id": 7003,
+    "text": "Pszczoły komunikują się tańcem, wskazując siostrom kierunek do kwiatów. Jedna pszczoła może odwiedzić setki kwiatów w ciągu jednego ranka, przenosząc pyłek z jednego na drugi i pomagając roślinom wydać owoce. Bez nich zniknęłaby jedna trzecia żywności, którą jemy.",
+    "source": "Zachowanie pszczół, wiedza powszechna",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "pl",
+    "name": "Pszczoły i zapylanie"
+  },
+  {
+    "id": 7004,
+    "text": "Sztuczna inteligencja to zbiór technik pozwalających maszynie symulować funkcje poznawcze: rozumowanie, uczenie się i postrzeganie. Dzięki uczeniu głębokiemu i dużym zbiorom danych, w ostatnich latach dokonano znacznych postępów w rozpoznawaniu obrazów, mowy i przetwarzaniu języka naturalnego.",
+    "source": "Sztuczna inteligencja, wiedza powszechna",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "pl",
+    "name": "Sztuczna inteligencja"
+  },
+  {
+    "id": 7005,
+    "text": "Otwarte oprogramowanie to takie, którego kod źródłowy jest publicznie dostępny. Każdy może go czytać, modyfikować i rozpowszechniać. Ten model rozwoju oprogramowania dał początek niektórym z najważniejszych narzędzi na świecie, od serwerów internetowych po języki programowania i systemy operacyjne.",
+    "source": "Otwarte oprogramowanie, wiedza powszechna",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "pl",
+    "name": "Otwarte oprogramowanie"
+  },
+  {
+    "id": 7006,
+    "text": "Kruki są zaskakująco inteligentnymi ptakami. W eksperymentach wykazano, że potrafią liczyć, używać narzędzi, a nawet pamiętać ludzkie twarze przez lata. Niektóre badania sugerują, że ich zdolności poznawcze dorównują zdolnościom pięcioletniego dziecka.",
+    "source": "Inteligencja zwierząt, wiedza powszechna",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "pl",
+    "name": "Inteligencja kruków"
+  },
+  {
+    "id": 7007,
+    "text": "Rower to prosta, ale genialna maszyna. Dwa koła, rama, pedały i łańcuch, to wszystko, czego potrzeba. Od ponad stu lat rower jest tanim i niezawodnym środkiem transportu dla miliardów ludzi. W niektórych krajach co roku sprzedaje się więcej rowerów niż samochodów.",
+    "source": "Rower, wiedza powszechna",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "pl",
+    "name": "Rower"
+  },
+  {
+    "id": 7008,
+    "text": "Drukarnia zmieniła świat. Przed jej wynalezieniem każdą książkę trzeba było przepisywać ręcznie, a jedna książka mogła powstawać miesiącami. Dzięki prasie drukarskiej setki kopii można było wykonać w ciągu jednego dnia, a wiedza zaczęła rozprzestrzeniać się szybciej niż kiedykolwiek wcześniej.",
+    "source": "Historia druku, wiedza powszechna",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "pl",
+    "name": "Druk"
+  },
+  {
+    "id": 7009,
+    "text": "Algorytm to skończony ciąg precyzyjnych instrukcji, które komputer wykonuje sekwencyjnie, by rozwiązać określone zadanie. Pojęcie algorytmu jest starsze od samego komputera: matematycy starożytni, jak Euklides, już je formułowali. Dziś algorytmy stanowią podstawę całego współczesnego oprogramowania.",
+    "source": "Algorytmy, wiedza powszechna",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "pl",
+    "name": "Algorytmy"
+  },
+  {
+    "id": 7010,
+    "text": "Kryptografia kwantowa wykorzystuje właściwości mechaniki kwantowej, takie jak splątanie i superpozycja, do przesyłania informacji w sposób teoretycznie nie do złamania. W odróżnieniu od kryptografii klasycznej, opierającej się na trudności obliczeniowej problemów matematycznych, kryptografia kwantowa opiera się na samych prawach fizyki.",
+    "source": "Kryptografia kwantowa, wiedza powszechna",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "pl",
+    "name": "Kryptografia kwantowa"
+  },
+  {
+    "id": 7011,
+    "text": "Bitwa pod Grunwaldem w 1410 roku była jedną z największych bitew średniowiecznej Europy. Połączone siły polsko-litewskie pod dowództwem króla Władysława Jagiełły pokonały zakon krzyżacki. Zwycięstwo to wzmocniło pozycję Polski i Litwy w regionie, a zakon krzyżacki nigdy w pełni nie odzyskał dawnej potęgi.",
+    "source": "Historia średniowiecza, wiedza powszechna",
+    "difficulty": "hard",
+    "category": "history",
+    "language": "pl",
+    "name": "Bitwa pod Grunwaldem"
+  },
+  {
+    "id": 7012,
+    "text": "Mikołaj Kopernik, urodzony w 1473 roku w Toruniu, był renesansowym astronomem, który dokonał jednego z najważniejszych przewrotów w historii nauki. W dziele 'O obrotach sfer niebieskich' zaproponował heliocentryczny model Układu Słonecznego, w którym to Ziemia i inne planety obiegają Słońce.",
+    "source": "Historia nauki, wiedza powszechna",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "pl",
+    "name": "Mikołaj Kopernik"
+  },
+  {
+    "id": 8001,
+    "text": "V Praze, v malém bytě u řeky Vltavy, žil starý hodinář jménem Tomáš. Každý den ráno otevíral svou malou dílnu a s nesmírnou trpělivostí opravoval hodiny, které k němu přinášeli lidé z celého města. Některé byly staré celá staletí, jiné měly poškozené stroje. Jeho ruce byly pevné, ale oči laskavé. Byl to muž, jehož řemeslo se stalo jeho životem.",
+    "source": "Původní vyprávění",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "cs",
+    "name": "Hodinář na břehu Vltavy"
+  },
+  {
+    "id": 8002,
+    "text": "Káva je jedním z nejpopulárnějších nápojů na světě. Připravuje se z pražených semen kávovníku, keře, který roste v tropických oblastech. Tradice pití kávy se rozšířila na všechny kontinenty a stala se součástí společenských, pracovních i osobních rituálů téměř všech kultur.",
+    "source": "Historie kávy, všeobecné znalosti",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "cs",
+    "name": "Káva ve světě"
+  },
+  {
+    "id": 8003,
+    "text": "Včely spolu komunikují prostřednictvím tance, kterým ukazují svým sestrám směr ke květinám. Jedna včela může za jedno ráno navštívit stovky květů, přenášet pyl z jednoho na druhý a pomáhat rostlinám nést plody. Bez nich by zmizela třetina potravin, které jíme.",
+    "source": "Chování včel, všeobecné znalosti",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "cs",
+    "name": "Včely a opylování"
+  },
+  {
+    "id": 8004,
+    "text": "Umělá inteligence je soubor technik, které umožňují stroji napodobovat kognitivní funkce: uvažovat, učit se a vnímat. Díky hlubokému učení a velkým souborům dat bylo v posledních letech dosaženo výrazného pokroku v rozpoznávání obrazu, řeči a zpracování přirozeného jazyka.",
+    "source": "Umělá inteligence, všeobecné znalosti",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "cs",
+    "name": "Umělá inteligence"
+  },
+  {
+    "id": 8005,
+    "text": "Otevřený software je takový software, jehož zdrojový kód je veřejně dostupný. Každý si ho může přečíst, upravit a šířit dál. Tento model vývoje dal vzniknout některým z nejdůležitějších nástrojů na světě, od webových serverů přes programovací jazyky až po operační systémy.",
+    "source": "Otevřený software, všeobecné znalosti",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "cs",
+    "name": "Otevřený software"
+  },
+  {
+    "id": 8006,
+    "text": "Vrány jsou překvapivě inteligentní ptáci. Pokusy ukazují, že dovedou počítat, používat nástroje a dokonce si léta pamatovat lidské tváře. Některé studie naznačují, že jejich kognitivní schopnosti odpovídají schopnostem pětiletého dítěte.",
+    "source": "Zvířecí inteligence, všeobecné znalosti",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "cs",
+    "name": "Inteligence vran"
+  },
+  {
+    "id": 8007,
+    "text": "Jízdní kolo je jednoduchý, ale geniální stroj. Stačí dvě kola, rám, pedály a řetěz. Již více než sto let je kolo levným a spolehlivým dopravním prostředkem pro miliardy lidí. V některých zemích se ročně prodá více kol než aut.",
+    "source": "Jízdní kolo, všeobecné znalosti",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "cs",
+    "name": "Jízdní kolo"
+  },
+  {
+    "id": 8008,
+    "text": "Tisk změnil svět. Před jeho vynálezem se každá kniha opisovala ručně, a na jednu knihu mohly padnout celé měsíce. S tiskařským lisem se daly za jediný den vyrobit stovky kopií, a vědění se šířilo rychleji než kdy předtím.",
+    "source": "Historie tisku, všeobecné znalosti",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "cs",
+    "name": "Tiskařský lis"
+  },
+  {
+    "id": 8009,
+    "text": "Algoritmus je konečná posloupnost přesných instrukcí, které počítač provádí, aby vyřešil zadaný úkol. Pojem algoritmu je starší než samotný počítač: formulovali jej již starověcí matematici, například Eukleidés. Dnes stojí v pozadí prakticky veškerého moderního softwaru.",
+    "source": "Algoritmy, všeobecné znalosti",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "cs",
+    "name": "Algoritmy"
+  },
+  {
+    "id": 8010,
+    "text": "Pražský hrad je největším hradním komplexem na světě a symbolem české státnosti. Jeho kořeny sahají až do 9. století, kdy bylo na skalnatém ostrohu nad Vltavou založeno hradiště. Od té doby se zde vystřídaly stovky knížat, králů a prezidentů.",
+    "source": "Historie, všeobecné znalosti",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "cs",
+    "name": "Pražský hrad"
+  },
+  {
+    "id": 8011,
+    "text": "Karel Čapek, slavný český spisovatel, přivedl na svět slovo 'robot' v roce 1920 ve své divadelní hře R.U.R. Slovo vytvořil z českého slova 'robota' neboli nucená práce. Hra pojednává o továrně, která vyrábí umělé lidi k těžké práci, ale ti se nakonec vzbouří proti svým tvůrcům. Přestože Čapek slovo vymyslel, neznamenalo pro něj přesně totéž, co dnes: v jeho představě to byli spíše mechaničtí dělníci než humanoidní stroje.",
+    "source": "Historie literatury, všeobecné znalosti",
+    "difficulty": "hard",
+    "category": "history",
+    "language": "cs",
+    "name": "Karel Čapek a slovo robot"
+  },
+  {
+    "id": 8012,
+    "text": "Smetanova 'Má vlast' je cyklus šesti symfonických básní, které hudebně ztvárňují českou krajinu a historii. Skladatel ji dokončil v roce 1879 a od té doby se stala nedílnou součástí české kulturní identity. Každý rok se hraje na pražském festivalu Pražské jaro.",
+    "source": "Historie hudby, všeobecné znalosti",
+    "difficulty": "medium",
+    "category": "culture",
+    "language": "cs",
+    "name": "Smetanova Má vlast"
+  },
+  {
+    "id": 9001,
+    "text": "Küçük bir Anadolu kasabasında, taş evlerin arasında bir fırıncı yaşardı. Adı Hasan'dı ve her sabah erkenden kalkıp ekmeğini pişirirdi. Ekmeğinin kokusu tüm mahalleye yayılır, çocukları ve yaşlıları dükkanına çekerdi. Fırının başında geçirdiği yıllar onu yormuş ama ekmeğine olan sevgisi hiç azalmamıştı.",
+    "source": "Orijinal hikâye",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "tr",
+    "name": "Anadolu fırıncısı"
+  },
+  {
+    "id": 9002,
+    "text": "Kahve, dünyada en çok tüketilen içeceklerden biridir. Tropik bölgelerde yetişen kahve ağacının kavrulmuş tohumlarından hazırlanır. Kahve içme geleneği tüm kıtalara yayılmış ve neredeyse tüm kültürlerde sosyal, mesleki ve kişisel ritüellerin bir parçası olmuştur.",
+    "source": "Kahve tarihi, genel bilgi",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "tr",
+    "name": "Dünyada kahve"
+  },
+  {
+    "id": 9003,
+    "text": "Arılar dans ederek birbirleriyle iletişim kurar ve kızkardeşlerine çiçeklerin yerini gösterir. Tek bir arı bir sabah yüzlerce çiçeği ziyaret edebilir, birinden diğerine polen taşıyabilir ve bitkilerin meyve vermesine yardımcı olabilir. Onlar olmadan, yediğimiz yiyeceklerin üçte biri ortadan kalkardı.",
+    "source": "Arı davranışı, genel bilgi",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "tr",
+    "name": "Arılar ve tozlaşma"
+  },
+  {
+    "id": 9004,
+    "text": "Yapay zekâ, bir makinenin muhakeme, öğrenme ve algılama gibi bilişsel işlevleri taklit etmesini sağlayan teknikler bütünüdür. Derin öğrenme ve büyük veri sayesinde, son yıllarda görüntü tanıma, konuşma tanıma ve doğal dil işleme alanlarında büyük ilerleme kaydedildi.",
+    "source": "Yapay zekâ, genel bilgi",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "tr",
+    "name": "Yapay zekâ"
+  },
+  {
+    "id": 9005,
+    "text": "Açık kaynaklı yazılım, kaynak kodu herkesin erişimine açık olan yazılımdır. Herkes kodu okuyabilir, değiştirebilir ve yeniden dağıtabilir. Bu geliştirme modeli, dünyadaki en önemli araçlardan bazılarını ortaya çıkardı: web sunucularından programlama dillerine, işletim sistemlerine kadar.",
+    "source": "Açık kaynak, genel bilgi",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "tr",
+    "name": "Açık kaynak yazılım"
+  },
+  {
+    "id": 9006,
+    "text": "Kargalar şaşırtıcı derecede zeki kuşlardır. Deneyler, sayı sayabildiklerini, araç kullanabildiklerini ve insan yüzlerini yıllarca hatırlayabildiklerini göstermiştir. Bazı çalışmalar, bilişsel yeteneklerinin beş yaşındaki bir çocuğunkine eşdeğer olduğunu ileri sürmektedir.",
+    "source": "Hayvan zekâsı, genel bilgi",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "tr",
+    "name": "Kargaların zekâsı"
+  },
+  {
+    "id": 9007,
+    "text": "Bisiklet, basit ama dâhiyane bir makinedir. İki tekerlek, bir kadro, pedal ve bir zincir yeterlidir. Yüz yıldan fazla bir süredir bisiklet, milyarlarca insan için ucuz ve güvenilir bir ulaşım aracı olmuştur. Bazı ülkelerde her yıl arabalardan daha fazla bisiklet satılmaktadır.",
+    "source": "Bisiklet, genel bilgi",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "tr",
+    "name": "Bisiklet"
+  },
+  {
+    "id": 9008,
+    "text": "Matbaa dünyayı değiştirdi. İcadından önce her kitap elle kopyalanırdı ve bir kitabın üretimi aylar sürerdi. Basım makinesiyle tek bir günde yüzlerce kopya üretilebilir, bilgi eskisinden çok daha hızlı yayılmaya başladı.",
+    "source": "Matbaa tarihi, genel bilgi",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "tr",
+    "name": "Matbaa"
+  },
+  {
+    "id": 9009,
+    "text": "Algoritma, bir bilgisayarın belirli bir problemi çözmek için adım adım izlediği sonlu bir dizi kesin talimattır. Algoritma kavramı bilgisayardan daha eskidir: Öklid gibi antik matematikçiler zaten algoritmalar formüle etmişlerdi. Günümüzde algoritmalar tüm modern yazılımın temelini oluşturur.",
+    "source": "Algoritmalar, genel bilgi",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "tr",
+    "name": "Algoritmalar"
+  },
+  {
+    "id": 9010,
+    "text": "Kuantum kriptografi, dolanıklık ve süperpozisyon gibi kuantum mekaniğinin özelliklerini kullanarak teorik olarak kırılamaz bilgi aktarımı sağlar. Belirli matematiksel problemlerin zorluğuna dayanan klasik kriptografinin aksine, kuantum kriptografi fiziğin kendi yasalarına dayanır.",
+    "source": "Kuantum kriptografi, genel bilgi",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "tr",
+    "name": "Kuantum kriptografi"
+  },
+  {
+    "id": 9011,
+    "text": "Mevlâna Celâleddîn-i Rûmî, 13. yüzyılda Anadolu'nun Konya şehrinde yaşamış büyük bir sûfî şâiri ve düşünürüdür. Mesnevî adlı eseri, tasavvufun en önemli metinlerinden biri olarak kabul edilir. Şiirlerinde sevgi, hoşgörü ve insanın iç yolculuğu üzerine derin imgeler kullanır.",
+    "source": "Kültür tarihi, genel bilgi",
+    "difficulty": "medium",
+    "category": "culture",
+    "language": "tr",
+    "name": "Mevlâna ve Mesnevî"
+  },
+  {
+    "id": 9012,
+    "text": "Türkiye'nin güneydoğusunda yer alan Göbekli Tepe, dünyanın bilinen en eski tapınak yapısıdır. MÖ 9500 civarında inşa edildiği düşünülen bu yapı, yerleşik hayata geçişin en eski kanıtlarından birini oluşturur. T sütunlarında işlenen hayvan figürleri, bölgenin tarih öncesi inanç sistemleri hakkında ipuçları vermektedir.",
+    "source": "Arkeoloji, genel bilgi",
+    "difficulty": "hard",
+    "category": "history",
+    "language": "tr",
+    "name": "Göbekli Tepe"
+  },
+  {
+    "id": 10001,
+    "text": "Într-un sat de munte din Carpați, unde drumurile erau pline de noroi și frunze, trăia un bătrân strungar care făcea unelte din lemn și metal. Oamenii veneau la el nu doar pentru coase, sape și securi, ci și pentru poveștile pe care le știa despre pădure. Spunea că fiecare copac are un nume ascuns, pe care nu-l cunoaște decât cel care îl cioplește cu drag.",
+    "source": "Povestire originală",
+    "difficulty": "medium",
+    "category": "literature",
+    "language": "ro",
+    "name": "Strungarul din munți"
+  },
+  {
+    "id": 10002,
+    "text": "Cafeaua este una dintre cele mai consumate băuturi din lume. Se prepară din boabele prăjite ale arbustului de cafea, care crește în regiunile tropicale. Tradiția de a bea cafea s-a răspândit pe toate continentele și a devenit parte a ritualurilor sociale, profesionale și personale în aproape toate culturile.",
+    "source": "Istorii, cunoștințe generale",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "ro",
+    "name": "Cafeaua în lume"
+  },
+  {
+    "id": 10003,
+    "text": "Albinele comunică prin dans, indicându-le surorilor direcția florilor. O singură albină poate vizita sute de flori într-o singură dimineață, transmițând polenul de la una la alta și ajutând plantele să rodească. Fără ele, o treime din hrana noastră ar dispărea.",
+    "source": "Comportamentul albinelor, cunoștințe generale",
+    "difficulty": "easy",
+    "category": "nature",
+    "language": "ro",
+    "name": "Albinele și polenizarea"
+  },
+  {
+    "id": 10004,
+    "text": "Inteligența artificială este ansamblul de tehnici care permit unei mașini să simuleze funcții cognitive: să raționeze, să învețe și să perceapă. Datorită învățării profunde și volumelor mari de date, în ultimii ani s-au făcut progrese importante în recunoașterea imaginilor, a vocii și în prelucrarea limbajului natural.",
+    "source": "Inteligența artificială, cunoștințe generale",
+    "difficulty": "hard",
+    "category": "technology",
+    "language": "ro",
+    "name": "Inteligența artificială"
+  },
+  {
+    "id": 10005,
+    "text": "Software-ul liber este software al cărui cod sursă este disponibil public. Oricine poate să citească, să modifice și să redistribuie codul. Acest model de dezvoltare a produs unele dintre cele mai importante instrumente din lume, de la servere web la limbaje de programare și sisteme de operare.",
+    "source": "Software liber, cunoștințe generale",
+    "difficulty": "medium",
+    "category": "technology",
+    "language": "ro",
+    "name": "Software-ul liber"
+  },
+  {
+    "id": 10006,
+    "text": "Ciorile sunt păsări surprinzător de inteligente. Experimentele arată că pot număra, folosi unelte și chiar își pot aminti fețe umane ani de zile. Unele studii sugerează că abilitățile lor cognitive sunt comparabile cu cele ale unui copil de cinci ani.",
+    "source": "Inteligența animală, cunoștințe generale",
+    "difficulty": "medium",
+    "category": "nature",
+    "language": "ro",
+    "name": "Inteligența ciorilor"
+  },
+  {
+    "id": 10007,
+    "text": "Bicicleta este o mașină simplă, dar genială. Două roți, un cadru, pedale și un lanț sunt tot ce trebuie. De peste un secol, bicicleta este un mijloc de transport ieftin și de încredere pentru miliarde de oameni. În unele țări, în fiecare an se vând mai multe biciclete decât mașini.",
+    "source": "Bicicleta, cunoștințe generale",
+    "difficulty": "easy",
+    "category": "general",
+    "language": "ro",
+    "name": "Bicicleta"
+  },
+  {
+    "id": 10008,
+    "text": "Tipografia a schimbat lumea. Înainte de inventarea ei, fiecare carte trebuia copiată de mână, iar producerea unei cărți putea dura luni de zile. Cu presa de tipar, sute de copii puteau fi realizate într-o singură zi, iar cunoașterea a început să se răspândească mai repede ca niciodată.",
+    "source": "Istoria tiparului, cunoștințe generale",
+    "difficulty": "easy",
+    "category": "history",
+    "language": "ro",
+    "name": "Tiparul"
+  },
+  {
+    "id": 10009,
+    "text": "Un algoritm este o succesiune finită de instrucțiuni precise pe care un calculator le execută secvențial pentru a rezolva o problemă. Noțiunea de algoritm este anterioară calculatorului: matematicienii antici, ca Euclid, formulau deja algoritmi. Astăzi, algoritmii stau la baza întregii programări moderne.",
+    "source": "Algoritmi, cunoștințe generale",
+    "difficulty": "medium",
+    "category": "science",
+    "language": "ro",
+    "name": "Algoritmii"
+  },
+  {
+    "id": 10010,
+    "text": "Criptografia cuantică folosește proprietăți ale mecanicii cuantice, cum ar fi entanglementul și suprapunerea, pentru a transmite informații într-un mod teoretic imposibil de spart. Spre deosebire de criptografia clasică, care se bazează pe dificultatea unor probleme matematice, criptografia cuantică se bazează pe legile fizicii.",
+    "source": "Criptografie cuantică, cunoștințe generale",
+    "difficulty": "hard",
+    "category": "science",
+    "language": "ro",
+    "name": "Criptografia cuantică"
+  },
+  {
+    "id": 10011,
+    "text": "Castelul Bran, ridicat într-un pas strategic din Carpați, este una dintre cele mai cunoscute construcții medievale din România. Deși nu a servit ca model pentru romanul lui Bram Stoker, castelul este adesea asociat cu legenda lui Dracula, datorită arhitecturii sale gotice și a peisajului care o înconjoară.",
+    "source": "Istorie, cunoștințe generale",
+    "difficulty": "medium",
+    "category": "history",
+    "language": "ro",
+    "name": "Castelul Bran"
+  },
+  {
+    "id": 10012,
+    "text": "Nicolae Iorga a fost unul dintre cei mai importanți istorici români, cu o operă vastă care acoperă istoria Europei de Sud-Est, a Imperiului Otoman, dar și a românilor. A fondat numeroase instituții culturale și a militat pentru drepturile românilor din teritoriile aflate sub stăpânire străină. Operele sale rămân o sursă fundamentală pentru cercetarea istorică din România.",
+    "source": "Istorie, cunoștințe generale",
+    "difficulty": "hard",
+    "category": "history",
+    "language": "ro",
+    "name": "Nicolae Iorga"
+  }
+]

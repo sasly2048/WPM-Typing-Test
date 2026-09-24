@@ -11,6 +11,7 @@
 
     "test": "npm run test:unit",
     "test:unit": "node src/engines/StatsEngine.test.js && node src/services/stats-engine.test.js && node src/services/pool-shuffler.test.js && node src/services/text-provider.test.js && node src/services/completion.test.js && node src/services/storage.test.js && node src/services/typing-events.test.js && node src/services/adaptive.test.js && node src/adapters/CodeAdapter.test.js && node src/audit/foundation.test.js",
+    "test:all": "npm run test:unit && node src/utils/test-config.test.js && node src/services/history.test.js && node src/services/profile.test.js && node src/services/input.test.js && node src/components/live-graph.test.js && node src/pages/leaderboards.test.js && node src/data/multilingual-paragraphs.test.js",
     "audit:lifecycle": "node src/audit/lifecycle.mjs",
     "audit:perf": "node src/audit/perf.mjs",
 

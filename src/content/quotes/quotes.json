@@ -1,0 +1,302 @@
+[
+  {
+    "id": "q-twain-truth",
+    "source": "Mark Twain",
+    "text": "If you tell the truth, you don't have to remember anything.",
+    "length": "short"
+  },
+  {
+    "id": "q-curie-knowledge",
+    "source": "Marie Curie",
+    "text": "Nothing in life is to be feared, it is only to be understood. Now is the time to understand more, so that we may fear less.",
+    "length": "medium"
+  },
+  {
+    "id": "q-davinci-simplicity",
+    "source": "Leonardo da Vinci",
+    "text": "Simplicity is the ultimate sophistication.",
+    "length": "short"
+  },
+  {
+    "id": "q-elion-perseverance",
+    "source": "Gertrude Elion",
+    "text": "Don't be afraid of hard work. Nothing worthwhile comes easily. Don't let others discourage you or tell you that you can't do it.",
+    "length": "medium"
+  },
+  {
+    "id": "q-feynman-attitude",
+    "source": "Richard Feynman",
+    "text": "The first principle is that you must not fool yourself, and you are the easiest person to fool.",
+    "length": "medium"
+  },
+  {
+    "id": "q-hopper-courage",
+    "source": "Grace Hopper",
+    "text": "The most dangerous phrase in the language is, 'We've always done it this way.'",
+    "length": "short"
+  },
+  {
+    "id": "q-angelou-courage",
+    "source": "Maya Angelou",
+    "text": "I have learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.",
+    "length": "medium"
+  },
+  {
+    "id": "q-mandela-courage",
+    "source": "Nelson Mandela",
+    "text": "I learned that courage was not the absence of fear, but the triumph over it. The brave man is not he who does not feel afraid, but he who conquers that fear.",
+    "length": "medium"
+  },
+  {
+    "id": "q-tzu-journey",
+    "source": "Lao Tzu",
+    "text": "A journey of a thousand miles begins with a single step.",
+    "length": "short"
+  },
+  {
+    "id": "q-franklin-fail",
+    "source": "Benjamin Franklin",
+    "text": "I have not failed. I've just found 10,000 ways that won't work.",
+    "length": "short"
+  },
+  {
+    "id": "q-curie-dreams",
+    "source": "Marie Curie",
+    "text": "Life is not easy for any of us. But what of that? We must have perseverance and above all confidence in ourselves. We must believe that we are gifted for something and that this thing must be attained.",
+    "length": "long"
+  },
+  {
+    "id": "q-disraeli-effort",
+    "source": "Benjamin Disraeli",
+    "text": "The secret of getting ahead is getting started.",
+    "length": "short"
+  },
+  {
+    "id": "q-thoreau-simplicity",
+    "source": "Henry David Thoreau",
+    "text": "Our life is frittered away by detail. Simplify, simplify.",
+    "length": "short"
+  },
+  {
+    "id": "q-wright-begin",
+    "source": "Orville Wright",
+    "text": "If we all worked on the assumption that what is accepted as true is really true, there would be little hope of advance.",
+    "length": "medium"
+  },
+  {
+    "id": "q-rumi-wound",
+    "source": "Rumi",
+    "text": "The wound is the place where the Light enters you.",
+    "length": "short"
+  },
+  {
+    "id": "q-paulo-journey",
+    "source": "Paulo Coelho",
+    "text": "When you want something, all the universe conspires in helping you to achieve it.",
+    "length": "short"
+  },
+  {
+    "id": "q-jobs-stay-hungry",
+    "source": "Steve Jobs",
+    "text": "Stay hungry. Stay foolish.",
+    "length": "short"
+  },
+  {
+    "id": "q-jobs-connect",
+    "source": "Steve Jobs",
+    "text": "Creativity is just connecting things. When you ask creative people how they did something, they feel a little guilty because they didn't really do it, they just saw something. It seemed obvious to them after a while.",
+    "length": "long"
+  },
+  {
+    "id": "q-ford-impossible",
+    "source": "Henry Ford",
+    "text": "Whether you think you can, or you think you can't — you're right.",
+    "length": "short"
+  },
+  {
+    "id": "q-emerson-trust",
+    "source": "Ralph Waldo Emerson",
+    "text": "Self-trust is the first secret of success.",
+    "length": "short"
+  },
+  {
+    "id": "q-twain-write",
+    "source": "Mark Twain",
+    "text": "Write without pay until somebody offers pay. If nobody offers within three years, the fellow's no good — but he'd better be in some other line of work.",
+    "length": "medium"
+  },
+  {
+    "id": "q-darwin-survival",
+    "source": "Charles Darwin",
+    "text": "It is not the strongest of the species that survives, nor the most intelligent, but the one most responsive to change.",
+    "length": "medium"
+  },
+  {
+    "id": "q-feynman-stay-curious",
+    "source": "Richard Feynman",
+    "text": "I would rather have questions that can't be answered than answers that can't be questioned.",
+    "length": "short"
+  },
+  {
+    "id": "q-feynman-problem",
+    "source": "Richard Feynman",
+    "text": "The problem is not the problem. The problem is your attitude about the problem.",
+    "length": "short"
+  },
+  {
+    "id": "q-tolstoy-knowledge",
+    "source": "Leo Tolstoy",
+    "text": "If you want to be happy, be.",
+    "length": "short"
+  },
+  {
+    "id": "q-orwell-words",
+    "source": "George Orwell",
+    "text": "Good writing is like a windowpane.",
+    "length": "short"
+  },
+  {
+    "id": "q-twain-quit",
+    "source": "Mark Twain",
+    "text": "Quitting smoking is easy. I've done it hundreds of times.",
+    "length": "short"
+  },
+  {
+    "id": "q-flower-power",
+    "source": "Hedy Lamarr",
+    "text": "I was not the sort that a girl is supposed to be. I was the kind that does things and doesn't worry about what people think.",
+    "length": "medium"
+  },
+  {
+    "id": "q-easley-progress",
+    "source": "Annie Easley",
+    "text": "I liked the fact that there was no glass ceiling. I could go as far as my abilities would take me.",
+    "length": "medium"
+  },
+  {
+    "id": "q-turing-think",
+    "source": "Alan Turing",
+    "text": "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
+    "length": "medium"
+  },
+  {
+    "id": "q-hamilton-patterns",
+    "source": "Margaret Hamilton",
+    "text": "It was the work itself that mattered most. The software was the key to making the mission a success.",
+    "length": "medium"
+  },
+  {
+    "id": "q-jemison-possibility",
+    "source": "Mae Jemison",
+    "text": "The difference between science and the arts is not that they are different sides of the same coin, or even different parts of the same continuum, but rather, they are manifestations of the same impulse to explore.",
+    "length": "long"
+  },
+  {
+    "id": "q-goodall-tomorrow",
+    "source": "Jane Goodall",
+    "text": "What you do makes a difference, and you have to decide what kind of difference you want to make.",
+    "length": "short"
+  },
+  {
+    "id": "q-shelley-power",
+    "source": "Mary Shelley",
+    "text": "Nothing is so painful to the human mind as a great and sudden change.",
+    "length": "short"
+  },
+  {
+    "id": "q-wollstonecraft-reason",
+    "source": "Mary Wollstonecraft",
+    "text": "I do not wish women to have power over men but over themselves.",
+    "length": "short"
+  },
+  {
+    "id": "q-lovelace-thinking",
+    "source": "Ada Lovelace",
+    "text": "The Analytical Engine has no pretensions whatever to originate anything. It can do whatever we know how to order it to perform.",
+    "length": "medium"
+  },
+  {
+    "id": "q-elion-impossible",
+    "source": "Gertrude Elion",
+    "text": "It is important to pursue a dream, but it is just as important to know when to let that dream go.",
+    "length": "medium"
+  },
+  {
+    "id": "q-franklin-necessary",
+    "source": "Benjamin Franklin",
+    "text": "In this world, nothing is certain except death and taxes.",
+    "length": "short"
+  },
+  {
+    "id": "q-twain-reading",
+    "source": "Mark Twain",
+    "text": "The man who does not read has no advantage over the man who cannot read.",
+    "length": "short"
+  },
+  {
+    "id": "q-twain-friend",
+    "source": "Mark Twain",
+    "text": "The two most important days in your life are the day you are born and the day you find out why.",
+    "length": "short"
+  },
+  {
+    "id": "q-jobs-death",
+    "source": "Steve Jobs",
+    "text": "Remembering that I'll be dead soon is the most important tool I've ever encountered to help me make the big choices in life.",
+    "length": "medium"
+  },
+  {
+    "id": "q-emerson-roads",
+    "source": "Robert Frost",
+    "text": "Two roads diverged in a wood, and I took the one less traveled by, and that has made all the difference.",
+    "length": "short"
+  },
+  {
+    "id": "q-thoreau-noise",
+    "source": "Henry David Thoreau",
+    "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach.",
+    "length": "medium"
+  },
+  {
+    "id": "q-aurelius-actions",
+    "source": "Marcus Aurelius",
+    "text": "Waste no more time arguing what a good man should be. Be one.",
+    "length": "short"
+  },
+  {
+    "id": "q-aurelius-discipline",
+    "source": "Marcus Aurelius",
+    "text": "The impediment to action advances action. What stands in the way becomes the way.",
+    "length": "short"
+  },
+  {
+    "id": "q-aurelius-morning",
+    "source": "Marcus Aurelius",
+    "text": "Begin the morning by saying to thyself, I shall meet with the busybody, the ungrateful, arrogant, deceitful, envious, unsocial. All these things happen to them by reason of their ignorance of what is good and evil.",
+    "length": "long"
+  },
+  {
+    "id": "q-buddha-mind",
+    "source": "Buddha",
+    "text": "The mind is everything. What you think you become.",
+    "length": "short"
+  },
+  {
+    "id": "q-chuang-tzu-flow",
+    "source": "Chuang Tzu",
+    "text": "Flow with whatever may happen and let your mind be free. Stay centered by accepting whatever you are doing. This is the ultimate.",
+    "length": "medium"
+  },
+  {
+    "id": "q-seneca-progress",
+    "source": "Seneca",
+    "text": "Every new beginning comes from some other beginning's end.",
+    "length": "short"
+  },
+  {
+    "id": "q-seneca-luck",
+    "source": "Seneca",
+    "text": "Luck is what happens when preparation meets opportunity.",
+    "length": "short"
+  }
+]

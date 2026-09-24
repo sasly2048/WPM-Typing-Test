@@ -927,7 +927,7 @@
   --typing-current:   var(--color-accent);
   --typing-extra:     #FF5C5C;
   --typing-font:      var(--font-mono);
-  --typing-font-size: 1rem;
+  --typing-font-size: 0.9375rem;
   --typing-line-height: 1.65;
 
   --caret-color: var(--color-accent);

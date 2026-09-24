@@ -211,6 +211,34 @@ export const createRenderer = ({ container, caret, onScroll }) => {
     container.dataset.sourceLength = '0';
   };
 
+  /**
+   * Append characters to the existing render. Used by zen mode to
+   * extend the source as the user approaches the end. The new
+   * characters are appended as pending spans; the existing
+   * coordinate system and the caret position are preserved.
+   */
+  const append = (text, tokens) => {
+    if (destroyed) return;
+    const startIdx = spans.length;
+    const newSpans = new Array(text.length);
+    for (let i = 0; i < text.length; i++) {
+      const t = tokens[i] || { char: text[i], status: 'pending' };
+      const span = document.createElement('span');
+      span.className = `kf-char kf-char--${t.status}`;
+      span.dataset.index = String(startIdx + i);
+      if (t.char === ' ') span.classList.add('kf-char--space');
+      else if (t.char === '\t') span.classList.add('kf-char--tab');
+      span.textContent = t.char === ' ' ? '\u00A0' : t.char;
+      container.appendChild(span);
+      newSpans[i] = span;
+    }
+    // Splice the new spans into the existing span cache.
+    for (let i = 0; i < newSpans.length; i++) spans.push(newSpans[i]);
+    sourceText = sourceText + text;
+    container.dataset.sourceLength = String(spans.length);
+    scheduleRepaint();
+  };
+
   const destroy = () => {
     if (destroyed) return;
     destroyed = true;
@@ -222,6 +250,7 @@ export const createRenderer = ({ container, caret, onScroll }) => {
 
   return {
     build,
+    append,
     updateChar,
     setCaret,
     scheduleRepaint,

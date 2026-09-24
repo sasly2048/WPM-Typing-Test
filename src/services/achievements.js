@@ -83,6 +83,17 @@ const observedValue = (type, history, stats) => {
       return distinct((s) => s.mode) >= 5 ? 1 : 0;
     case 'perfect_run':
       return history.some((s) => (s.accuracy || 0) >= 100 && (s.wpm || 0) >= 100 && (s.duration || 0) >= 60) ? 1 : 0;
+    case 'quote_completed':
+      return history.filter((s) => s.mode === 'quote').length;
+    case 'zen_minutes':
+      return best((s) => s.zenMinutes || 0);
+    case 'adaptive_completed':
+      return history.filter((s) => s.mode === 'adaptive').length;
+    case 'multilingual_completed':
+      // Count distinct non-English languages used.
+      return distinct((s) => (s.language && s.language !== 'en') ? s.language : null);
+    case 'burst_reached':
+      return best((s) => s.burstWpm);
     default:
       return 0;
   }

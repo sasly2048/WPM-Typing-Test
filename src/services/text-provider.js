@@ -4,6 +4,8 @@ import { LANGUAGE_SNIPPETS } from '../content/developer/languages.js';
 
 let wordsCache = null;
 let paragraphsCache = null;
+let multilingualCache = null;
+let quotesCache = null;
 
 const loadWords = async () => {
   if (wordsCache) return wordsCache;
@@ -27,6 +29,28 @@ const loadParagraphs = async () => {
   }
 };
 
+const loadMultilingual = async () => {
+  if (multilingualCache) return multilingualCache;
+  try {
+    const mod = await import('../data/multilingual-paragraphs.json', { with: { type: 'json' } });
+    multilingualCache = mod.default ?? mod;
+    return multilingualCache;
+  } catch (e) {
+    return null;
+  }
+};
+
+const loadQuotes = async () => {
+  if (quotesCache) return quotesCache;
+  try {
+    const mod = await import('../content/quotes/quotes.json', { with: { type: 'json' } });
+    quotesCache = mod.default ?? mod;
+    return Array.isArray(quotesCache) ? quotesCache : [];
+  } catch (e) {
+    return [];
+  }
+};
+
 /**
  * Maps session duration to appropriate word counts.
  *
@@ -41,6 +65,7 @@ export const DURATION_WORD_COUNTS = {
   30: 50,
   60: 100,
   120: 200,
+  180: 300,
   300: 450,
   600: 900,
 };
@@ -58,6 +83,8 @@ export const PROSE_WORD_COUNTS = {
   30: 60,
   60: 120,
   120: 240,
+  180: 360,
+  300: 600,
 };
 
 /**
@@ -71,7 +98,7 @@ export const getText = async (mode, difficulty = 'medium', options = {}) => {
       // and the passage often ran past the visible typing area.
       const duration = options.duration || 30;
       const budget = PROSE_WORD_COUNTS[duration] || Math.ceil(duration * 2);
-      return getParagraphText(difficulty, `prose-${duration}`, budget);
+      return getParagraphText(difficulty, `prose-${duration}`, budget, options.language || 'en');
     }
 
     case MODES.TIME: {
@@ -80,7 +107,7 @@ export const getText = async (mode, difficulty = 'medium', options = {}) => {
       // assume ~80 WPM ceiling) so the concatenated paragraphs comfortably
       // outlast even a fast typist for the full session.
       const targetWordCount = DURATION_WORD_COUNTS[duration] || Math.ceil(duration * 2);
-      return getParagraphText(difficulty, `time-${duration}`, targetWordCount);
+      return getParagraphText(difficulty, `time-${duration}`, targetWordCount, options.language || 'en');
     }
 
     case MODES.WORDS: {
@@ -90,6 +117,49 @@ export const getText = async (mode, difficulty = 'medium', options = {}) => {
         punctuation: !!options.punctuation,
         numbers: !!options.numbers,
       });
+    }
+
+    case MODES.QUOTE: {
+      // Pick a quote whose length matches the duration. Short quotes
+      // for short durations, long for long.
+      const quotes = await loadQuotes();
+      if (!quotes.length) {
+        return 'The future depends on what you do today. — Mahatma Gandhi';
+      }
+      const duration = options.duration || 30;
+      const targetLen = duration <= 30 ? 'short' : duration <= 90 ? 'medium' : 'long';
+      // 30% chance to break out of the length bucket (variety), otherwise stay in.
+      const pool = Math.random() < 0.7
+        ? quotes.filter((q) => q.length === targetLen)
+        : quotes;
+      const source = pool.length ? pool : quotes;
+      const quote = getNonRepeatingItem(`quote-${targetLen}`, source, (q) => q.id);
+      return { code: quote.text, name: quote.source || 'Unknown', quoteId: quote.id };
+    }
+
+    case MODES.ZEN: {
+      // Endless mode: generate a long stream of words with a "—"  burst every
+      // 10-12 words so the test has rhythm without end conditions.
+      const target = options.zenTarget || 400;
+      const words = await generateNonRepeatingWords(target, difficulty, `zen-${target}`);
+      return { code: words, name: 'Zen Mode', zen: true };
+    }
+
+    case MODES.ADAPTIVE: {
+      // Weak-key drill. The adaptive engine produces text biased
+      // toward the user's worst keys.
+      try {
+        const { generateWeakKeyText } = await import('./adaptive.js');
+        const text = await generateWeakKeyText({
+          difficulty,
+          count: options.count || 60,
+          minMistakes: 2,
+          weakKeyCount: 5,
+        });
+        return { code: text, name: 'Weak-key Drill' };
+      } catch (e) {
+        return generateNonRepeatingWords(60, difficulty, 'adaptive-fallback');
+      }
     }
 
     case MODES.CODE: {
@@ -114,15 +184,48 @@ export const getText = async (mode, difficulty = 'medium', options = {}) => {
  * until the combined text meets that word budget — used by Time mode so a
  * fast typist never runs out of real prose mid-session.
  *
+ * The optional `language` argument restricts the pool to paragraphs in
+ * that language. 'en' (default) uses paragraphs.json. Other languages
+ * (fr, de, it, pt, sv, pl, cs, tr, ro) use multilingual-paragraphs.json.
+ * If the requested language has no qualifying paragraph at the chosen
+ * difficulty, we fall back to English rather than serving nothing.
+ *
  * Trimming behaviour: when the current passage would push us past the
  * budget by a wide margin AND we already have one passage in the buffer,
  * we either take a complete leading sentence from the new passage or
  * stop after the first whole passage. The result is a small, complete
  * sequence of sentences rather than a fragment that ends mid-clause.
  */
-const getParagraphText = async (difficulty, poolKeySuffix, minWordCount = 0) => {
-  const paragraphs = await loadParagraphs();
-  const fallback = 'The quick brown fox jumps over the lazy dog.';
+const getParagraphText = async (difficulty, poolKeySuffix, minWordCount = 0, language = 'en') => {
+  let paragraphs;
+  if (language === 'en') {
+    paragraphs = await loadParagraphs();
+  } else {
+    const ml = await loadMultilingual();
+    if (ml && Array.isArray(ml)) {
+      paragraphs = ml.filter((p) => p.language === language);
+      // If no paragraphs at this language, fall back to English so
+      // the user always has something to type rather than an empty
+      // typing area.
+      if (paragraphs.length === 0) {
+        paragraphs = await loadParagraphs();
+      }
+    } else {
+      paragraphs = await loadParagraphs();
+    }
+  }
+
+  const fallback = language === 'fr' ? 'Le café est l\'une des boissons les plus consommées au monde.'
+    : language === 'de' ? 'Kaffee ist eines der meistgetrunkenen Getränke der Welt.'
+    : language === 'it' ? 'Il caffè è una delle bevande più consumate al mondo.'
+    : language === 'pt' ? 'O café é uma das bebidas mais consumidas no mundo.'
+    : language === 'sv' ? 'Kaffe är en av de mest konsumerade dryckerna i världen.'
+    : language === 'pl' ? 'Kawa jest jednym z najczęściej pitych napojów na świecie.'
+    : language === 'cs' ? 'Káva je jedním z nejpopulárnějších nápojů na světě.'
+    : language === 'tr' ? 'Kahve, dünyada en çok tüketilen içeceklerden biridir.'
+    : language === 'ro' ? 'Cafeaua este una dintre cele mai consumate băuturi din lume.'
+    : 'The quick brown fox jumps over the lazy dog.';
+
   if (!paragraphs || !Array.isArray(paragraphs) || paragraphs.length === 0) {
     return generateNonRepeatingWords(Math.max(minWordCount, 50), difficulty, `${poolKeySuffix}-fallback`);
   }

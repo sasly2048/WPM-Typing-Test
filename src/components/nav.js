@@ -9,6 +9,8 @@ export function createNav({ currentPath = '/', onNavigate, user = null, onSignOu
     { label: 'Practice', path: '/practice', icon: 'keyboard' },
     { label: 'Developer', path: '/developer', icon: 'code-2' },
     { label: 'Dashboard', path: '/dashboard', icon: 'bar-chart-3' },
+    { label: 'History', path: '/history', icon: 'history' },
+    { label: 'Leaderboards', path: '/leaderboards', icon: 'crown' },
     { label: 'Achievements', path: '/achievements', icon: 'trophy' },
     { label: 'Themes', path: '/themes', icon: 'palette' }
   ];

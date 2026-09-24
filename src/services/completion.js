@@ -30,8 +30,11 @@ export const COMPLETION = Object.freeze({
   TIME: 'time',
   WORDS: 'words',
   PARAGRAPH: 'paragraph',
+  QUOTE: 'quote',
+  ZEN: 'zen',
   CODE: 'code',
   CUSTOM: 'custom',
+  ADAPTIVE: 'adaptive',
 });
 
 /**
@@ -79,6 +82,8 @@ export const createCompletionPolicy = (mode, ctx) => {
     case COMPLETION.CODE:
     case COMPLETION.CUSTOM:
     case COMPLETION.PARAGRAPH:
+    case COMPLETION.QUOTE:
+    case COMPLETION.ADAPTIVE:
     default:
       return {
         mode,

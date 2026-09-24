@@ -32,6 +32,13 @@ const validateSession = (v) => {
   if (v.wpm != null && !isNumber(v.wpm)) return false;
   if (v.accuracy != null && !isNumber(v.accuracy)) return false;
   if (v.timestamp != null && !isNumber(v.timestamp)) return false;
+  if (v.consistency != null && !isNumber(v.consistency)) return false;
+  if (v.burstWpm != null && !isNumber(v.burstWpm)) return false;
+  if (v.rawWpm != null && !isNumber(v.rawWpm)) return false;
+  // Accept arbitrary additional fields (mistakesByKey, mode, etc.) as
+  // long as the basic numeric fields are valid. We don't want to
+  // reject future feature additions just because the validator wasn't
+  // updated.
   return true;
 };
 
@@ -56,17 +63,25 @@ const validateSettings = (v) => isObject(v) && Object.entries(v).every(
   }
 );
 
+const validateProfile = (v) => isObject(v) && (
+  typeof v.displayName !== 'undefined' ? isString(v.displayName) : true
+) && (
+  typeof v.bio !== 'undefined' ? isString(v.bio) && v.bio.length <= 500 : true
+) && (
+  typeof v.location !== 'undefined' ? isString(v.location) && v.location.length <= 80 : true
+) && (
+  typeof v.website !== 'undefined' ? isString(v.website) && v.website.length <= 200 : true
+);
+
 const validateTheme = (v) => isString(v);
 const validateDevAccent = (v) => isString(v);
 const validateAppearance = (v) => v === 'light' || v === 'dark' || v === 'system';
 
 /**
- * Map of key suffix -> { validate, optional default }.
- *   - validate(value): returns true if the value is acceptable, false
- *     otherwise. The key is dropped on import when validate fails.
- *   - default: returned by read() when the value is absent.
+ * Schema registry. Exposed (instead of being a module-local constant)
+ * so tests and migration scripts can inspect and extend it.
  */
-const SCHEMA = {
+export const SCHEMA = {
   settings: { validate: validateSettings, default: () => ({ ...DEFAULT_SETTINGS }) },
   history: { validate: validateHistory, default: () => [] },
   // The personal best is stored as a record map; older versions were a
@@ -76,6 +91,7 @@ const SCHEMA = {
   theme: { validate: validateTheme, default: () => 'paper' },
   dev_accent: { validate: validateDevAccent, default: () => 'phosphor' },
   appearance: { validate: validateAppearance, default: () => 'system' },
+  profile: { validate: validateProfile, default: () => ({}) },
   // Schema migration marker. Bumped when the on-disk shape changes in
   // a breaking way. Older values are migrated in `migrate()` below.
   schema_version: { validate: isNumber, default: () => 1 },

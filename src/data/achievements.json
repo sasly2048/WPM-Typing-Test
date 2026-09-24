@@ -142,5 +142,101 @@
     "icon": "gem",
     "category": "speed",
     "condition": { "type": "perfect_run", "value": 100 }
+  },
+  {
+    "id": "first_quote",
+    "title": "Reader",
+    "description": "Type your first quote in Quote mode",
+    "icon": "quote",
+    "category": "milestone",
+    "condition": { "type": "quote_completed", "value": 1 }
+  },
+  {
+    "id": "quotes_25",
+    "title": "Librarian",
+    "description": "Type 25 quotes in Quote mode",
+    "icon": "book-open",
+    "category": "milestone",
+    "condition": { "type": "quote_completed", "value": 25 }
+  },
+  {
+    "id": "zen_first",
+    "title": "In the Flow",
+    "description": "Complete a Zen session of at least 60 seconds",
+    "icon": "infinity",
+    "category": "milestone",
+    "condition": { "type": "zen_minutes", "value": 1 }
+  },
+  {
+    "id": "zen_10",
+    "title": "Endless",
+    "description": "Reach 10 minutes of continuous Zen typing",
+    "icon": "mountain",
+    "category": "endurance",
+    "condition": { "type": "zen_minutes", "value": 10 }
+  },
+  {
+    "id": "zen_30",
+    "title": "Monk",
+    "description": "Reach 30 minutes of continuous Zen typing",
+    "icon": "trophy",
+    "category": "endurance",
+    "condition": { "type": "zen_minutes", "value": 30 }
+  },
+  {
+    "id": "adaptive_first",
+    "title": "Self-Aware",
+    "description": "Try the Adaptive (weak-key) drill",
+    "icon": "target",
+    "category": "developer",
+    "condition": { "type": "adaptive_completed", "value": 1 }
+  },
+  {
+    "id": "adaptive_25",
+    "title": "Iron Out the Wrinkles",
+    "description": "Complete 25 adaptive drill sessions",
+    "icon": "crosshair",
+    "category": "developer",
+    "condition": { "type": "adaptive_completed", "value": 25 }
+  },
+  {
+    "id": "multilingual_first",
+    "title": "Tourist",
+    "description": "Type in a non-English language",
+    "icon": "globe",
+    "category": "milestone",
+    "condition": { "type": "multilingual_completed", "value": 1 }
+  },
+  {
+    "id": "multilingual_5",
+    "title": "Polyglot Pro",
+    "description": "Type in 5 different non-English languages",
+    "icon": "globe-2",
+    "category": "milestone",
+    "condition": { "type": "multilingual_completed", "value": 5 }
+  },
+  {
+    "id": "burst_120",
+    "title": "Sprint",
+    "description": "Reach a burst of 120 WPM in any single second",
+    "icon": "zap",
+    "category": "speed",
+    "condition": { "type": "burst_reached", "value": 120 }
+  },
+  {
+    "id": "burst_160",
+    "title": "Lightning",
+    "description": "Reach a burst of 160 WPM in any single second",
+    "icon": "bolt",
+    "category": "speed",
+    "condition": { "type": "burst_reached", "value": 160 }
+  },
+  {
+    "id": "tests_500",
+    "title": "Veteran",
+    "description": "Complete 500 typing tests",
+    "icon": "award",
+    "category": "milestone",
+    "condition": { "type": "tests_completed", "value": 500 }
   }
 ]
